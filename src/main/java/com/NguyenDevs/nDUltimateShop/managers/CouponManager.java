@@ -11,7 +11,7 @@ public class CouponManager {
 
     private final NDUltimateShop plugin;
     private final Map<String, Coupon> coupons;
-    private final Map<UUID, String> activeCoupons; // player -> coupon code
+    private final Map<UUID, String> activeCoupons;
 
     public CouponManager(NDUltimateShop plugin) {
         this.plugin = plugin;

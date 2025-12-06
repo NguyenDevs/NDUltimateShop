@@ -35,7 +35,7 @@ public class NightShopListener implements Listener {
         // Xử lý nút Sắp xếp
         if (slot == gui.getSortSlot()) {
             gui.getConfig().playSound(player, "click");
-            gui.rotateSort();
+            gui.handleSortClick(event.getClick());
             gui.open();
             return;
         }

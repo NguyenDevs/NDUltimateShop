@@ -13,7 +13,7 @@ import java.util.Map;
 public class SellManager {
 
     private final NDUltimateShop plugin;
-    private final Map<String, Double> itemPrices; // metadata hash -> price
+    private final Map<String, Double> itemPrices;
     private final Map<Material, Double> materialPrices;
 
     public SellManager(NDUltimateShop plugin) {
@@ -28,7 +28,6 @@ public class SellManager {
 
         FileConfiguration config = plugin.getConfigManager().getConfig("itemsell.yml");
 
-        // Load custom item prices (with metadata)
         ConfigurationSection customSection = config.getConfigurationSection("custom-items");
         if (customSection != null) {
             for (String key : customSection.getKeys(false)) {
@@ -41,7 +40,6 @@ public class SellManager {
             }
         }
 
-        // Load material prices
         ConfigurationSection materialSection = config.getConfigurationSection("materials");
         if (materialSection != null) {
             for (String key : materialSection.getKeys(false)) {
@@ -55,7 +53,6 @@ public class SellManager {
             }
         }
 
-        // Load default prices from main config
         ConfigurationSection defaultSection = plugin.getConfig().getConfigurationSection("sell.default-prices");
         if (defaultSection != null) {
             for (String key : defaultSection.getKeys(false)) {
@@ -79,17 +76,13 @@ public class SellManager {
         config.set("custom-items", null);
         config.set("materials", null);
 
-        // Save custom items
         int index = 0;
         for (Map.Entry<String, Double> entry : itemPrices.entrySet()) {
             String key = "custom-items.item" + index;
-            // Note: We need to store the item, but we only have the hash
-            // This is a limitation - consider storing items differently
             config.set(key + ".price", entry.getValue());
             index++;
         }
 
-        // Save materials
         for (Map.Entry<Material, Double> entry : materialPrices.entrySet()) {
             config.set("materials." + entry.getKey().name(), entry.getValue());
         }
@@ -102,13 +95,11 @@ public class SellManager {
             return 0.0;
         }
 
-        // Check custom item price first
         String hash = getItemHash(item);
         if (itemPrices.containsKey(hash)) {
             return itemPrices.get(hash);
         }
 
-        // Check material price
         if (materialPrices.containsKey(item.getType())) {
             return materialPrices.get(item.getType());
         }

@@ -7,7 +7,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -25,7 +24,6 @@ public class AuctionGUI extends BaseGUI {
     @Override
     public void open() {
         this.listings = new ArrayList<>(plugin.getAuctionManager().getAllListings());
-        // Sắp xếp items
         sortItems(listings);
 
         Map<String, String> ph = new HashMap<>();
@@ -94,7 +92,6 @@ public class AuctionGUI extends BaseGUI {
             inventory.setItem(slots.get("my-listings"), myItems);
         }
 
-        // Add Sort Button
         inventory.setItem(getSortSlot(), getSortButton());
 
         fillDecorative();

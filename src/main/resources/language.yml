@@ -22,9 +22,15 @@ gui-sort-name: "&eSắp xếp: &f%type%"
 gui-sort-az: "A - Z"
 gui-sort-za: "Z - A"
 gui-sort-type: "Loại"
-gui-sort-lore:
-  - "&7Click để thay đổi cách sắp xếp"
-  - "&7vật phẩm trong cửa hàng."
+
+gui-subtype-enchant: "&dEnchant"
+gui-subtype-food: "&6Thức ăn"
+gui-subtype-block: "&bKhối"
+gui-subtype-tool: "&cCông cụ/Vũ khí"
+
+gui-action-left: "&7Click Trái: Đổi chế độ sắp xếp"
+gui-action-right: "&7Click Phải: Đổi loại vật phẩm"
+gui-current-priority: "&7Hiện tại ưu tiên: &f%type%"
 
 shop-item-added: "&aĐã thêm &e%item% &avào cửa hàng với giá &e%price%$ &a(Kho: &e%stock%&a)"
 shop-item-removed: "&aĐã xóa vật phẩm &e%id% &akhỏi cửa hàng!"

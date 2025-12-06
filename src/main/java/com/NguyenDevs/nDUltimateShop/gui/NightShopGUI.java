@@ -6,7 +6,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -25,7 +24,6 @@ public class NightShopGUI extends BaseGUI {
     @Override
     public void open() {
         loadItems();
-        // Sắp xếp items
         sortItems(items);
 
         Map<String, String> ph = new HashMap<>();
@@ -93,7 +91,6 @@ public class NightShopGUI extends BaseGUI {
             inventory.setItem(slots.get("info"), info);
         }
 
-        // Add Sort Button
         inventory.setItem(getSortSlot(), getSortButton());
 
         fillDecorative();
@@ -132,7 +129,6 @@ public class NightShopGUI extends BaseGUI {
             List<String> finalLore = new ArrayList<>();
             for (String line : configLore) {
                 if (line.contains("%lore%")) {
-                    // Logic fix: Chỉ thêm nếu item gốc có lore, tránh lỗi hiển thị
                     if (meta.hasLore()) {
                         for (String originalLine : meta.getLore()) {
                             finalLore.add(originalLine);
@@ -141,8 +137,6 @@ public class NightShopGUI extends BaseGUI {
                 } else {
                     String processed = plugin.getLanguageManager().colorize(
                             plugin.getPlaceholderManager().replacePlaceholders(player, line, ph));
-                    // Chỉ add nếu dòng không rỗng để tránh khoảng trống thừa,
-                    // nhưng nếu config cố tình để trống "" thì vẫn giữ.
                     finalLore.add(processed);
                 }
             }

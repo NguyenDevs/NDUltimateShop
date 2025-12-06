@@ -7,6 +7,7 @@ import com.NguyenDevs.nDUltimateShop.models.ShopItem;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
@@ -27,10 +28,19 @@ public abstract class BaseGUI implements InventoryHolder {
     protected int currentPage = 0;
     protected SortType sortType = SortType.NAME_AZ;
 
+    protected SubSortType subSortType = SubSortType.ENCHANT;
+
     public enum SortType {
         NAME_AZ,
         NAME_ZA,
         TYPE
+    }
+
+    public enum SubSortType {
+        ENCHANT,
+        FOOD,
+        BLOCK,
+        TOOL_WEAPON
     }
 
     public BaseGUI(NDUltimateShop plugin, Player player, String configName) {
@@ -55,19 +65,39 @@ public abstract class BaseGUI implements InventoryHolder {
         }
     }
 
-    public void rotateSort() {
-        switch (sortType) {
-            case NAME_AZ:
-                sortType = SortType.NAME_ZA;
-                break;
-            case NAME_ZA:
-                sortType = SortType.TYPE;
-                break;
-            case TYPE:
-                sortType = SortType.NAME_AZ;
-                break;
+    public void handleSortClick(ClickType clickType) {
+        if (clickType.isLeftClick()) {
+            switch (sortType) {
+                case NAME_AZ:
+                    sortType = SortType.NAME_ZA;
+                    break;
+                case NAME_ZA:
+                    sortType = SortType.TYPE;
+                    break;
+                case TYPE:
+                    sortType = SortType.NAME_AZ;
+                    break;
+            }
+        } else if (clickType.isRightClick()) {
+            if (sortType == SortType.TYPE) {
+                switch (subSortType) {
+                    case ENCHANT:
+                        subSortType = SubSortType.FOOD;
+                        break;
+                    case FOOD:
+                        subSortType = SubSortType.BLOCK;
+                        break;
+                    case BLOCK:
+                        subSortType = SubSortType.TOOL_WEAPON;
+                        break;
+                    case TOOL_WEAPON:
+                        subSortType = SubSortType.ENCHANT;
+                        break;
+                }
+            }
         }
     }
+
 
     public ItemStack getSortButton() {
         ItemStack item = new ItemStack(Material.BOOK);
@@ -82,7 +112,8 @@ public abstract class BaseGUI implements InventoryHolder {
                     sortName = plugin.getLanguageManager().getMessage("gui-sort-za");
                     break;
                 case TYPE:
-                    sortName = plugin.getLanguageManager().getMessage("gui-sort-type");
+                    String subName = getSubSortName(subSortType);
+                    sortName = plugin.getLanguageManager().getMessage("gui-sort-type") + " (" + subName + "&f)";
                     break;
             }
 
@@ -90,20 +121,31 @@ public abstract class BaseGUI implements InventoryHolder {
             meta.setDisplayName(plugin.getLanguageManager().colorize(nameFormat.replace("%type%", sortName)));
 
             List<String> lore = new ArrayList<>();
-            String loreKey = "gui-sort-lore";
-            if (plugin.getLanguageManager().getMessage(loreKey).startsWith("&cMissing")) {
-                lore.add("§7Click để đổi cách sắp xếp.");
-            } else {
-                String rawLore = plugin.getLanguageManager().getMessage(loreKey);
-                lore.add(plugin.getLanguageManager().colorize("&7Click để thay đổi."));
+            lore.add(plugin.getLanguageManager().getMessage("gui-action-left"));
+
+            if (sortType == SortType.TYPE) {
+                lore.add(plugin.getLanguageManager().getMessage("gui-action-right"));
+
+                String priorityMsg = plugin.getLanguageManager().getMessage("gui-current-priority");
+                lore.add(plugin.getLanguageManager().colorize(priorityMsg.replace("%type%", getSubSortName(subSortType))));
             }
+
             meta.setLore(lore);
             item.setItemMeta(meta);
         }
         return item;
     }
 
-    // Helper sắp xếp chung cho ShopItem và AuctionListing
+    private String getSubSortName(SubSortType type) {
+        switch (type) {
+            case ENCHANT: return plugin.getLanguageManager().getMessage("gui-subtype-enchant");
+            case FOOD: return plugin.getLanguageManager().getMessage("gui-subtype-food");
+            case BLOCK: return plugin.getLanguageManager().getMessage("gui-subtype-block");
+            case TOOL_WEAPON: return plugin.getLanguageManager().getMessage("gui-subtype-tool");
+            default: return "";
+        }
+    }
+
     protected <T> void sortItems(List<T> items) {
         items.sort((o1, o2) -> {
             ItemStack i1 = getItemStackFromObject(o1);
@@ -117,17 +159,40 @@ public abstract class BaseGUI implements InventoryHolder {
                 case NAME_ZA:
                     return name2.compareToIgnoreCase(name1);
                 case TYPE:
-                    int typeScore1 = getMaterialScore(i1.getType());
-                    int typeScore2 = getMaterialScore(i2.getType());
-                    if (typeScore1 != typeScore2) {
-                        return Integer.compare(typeScore1, typeScore2);
-                    }
+                    boolean match1 = matchesSubType(i1);
+                    boolean match2 = matchesSubType(i2);
+
+                    if (match1 && !match2) return -1;
+                    if (!match1 && match2) return 1;
+
                     return name1.compareToIgnoreCase(name2);
                 case NAME_AZ:
                 default:
                     return name1.compareToIgnoreCase(name2);
             }
         });
+    }
+
+    private boolean matchesSubType(ItemStack item) {
+        if (item == null) return false;
+        Material m = item.getType();
+
+        switch (subSortType) {
+            case ENCHANT:
+                return item.getEnchantments().size() > 0 || m == Material.ENCHANTED_BOOK;
+            case FOOD:
+                return m.isEdible();
+            case BLOCK:
+                return m.isBlock();
+            case TOOL_WEAPON:
+                String name = m.name();
+                return name.endsWith("_SWORD") || name.endsWith("_AXE") ||
+                        name.endsWith("_PICKAXE") || name.endsWith("_SHOVEL") ||
+                        name.endsWith("_HOE") || name.endsWith("BOW") ||
+                        name.endsWith("TRIDENT") || name.endsWith("SHIELD");
+            default:
+                return false;
+        }
     }
 
     private ItemStack getItemStackFromObject(Object obj) {
@@ -141,16 +206,6 @@ public abstract class BaseGUI implements InventoryHolder {
             return org.bukkit.ChatColor.stripColor(item.getItemMeta().getDisplayName());
         }
         return item.getType().name();
-    }
-
-    private int getMaterialScore(Material m) {
-        String name = m.name();
-        if (name.endsWith("_SWORD") || name.endsWith("_AXE") || name.endsWith("BOW") || name.endsWith("TRIDENT")) return 1;
-        if (name.endsWith("_HELMET") || name.endsWith("_CHESTPLATE") || name.endsWith("_LEGGINGS") || name.endsWith("_BOOTS")) return 2;
-        if (name.endsWith("_PICKAXE") || name.endsWith("_SHOVEL") || name.endsWith("_HOE") || name.endsWith("FISHING_ROD")) return 3;
-        if (m.isEdible()) return 4;
-        if (m.isBlock()) return 5;
-        return 6;
     }
 
     public int getSortSlot() {

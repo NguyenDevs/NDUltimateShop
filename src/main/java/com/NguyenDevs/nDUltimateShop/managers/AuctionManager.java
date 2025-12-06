@@ -124,7 +124,6 @@ public class AuctionManager {
                 if (listing.isExpired()) {
                     expiredIds.add(listing.getId());
 
-                    // Return item to seller
                     Player seller = Bukkit.getPlayer(listing.getSellerUUID());
                     if (seller != null && seller.isOnline()) {
                         seller.getInventory().addItem(listing.getItemStack());
@@ -136,7 +135,7 @@ public class AuctionManager {
             }
 
             expiredIds.forEach(this::removeListing);
-        }, 1200L, 1200L); // Check every minute
+        }, 1200L, 1200L);
     }
 
     private boolean isExpired(long expirationTime) {

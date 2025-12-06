@@ -59,7 +59,7 @@ public class SellListener implements Listener {
             event.setCancelled(true);
         } else {
             if (event.isShiftClick()) {
-                event.setCancelled(true); // Simplify prevent shift click to avoid logic complexity
+                event.setCancelled(true);
             }
             plugin.getServer().getScheduler().runTask(plugin, gui::updateGUI);
         }

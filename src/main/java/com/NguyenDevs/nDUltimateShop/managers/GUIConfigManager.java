@@ -88,7 +88,6 @@ public class GUIConfigManager {
             if (slotsSection != null) {
                 for (String key : slotsSection.getKeys(false)) mapping.put(key, slotsSection.getInt(key));
             }
-            // Mặc định slot sắp xếp là 52 nếu không có trong config
             if (!mapping.containsKey("sort")) {
                 mapping.put("sort", 52);
             }

@@ -62,7 +62,6 @@ public class ConfigManager {
 
         File file = new File(guiFolder, fileName);
         if (!file.exists()) {
-            // Sửa lại đây - chỉ cần "gui/" + fileName
             plugin.saveResource("gui/" + fileName, false);
         }
         String key = "gui/" + fileName;

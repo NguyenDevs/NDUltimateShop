@@ -22,7 +22,6 @@ sell:
     STONE: 0.5
     OAK_LOG: 2.0
     WHEAT: 1.0
-
 sounds:
   enabled: true
 

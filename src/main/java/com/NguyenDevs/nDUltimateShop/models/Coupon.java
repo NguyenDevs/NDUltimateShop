@@ -7,15 +7,15 @@ import java.util.UUID;
 public class Coupon {
 
     private final String code;
-    private final double discount; // percentage
+    private final double discount;
     private final CouponType type;
-    private final long value; // time in millis or max uses
+    private final long value;
     private long createdTime;
     private final Set<UUID> usedBy;
 
     public enum CouponType {
-        TIME,  // Expires after certain time
-        USES   // Expires after certain number of uses
+        TIME,
+        USES
     }
 
     public Coupon(String code, double discount, CouponType type, long value) {
@@ -71,7 +71,7 @@ public class Coupon {
     public boolean canUse(UUID playerUUID) {
         if (isExpired()) return false;
 
-        int maxUsesPerPlayer = 1; // Can be made configurable
+        int maxUsesPerPlayer = 1;
         return !usedBy.contains(playerUUID);
     }
 
