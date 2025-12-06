@@ -1,8 +1,6 @@
-# Black Shop GUI Configuration
 title: "&5&lCHỢ ĐÊM &8[{blackshop_status}]"
 rows: 6
 
-# Hiển thị tag "Vật phẩm hiếm" trong lore
 show-rare-tag: true
 
 item-slots:
@@ -70,13 +68,13 @@ filler-material: PURPLE_STAINED_GLASS_PANE
 decorative-items:
   info:
     material: NETHER_STAR
-    name: "&5&lTHÔNG TIN CHỢ ĐÊM"
+    name: "&5&lTHÔNG TIN"
     lore:
-      - "&7Mở cửa: &d{blackshop_time}"
+      - "&7Giờ mở: &d{blackshop_time}"
       - "&7Trạng thái: &a{blackshop_status}"
       - ""
       - "&7Số dư: &a${balance}"
-      - "&dNơi bán những vật phẩm cấm & hiếm!"
+      - "&dNơi bán vật phẩm Cấm & Hiếm!"
     enchanted: true
 
   previous-button:
@@ -85,7 +83,7 @@ decorative-items:
 
   next-button:
     material: ARROW
-    name: "&dTrang Tiếp ▶"
+    name: "&dTrang Sau ▶"
 
   close-button:
     material: BARRIER
@@ -93,16 +91,9 @@ decorative-items:
 
 messages:
   lore-price: "&dGiá: &5{price}$"
-  lore-stock: "&7Còn lại: &d{stock}"
-  lore-click-buy: "&5▶ Click để Mua Ngay!"
-  lore-rare: "&6✦ VẬT PHẨM HIẾM ✦"
-
-  blackshop-item-bought: "&aGiao dịch chợ đêm thành công: &e{amount}x {item} &avới giá &d{price}$"
-  blackshop-closed: "&cChợ Đêm đã đóng cửa! Quay lại sau nhé."
-  blackshop-open-time: "&7Giờ mở cửa: &d{open}h - {close}h"
-  blackshop-opened: "&aChợ Đêm đã mở cửa!"
-  blackshop-announce-open: "&5&l[CHỢ ĐÊM] &dCổng chợ đen đã mở! Những món hàng độc lạ đang chờ chủ nhân!"
-  blackshop-announce-close: "&5&l[CHỢ ĐÊM] &7Cổng chợ đen đã đóng. Hẹn gặp lại vào ngày mai!"
+  lore-stock: "&7Còn: &d{stock}"
+  lore-click-buy: "&5▶ Click để Mua!"
+  lore-rare: "&6✦ HÀNG HIẾM ✦"
 
 sounds:
   click: UI_BUTTON_CLICK:1:1

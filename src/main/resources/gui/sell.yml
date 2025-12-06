@@ -1,8 +1,6 @@
-# Sell GUI Configuration
 title: "&9&lTHU MUA VẬT PHẨM"
 rows: 6
 
-# Các slot người chơi có thể đặt đồ vào
 item-slots:
   - 10
   - 11
@@ -68,20 +66,18 @@ filler-material: BLUE_STAINED_GLASS_PANE
 decorative-items:
   info:
     material: BOOK
-    name: "&9&lHƯỚNG DẪN BÁN"
+    name: "&9&lHƯỚNG DẪN"
     lore:
-      - "&7Kéo thả vật phẩm vào ô trống"
-      - "&7Hệ thống sẽ tự động định giá"
-      - "&7Nhấn &aXác Nhận &7để nhận tiền"
-      - ""
-      - "&eChỉ bán được các vật phẩm có trong danh sách thu mua!"
+      - "&7Kéo thả đồ vào ô trống"
+      - "&7Hệ thống tự định giá"
+      - "&7Nhấn &aXác Nhận &7để bán"
     enchanted: false
 
   total-value:
     material: EMERALD
     name: "&a&lTỔNG GIÁ TRỊ"
     lore:
-      - "&7Giá trị đơn hàng: &e{total}$"
+      - "&7Tổng thu về: &e{total}$"
       - ""
       - "&7Số dư hiện tại: &a${balance}"
     enchanted: true
@@ -90,19 +86,19 @@ decorative-items:
     material: LIME_DYE
     name: "&a✔ XÁC NHẬN BÁN"
     lore:
-      - "&7Nhấn để bán tất cả vật phẩm"
-      - "&aTổng thu về: &e{total}$"
+      - "&7Bán tất cả vật phẩm trong khung"
+      - "&aGiá trị: &e{total}$"
 
   cancel:
     material: RED_DYE
-    name: "&c✖ HỦY GIAO DỊCH"
+    name: "&c✖ HỦY BỎ"
     lore:
-      - "&7Nhấn để lấy lại toàn bộ vật phẩm"
+      - "&7Lấy lại toàn bộ vật phẩm"
 
 messages:
-  sell-success: "&aGiao dịch thành công! +{amount}$"
-  sell-cancelled: "&eĐã hủy giao dịch."
-  sell-no-items: "&cChưa có vật phẩm nào để bán!"
+  sell-success: "&aBán thành công! +{amount}$"
+  sell-cancelled: "&eĐã hủy bán."
+  sell-no-items: "&cKhông có gì để bán!"
 
 sounds:
   click: UI_BUTTON_CLICK:1:1

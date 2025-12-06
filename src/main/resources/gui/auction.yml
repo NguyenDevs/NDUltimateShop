@@ -1,4 +1,3 @@
-# Auction House GUI Configuration
 title: "&e&lNHÀ ĐẤU GIÁ - Trang {page}"
 rows: 6
 
@@ -67,10 +66,10 @@ filler-material: YELLOW_STAINED_GLASS_PANE
 decorative-items:
   info:
     material: GOLD_INGOT
-    name: "&e&lTHỐNG KÊ ĐẤU GIÁ"
+    name: "&e&lTHÔNG TIN"
     lore:
-      - "&7Tổng số tin đăng: &e{total_listings}"
-      - "&7Tin đăng của bạn: &a{player_listings}"
+      - "&7Tổng tin đăng: &e{total_listings}"
+      - "&7Tin của bạn: &a{player_listings}"
       - "&7Phí sàn: &c{commission}%"
       - ""
       - "&7Số dư: &a${balance}"
@@ -80,10 +79,8 @@ decorative-items:
     material: CHEST
     name: "&6Vật phẩm đang bán"
     lore:
-      - "&7Danh sách vật phẩm bạn đang treo"
-      - "&7Số lượng: &e{count}"
-      - ""
-      - "&eShift + Chuột trái &7vào vật phẩm để gỡ xuống"
+      - "&7Xem danh sách bạn đang treo"
+      - "&eShift + Click &7để gỡ xuống"
 
   previous-button:
     material: ARROW
@@ -91,7 +88,7 @@ decorative-items:
 
   next-button:
     material: ARROW
-    name: "&eTrang Tiếp ▶"
+    name: "&eTrang Sau ▶"
 
   close-button:
     material: BARRIER
@@ -99,12 +96,12 @@ decorative-items:
 
 messages:
   lore-seller: "&7Người bán: &b{seller}"
-  lore-discount: "&d⚡ Ưu đãi: &c-{discount}%"
-  lore-original-price: "&7&mGiá gốc: &r&7{original_price}$"
+  lore-discount: "&d⚡ Sale: &c-{discount}%"
+  lore-original-price: "&7&mGốc: &r&7{original_price}$"
   lore-price: "&aGiá: &e{price}$"
   lore-time-left: "&7Còn lại: &e{time}"
-  lore-click-buy: "&e▶ Nhấn để Mua ngay!"
-  lore-click-cancel: "&c▶ Shift + Chuột trái để Gỡ!"
+  lore-click-buy: "&e▶ Click để Mua!"
+  lore-click-cancel: "&c▶ Shift + Click để Gỡ!"
 
 sounds:
   click: UI_BUTTON_CLICK:1:1

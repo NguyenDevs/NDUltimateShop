@@ -37,26 +37,31 @@ public class SellListener implements Listener {
 
         if (!event.getView().getTitle().equals(title)) return;
 
+        // FIX: Xử lý session null (do reload hoặc lỗi) -> Đóng inv và hủy sự kiện để tránh lấy item
+        SellGUI gui = activeGUIs.get(player);
+        if (gui == null) {
+            event.setCancelled(true);
+            player.closeInventory();
+            return;
+        }
+
         if (event.getClick() == ClickType.DOUBLE_CLICK) {
             event.setCancelled(true);
             return;
         }
 
         int slot = event.getRawSlot();
-        SellGUI gui = activeGUIs.get(player);
-        if (gui == null) return;
-
         Map<String, Integer> slots = config.getSlotMapping();
         List<Integer> itemSlots = config.getItemSlots();
 
         if (slots.containsKey("confirm") && slot == slots.get("confirm")) {
             event.setCancelled(true);
             if (gui.confirmSell()) {
-                player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1.0f, 2.0f);
+                config.playSound(player, "success");
                 player.closeInventory();
                 activeGUIs.remove(player);
             } else {
-                player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_BASS, 1.0f, 0.5f);
+                config.playSound(player, "error");
             }
             return;
         }
@@ -64,32 +69,35 @@ public class SellListener implements Listener {
         if (slots.containsKey("cancel") && slot == slots.get("cancel")) {
             event.setCancelled(true);
             gui.cancelSell();
-            player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 1.0f, 1.0f);
+            config.playSound(player, "click");
             player.closeInventory();
             activeGUIs.remove(player);
             return;
         }
 
+        // Logic cho slot bán đồ
         if (itemSlots.contains(slot)) {
             if (slot < event.getInventory().getSize()) {
                 if (event.getClick() == ClickType.NUMBER_KEY) {
                     event.setCancelled(true);
                     return;
                 }
-                player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 1.0f, 1.0f);
+                config.playSound(player, "click");
                 plugin.getServer().getScheduler().runTaskLater(plugin, gui::updateTotalDisplay, 1L);
                 return;
             }
         }
 
+        // Chặn lấy item trang trí
         if (slot < event.getInventory().getSize()) {
             event.setCancelled(true);
         } else if (event.isShiftClick()) {
             event.setCancelled(true);
         } else {
-            // Player inventory click to add item
+            // Player click vào inventory của mình để bỏ đồ vào
             plugin.getServer().getScheduler().runTaskLater(plugin, () -> {
-                player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 1.0f, 1.0f);
+                config.playSound(player, "click");
+                gui.updateTotalDisplay();
             }, 1L);
         }
     }
@@ -106,7 +114,11 @@ public class SellListener implements Listener {
         if (!event.getView().getTitle().equals(title)) return;
 
         SellGUI gui = activeGUIs.get(player);
-        if (gui == null) return;
+        if (gui == null) {
+            event.setCancelled(true);
+            player.closeInventory();
+            return;
+        }
 
         List<Integer> itemSlots = config.getItemSlots();
         boolean affectsItemSlots = event.getRawSlots().stream().anyMatch(itemSlots::contains);
@@ -118,7 +130,7 @@ public class SellListener implements Listener {
         }
 
         if (affectsItemSlots) {
-            player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 1.0f, 1.0f);
+            config.playSound(player, "click");
             plugin.getServer().getScheduler().runTaskLater(plugin, gui::updateTotalDisplay, 1L);
         }
     }
@@ -128,14 +140,11 @@ public class SellListener implements Listener {
         if (!(event.getPlayer() instanceof Player)) return;
 
         Player player = (Player) event.getPlayer();
-        GUIConfigManager.GUIConfig config = plugin.getConfigManager().getGUIConfig("sell");
-        String title = plugin.getPlaceholderManager().replacePlaceholders(player, config.getTitle());
-        title = plugin.getLanguageManager().colorize(title);
+        // Check title đơn giản để tránh lỗi null config khi disable
+        if (activeGUIs.containsKey(player)) {
+            SellGUI gui = activeGUIs.get(player);
+            GUIConfigManager.GUIConfig config = plugin.getConfigManager().getGUIConfig("sell");
 
-        if (!event.getView().getTitle().equals(title)) return;
-
-        SellGUI gui = activeGUIs.get(player);
-        if (gui != null) {
             List<Integer> itemSlots = config.getItemSlots();
             for (int slot : itemSlots) {
                 ItemStack item = event.getInventory().getItem(slot);

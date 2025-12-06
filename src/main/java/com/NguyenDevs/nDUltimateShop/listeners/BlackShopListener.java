@@ -31,25 +31,30 @@ public class BlackShopListener implements Listener {
         GUIConfigManager.GUIConfig config = plugin.getConfigManager().getGUIConfig("blackshop");
 
         String configTitleRaw = config.getTitle();
-        String mainTitlePart = configTitleRaw.split("\\[")[0].trim();
+        // Lấy phần title chính trước dấu [ để so sánh
+        String mainTitlePart = configTitleRaw.contains("[") ? configTitleRaw.split("\\[")[0].trim() : configTitleRaw;
         mainTitlePart = plugin.getLanguageManager().colorize(mainTitlePart);
 
         if (!event.getView().getTitle().startsWith(mainTitlePart)) return;
 
         event.setCancelled(true);
 
+        // FIX: Check session
+        BlackShopGUI gui = activeGUIs.get(player);
+        if (gui == null) {
+            player.closeInventory();
+            return;
+        }
+
         ItemStack clickedItem = event.getCurrentItem();
         int slot = event.getRawSlot();
 
         if (clickedItem == null || slot >= event.getInventory().getSize()) return;
 
-        BlackShopGUI gui = activeGUIs.get(player);
-        if (gui == null) return;
-
         Map<String, Integer> slots = config.getSlotMapping();
 
         if (slots.containsKey("close") && slot == slots.get("close")) {
-            player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 1.0f, 1.0f);
+            config.playSound(player, "click");
             player.closeInventory();
             activeGUIs.remove(player);
             return;
@@ -57,17 +62,17 @@ public class BlackShopListener implements Listener {
 
         if (slots.containsKey("previous") && slot == slots.get("previous")) {
             if (gui.getCurrentPage() > 0) {
-                player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 1.0f, 1.0f);
+                config.playSound(player, "click");
                 gui.setCurrentPage(gui.getCurrentPage() - 1);
                 gui.open();
             } else {
-                player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_BASS, 1.0f, 0.5f);
+                config.playSound(player, "error");
             }
             return;
         }
 
         if (slots.containsKey("next") && slot == slots.get("next")) {
-            player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 1.0f, 1.0f);
+            config.playSound(player, "click");
             gui.setCurrentPage(gui.getCurrentPage() + 1);
             gui.open();
             return;
@@ -75,19 +80,19 @@ public class BlackShopListener implements Listener {
 
         ShopItem shopItem = gui.getShopItemAt(slot);
         if (shopItem != null) {
-            purchaseItem(player, shopItem, gui);
+            purchaseItem(player, shopItem, gui, config);
         }
     }
 
-    private void purchaseItem(Player player, ShopItem shopItem, BlackShopGUI gui) {
+    private void purchaseItem(Player player, ShopItem shopItem, BlackShopGUI gui, GUIConfigManager.GUIConfig config) {
         if (!shopItem.hasStock()) {
-            player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_BASS, 1.0f, 0.5f);
+            config.playSound(player, "error");
             player.sendMessage(plugin.getLanguageManager().getPrefixedMessage("shop-not-enough-stock"));
             return;
         }
 
         if (player.getInventory().firstEmpty() == -1) {
-            player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_BASS, 1.0f, 0.5f);
+            config.playSound(player, "error");
             player.sendMessage(plugin.getLanguageManager().getPrefix() + " §cTúi đồ của bạn đã đầy!");
             return;
         }
@@ -95,7 +100,7 @@ public class BlackShopListener implements Listener {
         double price = shopItem.getPrice();
 
         if (plugin.getEconomy().getBalance(player) < price) {
-            player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_BASS, 1.0f, 0.5f);
+            config.playSound(player, "error");
             Map<String, String> placeholders = new HashMap<>();
             placeholders.put("amount", String.format("%.2f", price));
             player.sendMessage(plugin.getLanguageManager().getPrefixedMessage("not-enough-money", placeholders));
@@ -113,7 +118,7 @@ public class BlackShopListener implements Listener {
 
         plugin.getBlackShopManager().purchaseItem(shopItem.getId(), 1);
 
-        player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1.0f, 2.0f);
+        config.playSound(player, "success");
 
         Map<String, String> placeholders = new HashMap<>();
         placeholders.put("amount", "1");

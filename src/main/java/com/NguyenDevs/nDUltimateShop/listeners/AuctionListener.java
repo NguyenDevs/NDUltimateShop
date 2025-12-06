@@ -32,29 +32,33 @@ public class AuctionListener implements Listener {
         Player player = (Player) event.getWhoClicked();
         GUIConfigManager.GUIConfig config = plugin.getConfigManager().getGUIConfig("auction");
 
-        String configTitle = plugin.getLanguageManager().stripColor(
-                plugin.getLanguageManager().colorize(config.getTitle())
-        );
-        String currentTitle = event.getView().getTitle();
-
-        String baseTitle = config.getTitle().split("-")[0].trim();
+        // Logic check title linh hoạt hơn
+        String currentTitle = plugin.getLanguageManager().stripColor(event.getView().getTitle());
+        String baseTitle = config.getTitle().contains("-")
+                ? config.getTitle().split("-")[0].trim()
+                : config.getTitle();
         baseTitle = plugin.getLanguageManager().stripColor(plugin.getLanguageManager().colorize(baseTitle));
 
-        if (!plugin.getLanguageManager().stripColor(currentTitle).contains(baseTitle)) return;
-        event.setCancelled(true);
+        if (!currentTitle.contains(baseTitle)) return;
+
+        event.setCancelled(true); // Luôn cancel để chặn lấy đồ
+
+        // FIX: Check session
+        AuctionGUI gui = activeGUIs.get(player);
+        if (gui == null) {
+            player.closeInventory();
+            return;
+        }
 
         ItemStack clickedItem = event.getCurrentItem();
         int slot = event.getRawSlot();
 
         if (clickedItem == null || slot >= event.getInventory().getSize()) return;
 
-        AuctionGUI gui = activeGUIs.get(player);
-        if (gui == null) return;
-
         Map<String, Integer> slots = config.getSlotMapping();
 
         if (slots.containsKey("close") && slot == slots.get("close")) {
-            player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 1.0f, 1.0f);
+            config.playSound(player, "click");
             player.closeInventory();
             activeGUIs.remove(player);
             return;
@@ -62,17 +66,17 @@ public class AuctionListener implements Listener {
 
         if (slots.containsKey("previous") && slot == slots.get("previous")) {
             if (gui.getCurrentPage() > 0) {
-                player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 1.0f, 1.0f);
+                config.playSound(player, "click");
                 gui.setCurrentPage(gui.getCurrentPage() - 1);
                 gui.open();
             } else {
-                player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_BASS, 1.0f, 0.5f);
+                config.playSound(player, "error");
             }
             return;
         }
 
         if (slots.containsKey("next") && slot == slots.get("next")) {
-            player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 1.0f, 1.0f);
+            config.playSound(player, "click");
             gui.setCurrentPage(gui.getCurrentPage() + 1);
             gui.open();
             return;
@@ -80,20 +84,27 @@ public class AuctionListener implements Listener {
 
         AuctionListing listing = gui.getAuctionListingAt(slot);
         if (listing != null) {
-            if (event.getClick() == ClickType.SHIFT_LEFT && listing.getSellerUUID().equals(player.getUniqueId())) {
-                cancelListing(player, listing, gui);
-            } else if (!listing.getSellerUUID().equals(player.getUniqueId())) {
-                purchaseAuction(player, listing, gui);
+            if (listing.getSellerUUID().equals(player.getUniqueId())) {
+                if (event.getClick() == ClickType.SHIFT_LEFT || event.getClick() == ClickType.SHIFT_RIGHT) {
+                    cancelListing(player, listing, gui, config);
+                } else {
+                    // Thông báo nếu click thường vào đồ của mình
+                    config.playSound(player, "error");
+                    player.sendMessage(plugin.getLanguageManager().getMessage("help-admin-auction-cancel-hint",
+                            Map.of("hint", "Shift + Click để hủy")));
+                }
+            } else {
+                purchaseAuction(player, listing, gui, config);
             }
         }
     }
 
-    private void purchaseAuction(Player buyer, AuctionListing listing, AuctionGUI gui) {
+    private void purchaseAuction(Player buyer, AuctionListing listing, AuctionGUI gui, GUIConfigManager.GUIConfig config) {
         double originalPrice = listing.getPrice();
         double finalPrice = plugin.getCouponManager().getDiscountedPrice(buyer.getUniqueId(), originalPrice);
 
         if (plugin.getEconomy().getBalance(buyer) < finalPrice) {
-            buyer.playSound(buyer.getLocation(), Sound.BLOCK_NOTE_BLOCK_BASS, 1.0f, 0.5f);
+            config.playSound(buyer, "error");
             Map<String, String> placeholders = new HashMap<>();
             placeholders.put("amount", String.format("%.2f", finalPrice));
             buyer.sendMessage(plugin.getLanguageManager().getPrefixedMessage("not-enough-money", placeholders));
@@ -121,7 +132,7 @@ public class AuctionListener implements Listener {
         }
 
         plugin.getAuctionManager().removeListing(listing.getId());
-        buyer.playSound(buyer.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1.0f, 2.0f);
+        config.playSound(buyer, "success");
 
         Map<String, String> placeholders = new HashMap<>();
         placeholders.put("item", listing.getItemStack().getType().name());
@@ -132,7 +143,7 @@ public class AuctionListener implements Listener {
         gui.open();
     }
 
-    private void cancelListing(Player player, AuctionListing listing, AuctionGUI gui) {
+    private void cancelListing(Player player, AuctionListing listing, AuctionGUI gui, GUIConfigManager.GUIConfig config) {
         plugin.getAuctionManager().removeListing(listing.getId());
 
         Map<Integer, ItemStack> remaining = player.getInventory().addItem(listing.getItemStack());
@@ -143,7 +154,7 @@ public class AuctionListener implements Listener {
         }
 
         player.sendMessage(plugin.getLanguageManager().getPrefixedMessage("auction-item-cancelled"));
-        player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 1.0f, 1.0f);
+        config.playSound(player, "click");
         gui.open();
     }
 

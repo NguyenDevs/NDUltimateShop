@@ -1,8 +1,6 @@
-# Shop GUI Configuration
 title: "&2&lCỬA HÀNG - Trang {page}"
 rows: 6
 
-# Các ô hiển thị vật phẩm
 item-slots:
   - 10
   - 11
@@ -33,14 +31,12 @@ item-slots:
   - 42
   - 43
 
-# Mapping các ô chức năng
 slots:
   info: 4
   previous: 48
   next: 50
   close: 49
 
-# Các ô trang trí (kính màu)
 filler-slots:
   - 0
   - 1
@@ -67,46 +63,37 @@ filler-slots:
 
 filler-material: LIME_STAINED_GLASS_PANE
 
-# Vật phẩm trang trí & nút bấm
 decorative-items:
   info:
     material: BOOK
     name: "&a&lTHÔNG TIN"
     lore:
-      - "&7Số dư của bạn: &a${balance}"
+      - "&7Số dư: &a${balance}"
       - "&7Mã giảm giá: &d{coupon}"
-      - "&7Mức giảm: &c{coupon_discount}%"
+      - "&7Giảm: &c{coupon_discount}%"
       - ""
-      - "&eNhấn vào vật phẩm để mua!"
+      - "&eClick vật phẩm để mua!"
     enchanted: true
 
   previous-button:
     material: ARROW
     name: "&a◀ Trang Trước"
-    lore:
-      - "&7Quay lại trang trước đó"
 
   next-button:
     material: ARROW
-    name: "&aTrang Tiếp ▶"
-    lore:
-      - "&7Sang trang kế tiếp"
+    name: "&aTrang Sau ▶"
 
   close-button:
     material: BARRIER
-    name: "&c✖ Đóng Cửa Hàng"
-    lore:
-      - "&7Nhấn để thoát"
+    name: "&c✖ Đóng"
 
-# Messages hiển thị trong Lore
 messages:
-  lore-discount: "&d⚡ Khuyến mãi: &c-{discount}%"
-  lore-original-price: "&7&mGiá gốc: &r&7{original_price}$"
-  lore-price: "&aGiá bán: &e{price}$"
-  lore-stock: "&7Tồn kho: &b{stock}"
-  lore-click-buy: "&e▶ Nhấn chuột để Mua!"
+  lore-discount: "&d⚡ Sale: &c-{discount}%"
+  lore-original-price: "&7&mGốc: &r&7{original_price}$"
+  lore-price: "&aGiá: &e{price}$"
+  lore-stock: "&7Kho: &b{stock}"
+  lore-click-buy: "&e▶ Click để Mua!"
 
-# Âm thanh tương tác (Format: SOUND_NAME:VOLUME:PITCH)
 sounds:
   click: UI_BUTTON_CLICK:1:1
   success: ENTITY_PLAYER_LEVELUP:1:2
