@@ -10,7 +10,7 @@ description: Ultimate shop plugin with auction house, sell system, and black mar
 commands:
   ndshop:
     description: Main admin command
-    usage: /ndshop <reload|shop|sell|coupon|blackshop>
+    usage: /ndshop <reload|shop|sell|coupon|nightshop>
     permission: ndshop.admin
     aliases: [ndsa, shopadmin]
 
@@ -32,11 +32,11 @@ commands:
     permission: ndshop.sell.use
     aliases: [bán, ban]
 
-  blackshop:
-    description: Open black shop
-    usage: /blackshop
-    permission: ndshop.blackshop.use
-    aliases: [chợđêm, cd, bs]
+  nightshop:
+    description: Open night shop
+    usage: /nightshop
+    permission: ndshop.nightshop.use
+    aliases: [chợđêm, cd, bs, blackshop]
 
   coupon:
     description: Use a coupon code
@@ -61,8 +61,8 @@ permissions:
     description: Access to sell system
     default: true
 
-  ndshop.blackshop.use:
-    description: Access to black shop
+  ndshop.nightshop.use:
+    description: Access to night shop
     default: true
 
   ndshop.coupon.use:
@@ -77,5 +77,5 @@ permissions:
       ndshop.shop.use: true
       ndshop.auction.use: true
       ndshop.sell.use: true
-      ndshop.blackshop.use: true
+      ndshop.nightshop.use: true
       ndshop.coupon.use: true

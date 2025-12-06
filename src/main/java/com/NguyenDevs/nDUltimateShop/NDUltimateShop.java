@@ -16,7 +16,7 @@ public class NDUltimateShop extends JavaPlugin {
     private ShopManager shopManager;
     private AuctionManager auctionManager;
     private SellManager sellManager;
-    private BlackShopManager blackShopManager;
+    private NightShopManager nightShopManager;
     private CouponManager couponManager;
     private PlaceholderManager placeholderManager;
     private ListenerManager listenerManager;
@@ -46,9 +46,9 @@ public class NDUltimateShop extends JavaPlugin {
         sellManager = new SellManager(this);
         sellManager.loadSellPrices();
 
-        blackShopManager = new BlackShopManager(this);
-        blackShopManager.loadBlackShop();
-        blackShopManager.startScheduler();
+        nightShopManager = new NightShopManager(this);
+        nightShopManager.loadBlackShop();
+        nightShopManager.startScheduler();
 
         couponManager = new CouponManager(this);
         couponManager.loadCoupons();
@@ -65,9 +65,9 @@ public class NDUltimateShop extends JavaPlugin {
     public void onDisable() {
         if (auctionManager != null) auctionManager.saveAuctions();
         if (shopManager != null) shopManager.saveShops();
-        if (blackShopManager != null) {
-            blackShopManager.stopScheduler();
-            blackShopManager.saveBlackShop();
+        if (nightShopManager != null) {
+            nightShopManager.stopScheduler();
+            nightShopManager.saveBlackShop();
         }
         if (couponManager != null) couponManager.saveCoupons();
         if (sellManager != null) sellManager.saveSellPrices();
@@ -79,7 +79,7 @@ public class NDUltimateShop extends JavaPlugin {
         getCommand("shop").setExecutor(new ShopCommand(this));
         getCommand("ah").setExecutor(new AuctionCommand(this));
         getCommand("sell").setExecutor(new SellCommand(this));
-        getCommand("blackshop").setExecutor(new BlackShopCommand(this));
+        getCommand("nightshop").setExecutor(new NightShopCommand(this));
         getCommand("coupon").setExecutor(new CouponCommand(this));
     }
 
@@ -97,7 +97,7 @@ public class NDUltimateShop extends JavaPlugin {
     public ShopManager getShopManager() { return shopManager; }
     public AuctionManager getAuctionManager() { return auctionManager; }
     public SellManager getSellManager() { return sellManager; }
-    public BlackShopManager getBlackShopManager() { return blackShopManager; }
+    public NightShopManager getBlackShopManager() { return nightShopManager; }
     public CouponManager getCouponManager() { return couponManager; }
     public PlaceholderManager getPlaceholderManager() { return placeholderManager; }
 

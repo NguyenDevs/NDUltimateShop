@@ -44,18 +44,23 @@ public class ShopGUI extends BaseGUI {
             inventory.setItem(slot, createShopItemDisplay(shopItem));
         }
 
-        setupButtons(endIndex < items.size());
+        setupButtons();
         fillDecorative();
     }
 
-    private void setupButtons(boolean hasNext) {
+    private void setupButtons() {
         Map<String, Integer> slots = config.getSlotMapping();
+        List<Integer> itemSlots = config.getItemSlots();
+
         if (currentPage > 0 && slots.containsKey("previous")) {
             inventory.setItem(slots.get("previous"), config.getDecorativeItem("previous-button"));
         }
-        if (hasNext && slots.containsKey("next")) {
+
+        int maxItemsPerPage = itemSlots.size();
+        if ((currentPage + 1) * maxItemsPerPage < items.size() && slots.containsKey("next")) {
             inventory.setItem(slots.get("next"), config.getDecorativeItem("next-button"));
         }
+
         if (slots.containsKey("close")) {
             inventory.setItem(slots.get("close"), config.getDecorativeItem("close-button"));
         }

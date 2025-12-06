@@ -7,7 +7,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class SellGUI extends BaseGUI {
@@ -64,7 +66,16 @@ public class SellGUI extends BaseGUI {
                     plugin.getPlaceholderManager().replacePlaceholders(player, meta.getDisplayName(), ph)
             ));
         }
-        // ... (giữ nguyên logic xử lý lore như cũ) ...
+
+        if (meta.hasLore()) {
+            List<String> lore = new ArrayList<>();
+            for (String line : meta.getLore()) {
+                lore.add(plugin.getLanguageManager().colorize(
+                        plugin.getPlaceholderManager().replacePlaceholders(player, line, ph)
+                ));
+            }
+            meta.setLore(lore);
+        }
         item.setItemMeta(meta);
     }
 
@@ -80,23 +91,49 @@ public class SellGUI extends BaseGUI {
     }
 
     public boolean confirmSell() {
-        double total = calculateTotal();
-        boolean hasItems = total > 0;
+        double total = 0.0;
+        List<ItemStack> unsoldItems = new ArrayList<>();
+        boolean soldAnything = false;
 
-        if (!hasItems) {
+        for (int slot : config.getItemSlots()) {
+            ItemStack item = inventory.getItem(slot);
+            if (item != null && item.getType() != Material.AIR) {
+                double value = plugin.getSellManager().calculateSellValue(item);
+                if (value > 0) {
+                    total += value;
+                    soldAnything = true;
+                } else {
+                    unsoldItems.add(item);
+                }
+                inventory.setItem(slot, null);
+            }
+        }
+
+        if (!soldAnything && unsoldItems.isEmpty()) {
             player.sendMessage(plugin.getLanguageManager().getPrefixedMessage("sell-no-items"));
             return false;
         }
 
-        // Xóa item trước khi cộng tiền để tránh lỗi logic
-        for (int slot : config.getItemSlots()) {
-            inventory.setItem(slot, null);
+        if (total > 0) {
+            plugin.getEconomy().depositPlayer(player, total);
+            Map<String, String> ph = new HashMap<>();
+            ph.put("amount", String.format("%,.2f", total));
+            player.sendMessage(plugin.getLanguageManager().getPrefixedMessage("sell-success", ph));
         }
 
-        plugin.getEconomy().depositPlayer(player, total);
-        Map<String, String> ph = new HashMap<>();
-        ph.put("amount", String.format("%,.2f", total));
-        player.sendMessage(plugin.getLanguageManager().getPrefixedMessage("sell-success", ph));
+        if (!unsoldItems.isEmpty()) {
+            for (ItemStack item : unsoldItems) {
+                for (ItemStack drop : player.getInventory().addItem(item).values()) {
+                    player.getWorld().dropItem(player.getLocation(), drop);
+                }
+            }
+            if (soldAnything) {
+                player.sendMessage(plugin.getLanguageManager().getPrefix() + " §eMột số vật phẩm không thể bán đã được trả lại.");
+            } else {
+                player.sendMessage(plugin.getLanguageManager().getPrefix() + " §cVật phẩm này không thể bán!");
+            }
+        }
+
         return true;
     }
 
@@ -104,11 +141,9 @@ public class SellGUI extends BaseGUI {
         for (int slot : config.getItemSlots()) {
             ItemStack item = inventory.getItem(slot);
             if (item != null && item.getType() != Material.AIR) {
-                // Trả lại item vào kho người chơi
                 for (ItemStack drop : player.getInventory().addItem(item).values()) {
                     player.getWorld().dropItem(player.getLocation(), drop);
                 }
-                // QUAN TRỌNG: Xóa item khỏi GUI ngay lập tức để tránh trả lại lần 2
                 inventory.setItem(slot, null);
             }
         }

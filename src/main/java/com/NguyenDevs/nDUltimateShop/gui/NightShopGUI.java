@@ -13,18 +13,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class BlackShopGUI extends BaseGUI {
+public class NightShopGUI extends BaseGUI {
 
-    private List<ShopItem> items; // Không để final để có thể refresh
+    private List<ShopItem> items;
 
-    public BlackShopGUI(NDUltimateShop plugin, Player player) {
+    public NightShopGUI(NDUltimateShop plugin, Player player) {
         super(plugin, player, "blackshop");
-        this.items = new ArrayList<>(); // Khởi tạo list rỗng
+        this.items = new ArrayList<>();
     }
 
     @Override
     public void open() {
-        // REFRESH DATA: Tải lại danh sách item mỗi khi mở GUI
         loadItems();
 
         Map<String, String> ph = new HashMap<>();
@@ -57,13 +56,12 @@ public class BlackShopGUI extends BaseGUI {
 
         Map<String, Integer> slots = config.getSlotMapping();
 
-        // Logic mũi tên trang trước: Chỉ hiện khi không phải trang 1
         if (currentPage > 0 && slots.containsKey("previous")) {
             inventory.setItem(slots.get("previous"), config.getDecorativeItem("previous-button"));
         }
 
-        // Logic mũi tên trang sau: Chỉ hiện khi còn item phía sau
-        if (endIndex < items.size() && slots.containsKey("next")) {
+        int maxItemsPerPage = itemSlots.size();
+        if ((currentPage + 1) * maxItemsPerPage < items.size() && slots.containsKey("next")) {
             inventory.setItem(slots.get("next"), config.getDecorativeItem("next-button"));
         }
 

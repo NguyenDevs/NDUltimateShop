@@ -38,7 +38,7 @@ public class ConfigManager {
         createGUIConfig("shop.yml");
         createGUIConfig("auction.yml");
         createGUIConfig("sell.yml");
-        createGUIConfig("blackshop.yml");
+        createGUIConfig("nightshop.yml");
 
         loadGUIConfigs();
 

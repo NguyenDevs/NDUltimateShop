@@ -11,20 +11,20 @@ import java.time.LocalTime;
 import java.time.ZoneId;
 import java.util.*;
 
-public class BlackShopManager {
+public class NightShopManager {
 
     private final NDUltimateShop plugin;
-    private final Map<String, ShopItem> blackShopItems;
+    private final Map<String, ShopItem> nightShopItems;
     private int taskId = -1;
     private boolean isOpen = false;
 
-    public BlackShopManager(NDUltimateShop plugin) {
+    public NightShopManager(NDUltimateShop plugin) {
         this.plugin = plugin;
-        this.blackShopItems = new HashMap<>();
+        this.nightShopItems = new HashMap<>();
     }
 
     public void loadBlackShop() {
-        blackShopItems.clear();
+        nightShopItems.clear();
         FileConfiguration config = plugin.getConfigManager().getConfig("gui/blackshop.yml");
 
         ConfigurationSection itemsSection = config.getConfigurationSection("items");
@@ -35,19 +35,19 @@ public class BlackShopManager {
                 int stock = itemsSection.getInt(key + ".stock");
 
                 if (item != null) {
-                    blackShopItems.put(key, new ShopItem(key, item, price, stock));
+                    nightShopItems.put(key, new ShopItem(key, item, price, stock));
                 }
             }
         }
 
-        plugin.getLogger().info("Đã tải " + blackShopItems.size() + " vật phẩm trong chợ đêm!");
+        plugin.getLogger().info("Đã tải " + nightShopItems.size() + " vật phẩm trong chợ đêm!");
     }
 
     public void saveBlackShop() {
         FileConfiguration config = plugin.getConfigManager().getConfig("gui/blackshop.yml");
         config.set("items", null);
 
-        for (Map.Entry<String, ShopItem> entry : blackShopItems.entrySet()) {
+        for (Map.Entry<String, ShopItem> entry : nightShopItems.entrySet()) {
             String key = "items." + entry.getKey();
             ShopItem item = entry.getValue();
 
@@ -59,12 +59,29 @@ public class BlackShopManager {
         plugin.getConfigManager().saveConfig("gui/blackshop.yml");
     }
 
+    public boolean isSystemEnabled() {
+        return plugin.getConfig().getBoolean("blackshop.enabled", true);
+    }
+
+    public void setSystemEnabled(boolean enabled) {
+        plugin.getConfig().set("blackshop.enabled", enabled);
+        plugin.saveConfig();
+        if (!enabled && isOpen) {
+            closeBlackShop();
+        }
+    }
+
     public void startScheduler() {
         if (taskId != -1) {
             Bukkit.getScheduler().cancelTask(taskId);
         }
 
         taskId = Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, () -> {
+            if (!isSystemEnabled()) {
+                if (isOpen) closeBlackShop();
+                return;
+            }
+
             boolean shouldBeOpen = isWithinOpenHours();
 
             if (shouldBeOpen && !isOpen) {
@@ -72,7 +89,7 @@ public class BlackShopManager {
             } else if (!shouldBeOpen && isOpen) {
                 closeBlackShop();
             }
-        }, 0L, 1200L); // Check every minute
+        }, 0L, 1200L);
     }
 
     public void stopScheduler() {
@@ -94,7 +111,6 @@ public class BlackShopManager {
         if (closeTime.isAfter(openTime)) {
             return now.isAfter(openTime) && now.isBefore(closeTime);
         } else {
-            // Overnight period (e.g., 22:00 to 02:00)
             return now.isAfter(openTime) || now.isBefore(closeTime);
         }
     }
@@ -114,29 +130,29 @@ public class BlackShopManager {
     }
 
     public boolean isOpen() {
-        return isOpen;
+        return isOpen && isSystemEnabled();
     }
 
     public void addItem(String id, ItemStack item, double price, int stock) {
-        blackShopItems.put(id, new ShopItem(id, item, price, stock));
+        nightShopItems.put(id, new ShopItem(id, item, price, stock));
         saveBlackShop();
     }
 
     public void removeItem(String id) {
-        blackShopItems.remove(id);
+        nightShopItems.remove(id);
         saveBlackShop();
     }
 
     public ShopItem getItem(String id) {
-        return blackShopItems.get(id);
+        return nightShopItems.get(id);
     }
 
     public Collection<ShopItem> getAllItems() {
-        return blackShopItems.values();
+        return nightShopItems.values();
     }
 
     public boolean purchaseItem(String id, int amount) {
-        ShopItem item = blackShopItems.get(id);
+        ShopItem item = nightShopItems.get(id);
         if (item == null) return false;
 
         if (item.decreaseStock(amount)) {

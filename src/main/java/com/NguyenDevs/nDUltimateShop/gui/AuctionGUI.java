@@ -24,7 +24,6 @@ public class AuctionGUI extends BaseGUI {
 
     @Override
     public void open() {
-        // REFRESH DATA
         this.listings = new ArrayList<>(plugin.getAuctionManager().getAllListings());
 
         Map<String, String> ph = new HashMap<>();
@@ -57,7 +56,8 @@ public class AuctionGUI extends BaseGUI {
             inventory.setItem(slots.get("previous"), config.getDecorativeItem("previous-button"));
         }
 
-        if (endIndex < listings.size() && slots.containsKey("next")) {
+        int maxItemsPerPage = itemSlots.size();
+        if ((currentPage + 1) * maxItemsPerPage < listings.size() && slots.containsKey("next")) {
             inventory.setItem(slots.get("next"), config.getDecorativeItem("next-button"));
         }
 

@@ -2,11 +2,11 @@ package com.NguyenDevs.nDUltimateShop.managers;
 
 import com.NguyenDevs.nDUltimateShop.NDUltimateShop;
 import com.NguyenDevs.nDUltimateShop.gui.AuctionGUI;
-import com.NguyenDevs.nDUltimateShop.gui.BlackShopGUI;
+import com.NguyenDevs.nDUltimateShop.gui.NightShopGUI;
 import com.NguyenDevs.nDUltimateShop.gui.SellGUI;
 import com.NguyenDevs.nDUltimateShop.gui.ShopGUI;
 import com.NguyenDevs.nDUltimateShop.listeners.AuctionListener;
-import com.NguyenDevs.nDUltimateShop.listeners.BlackShopListener;
+import com.NguyenDevs.nDUltimateShop.listeners.NightShopListener;
 import com.NguyenDevs.nDUltimateShop.listeners.SellListener;
 import com.NguyenDevs.nDUltimateShop.listeners.ShopListener;
 import org.bukkit.entity.Player;
@@ -23,7 +23,7 @@ public class ListenerManager {
         plugin.getServer().getPluginManager().registerEvents(new ShopListener(plugin), plugin);
         plugin.getServer().getPluginManager().registerEvents(new AuctionListener(plugin), plugin);
         plugin.getServer().getPluginManager().registerEvents(new SellListener(plugin), plugin);
-        plugin.getServer().getPluginManager().registerEvents(new BlackShopListener(plugin), plugin);
+        plugin.getServer().getPluginManager().registerEvents(new NightShopListener(plugin), plugin);
     }
 
     public void openShopGUI(Player player) {
@@ -39,6 +39,6 @@ public class ListenerManager {
     }
 
     public void openBlackShopGUI(Player player) {
-        new BlackShopGUI(plugin, player).open();
+        new NightShopGUI(plugin, player).open();
     }
 }

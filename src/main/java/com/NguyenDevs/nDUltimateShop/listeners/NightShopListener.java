@@ -1,7 +1,7 @@
 package com.NguyenDevs.nDUltimateShop.listeners;
 
 import com.NguyenDevs.nDUltimateShop.NDUltimateShop;
-import com.NguyenDevs.nDUltimateShop.gui.BlackShopGUI;
+import com.NguyenDevs.nDUltimateShop.gui.NightShopGUI;
 import com.NguyenDevs.nDUltimateShop.models.ShopItem;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -12,20 +12,20 @@ import org.bukkit.inventory.ItemStack;
 import java.util.HashMap;
 import java.util.Map;
 
-public class BlackShopListener implements Listener {
+public class NightShopListener implements Listener {
 
     private final NDUltimateShop plugin;
 
-    public BlackShopListener(NDUltimateShop plugin) {
+    public NightShopListener(NDUltimateShop plugin) {
         this.plugin = plugin;
     }
 
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event) {
-        if (!(event.getInventory().getHolder() instanceof BlackShopGUI)) return;
+        if (!(event.getInventory().getHolder() instanceof NightShopGUI)) return;
         event.setCancelled(true);
 
-        BlackShopGUI gui = (BlackShopGUI) event.getInventory().getHolder();
+        NightShopGUI gui = (NightShopGUI) event.getInventory().getHolder();
         Player player = (Player) event.getWhoClicked();
         int slot = event.getRawSlot();
         Map<String, Integer> slots = gui.getConfig().getSlotMapping();
@@ -60,7 +60,7 @@ public class BlackShopListener implements Listener {
         }
     }
 
-    private void purchaseItem(Player player, ShopItem shopItem, BlackShopGUI gui) {
+    private void purchaseItem(Player player, ShopItem shopItem, NightShopGUI gui) {
         if (!shopItem.hasStock()) {
             gui.getConfig().playSound(player, "error");
             player.sendMessage(plugin.getLanguageManager().getPrefixedMessage("shop-not-enough-stock"));

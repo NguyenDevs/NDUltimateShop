@@ -1,7 +1,7 @@
 package com.NguyenDevs.nDUltimateShop.commands;
 
 import com.NguyenDevs.nDUltimateShop.NDUltimateShop;
-import com.NguyenDevs.nDUltimateShop.gui.BlackShopGUI;
+import com.NguyenDevs.nDUltimateShop.gui.NightShopGUI;
 import org.bukkit.Sound;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -14,11 +14,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class BlackShopCommand implements CommandExecutor, TabCompleter {
+public class NightShopCommand implements CommandExecutor, TabCompleter {
 
     private final NDUltimateShop plugin;
 
-    public BlackShopCommand(NDUltimateShop plugin) {
+    public NightShopCommand(NDUltimateShop plugin) {
         this.plugin = plugin;
     }
 
@@ -31,7 +31,7 @@ public class BlackShopCommand implements CommandExecutor, TabCompleter {
 
         Player player = (Player) sender;
 
-        if (!player.hasPermission("ndshop.blackshop.use")) {
+        if (!player.hasPermission("ndshop.nightshop.use")) {
             player.sendMessage(plugin.getLanguageManager().getMessage("no-permission"));
             playSound(player, Sound.BLOCK_NOTE_BLOCK_BASS, 1.0f, 0.5f);
             return true;
@@ -47,7 +47,7 @@ public class BlackShopCommand implements CommandExecutor, TabCompleter {
             return true;
         }
 
-        new BlackShopGUI(plugin, player).open();
+        new NightShopGUI(plugin, player).open();
         playSound(player, Sound.BLOCK_CHEST_OPEN, 1.0f, 1.0f);
         return true;
     }

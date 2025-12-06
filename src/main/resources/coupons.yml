@@ -1,13 +1,18 @@
 coupons:
-  SUMMER2024:
-    discount: 20.0  # 20% discount
-    type: TIME
-    value: 86400000  # 24 hours in milliseconds
-    created: 1234567890000
-    usedBy: []
-  WELCOME:
+  # Ví dụ 2: Mã giảm giá cho người chơi mới
+  # Giảm 10%, giới hạn 100 lượt dùng trên toàn server
+  TANTHU:
     discount: 10.0
     type: USES
-    value: 100  # Can be used 100 times
-    created: 1234567890000
+    value: 100
+    created: 1717200000000
+    usedBy: []
+
+  # Ví dụ 3: Mã giảm giá VIP
+  # Giảm 50%, hết hạn sau 24 giờ
+  VIPDAY:
+    discount: 50.0
+    type: TIME
+    value: 86400000
+    created: 1717200000000
     usedBy: []

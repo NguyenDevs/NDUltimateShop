@@ -66,7 +66,7 @@ public class AuctionListener implements Listener {
                     gui.getConfig().playSound(player, "error");
                     Map<String, String> ph = new HashMap<>();
                     ph.put("hint", "Shift + Click");
-                    player.sendMessage(plugin.getLanguageManager().getMessage("help-admin-auction-cancel-hint", ph));
+                    player.sendMessage(plugin.getLanguageManager().getPrefixedMessage("help-admin-auction-cancel-hint", ph));
                 }
             } else {
                 purchaseAuction(player, listing, gui);

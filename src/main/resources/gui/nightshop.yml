@@ -1,6 +1,8 @@
 title: "&5&lCHỢ ĐÊM &8[%blackshop_status%]"
 rows: 6
 
+enable: true
+
 show-rare-tag: true
 hide-out-of-stock: true
 
