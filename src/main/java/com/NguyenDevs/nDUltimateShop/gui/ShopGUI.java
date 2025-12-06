@@ -24,6 +24,9 @@ public class ShopGUI extends BaseGUI {
 
     @Override
     public void open() {
+        // Sắp xếp items trước khi hiển thị
+        sortItems(items);
+
         String title = plugin.getPlaceholderManager().replacePlaceholders(player, config.getTitle());
         title = title.replace("%page%", String.valueOf(currentPage + 1));
 
@@ -86,6 +89,9 @@ public class ShopGUI extends BaseGUI {
             processItemPlaceholders(info, new HashMap<>());
             inventory.setItem(slots.get("info"), info);
         }
+
+        // Add Sort Button
+        inventory.setItem(getSortSlot(), getSortButton());
     }
 
     private ItemStack createShopItemDisplay(ShopItem shopItem) {

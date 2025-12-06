@@ -18,6 +18,14 @@ help-header: "&6&l===== &eUltimateShop Admin &6&l====="
 help-coupon-use: "&e/coupon <code> &7- Sử dụng mã giảm giá"
 help-admin-auction-cancel-hint: "&cBạn không thể mua vật phẩm của chính mình! &e%hint%"
 
+gui-sort-name: "&eSắp xếp: &f%type%"
+gui-sort-az: "A - Z"
+gui-sort-za: "Z - A"
+gui-sort-type: "Loại"
+gui-sort-lore:
+  - "&7Click để thay đổi cách sắp xếp"
+  - "&7vật phẩm trong cửa hàng."
+
 shop-item-added: "&aĐã thêm &e%item% &avào cửa hàng với giá &e%price%$ &a(Kho: &e%stock%&a)"
 shop-item-removed: "&aĐã xóa vật phẩm &e%id% &akhỏi cửa hàng!"
 shop-item-bought: "&aĐã mua &e%amount%x %item% &avới giá &e%price%$"

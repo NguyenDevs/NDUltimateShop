@@ -25,6 +25,8 @@ public class AuctionGUI extends BaseGUI {
     @Override
     public void open() {
         this.listings = new ArrayList<>(plugin.getAuctionManager().getAllListings());
+        // Sắp xếp items
+        sortItems(listings);
 
         Map<String, String> ph = new HashMap<>();
         ph.put("page", String.valueOf(currentPage + 1));
@@ -91,6 +93,9 @@ public class AuctionGUI extends BaseGUI {
             processDecorativePlaceholders(myItems);
             inventory.setItem(slots.get("my-listings"), myItems);
         }
+
+        // Add Sort Button
+        inventory.setItem(getSortSlot(), getSortButton());
 
         fillDecorative();
     }

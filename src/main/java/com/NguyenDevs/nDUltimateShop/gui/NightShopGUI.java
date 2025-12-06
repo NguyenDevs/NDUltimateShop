@@ -25,6 +25,8 @@ public class NightShopGUI extends BaseGUI {
     @Override
     public void open() {
         loadItems();
+        // Sắp xếp items
+        sortItems(items);
 
         Map<String, String> ph = new HashMap<>();
         ph.put("page", String.valueOf(currentPage + 1));
@@ -91,6 +93,9 @@ public class NightShopGUI extends BaseGUI {
             inventory.setItem(slots.get("info"), info);
         }
 
+        // Add Sort Button
+        inventory.setItem(getSortSlot(), getSortButton());
+
         fillDecorative();
     }
 
@@ -127,11 +132,18 @@ public class NightShopGUI extends BaseGUI {
             List<String> finalLore = new ArrayList<>();
             for (String line : configLore) {
                 if (line.contains("%lore%")) {
-                    if (meta.hasLore()) finalLore.addAll(meta.getLore());
+                    // Logic fix: Chỉ thêm nếu item gốc có lore, tránh lỗi hiển thị
+                    if (meta.hasLore()) {
+                        for (String originalLine : meta.getLore()) {
+                            finalLore.add(originalLine);
+                        }
+                    }
                 } else {
                     String processed = plugin.getLanguageManager().colorize(
                             plugin.getPlaceholderManager().replacePlaceholders(player, line, ph));
-                    if (!processed.isEmpty()) finalLore.add(processed);
+                    // Chỉ add nếu dòng không rỗng để tránh khoảng trống thừa,
+                    // nhưng nếu config cố tình để trống "" thì vẫn giữ.
+                    finalLore.add(processed);
                 }
             }
             meta.setLore(finalLore);

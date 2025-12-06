@@ -1,7 +1,6 @@
 package com.NguyenDevs.nDUltimateShop.managers;
 
 import com.NguyenDevs.nDUltimateShop.NDUltimateShop;
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
@@ -88,6 +87,10 @@ public class GUIConfigManager {
             ConfigurationSection slotsSection = config.getConfigurationSection("slots");
             if (slotsSection != null) {
                 for (String key : slotsSection.getKeys(false)) mapping.put(key, slotsSection.getInt(key));
+            }
+            // Mặc định slot sắp xếp là 52 nếu không có trong config
+            if (!mapping.containsKey("sort")) {
+                mapping.put("sort", 52);
             }
             return mapping;
         }

@@ -35,6 +35,14 @@ public class AuctionListener implements Listener {
         Map<String, Integer> slots = gui.getConfig().getSlotMapping();
         ItemStack clickedItem = event.getCurrentItem();
 
+        // Xử lý nút Sắp xếp
+        if (slot == gui.getSortSlot()) {
+            gui.getConfig().playSound(player, "click");
+            gui.rotateSort();
+            gui.open();
+            return;
+        }
+
         if (slots.containsKey("close") && slot == slots.get("close")) {
             gui.getConfig().playSound(player, "click");
             player.closeInventory();
