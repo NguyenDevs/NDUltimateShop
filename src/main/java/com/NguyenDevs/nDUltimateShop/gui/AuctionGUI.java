@@ -15,15 +15,18 @@ import java.util.Map;
 
 public class AuctionGUI extends BaseGUI {
 
-    private final List<AuctionListing> listings;
+    private List<AuctionListing> listings;
 
     public AuctionGUI(NDUltimateShop plugin, Player player) {
         super(plugin, player, "auction");
-        this.listings = new ArrayList<>(plugin.getAuctionManager().getAllListings());
+        this.listings = new ArrayList<>();
     }
 
     @Override
     public void open() {
+        // REFRESH DATA
+        this.listings = new ArrayList<>(plugin.getAuctionManager().getAllListings());
+
         Map<String, String> ph = new HashMap<>();
         ph.put("page", String.valueOf(currentPage + 1));
         ph.put("total_listings", String.valueOf(listings.size()));
@@ -49,12 +52,15 @@ public class AuctionGUI extends BaseGUI {
         }
 
         Map<String, Integer> slots = config.getSlotMapping();
+
         if (currentPage > 0 && slots.containsKey("previous")) {
             inventory.setItem(slots.get("previous"), config.getDecorativeItem("previous-button"));
         }
+
         if (endIndex < listings.size() && slots.containsKey("next")) {
             inventory.setItem(slots.get("next"), config.getDecorativeItem("next-button"));
         }
+
         if (slots.containsKey("close")) {
             inventory.setItem(slots.get("close"), config.getDecorativeItem("close-button"));
         }
@@ -126,9 +132,7 @@ public class AuctionGUI extends BaseGUI {
             List<String> finalLore = new ArrayList<>();
             for (String line : configLore) {
                 if (line.contains("%lore%")) {
-                    if (meta.hasLore()) {
-                        finalLore.addAll(meta.getLore());
-                    }
+                    if (meta.hasLore()) finalLore.addAll(meta.getLore());
                 } else {
                     finalLore.add(plugin.getLanguageManager().colorize(
                             plugin.getPlaceholderManager().replacePlaceholders(player, line, ph)));

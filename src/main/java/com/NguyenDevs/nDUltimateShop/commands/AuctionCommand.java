@@ -56,7 +56,7 @@ public class AuctionCommand implements CommandExecutor, TabCompleter {
         if (args.length == 1) {
             completions.add("sell");
         } else if (args.length == 2 && args[0].equalsIgnoreCase("sell")) {
-            completions.add("<price>");
+            completions.add("<giá tiền>");
         }
 
         return completions.stream()

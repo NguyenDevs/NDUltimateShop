@@ -86,14 +86,24 @@ public class AdminCommand implements CommandExecutor, TabCompleter {
                         .map(Coupon::getCode)
                         .collect(Collectors.toList()));
             } else if ((args[0].equalsIgnoreCase("shop") || args[0].equalsIgnoreCase("blackshop")) && args[1].equalsIgnoreCase("add")) {
-                completions.add("<price>");
+                completions.add("<giá tiền>");
+            } else if (args[0].equalsIgnoreCase("coupon") && args[1].equalsIgnoreCase("create")) {
+                completions.add("<mã giảm giá>");
             }
         } else if (args.length == 4) {
             if ((args[0].equalsIgnoreCase("shop") || args[0].equalsIgnoreCase("blackshop")) && args[1].equalsIgnoreCase("add")) {
-                completions.add("<stock>");
+                completions.add("<số lượng>");
+            } else if (args[0].equalsIgnoreCase("coupon") && args[1].equalsIgnoreCase("create")) {
+                completions.add("<% giảm giá>");
             }
-        } else if (args.length == 5 && args[0].equalsIgnoreCase("coupon") && args[1].equalsIgnoreCase("create")) {
-            completions.addAll(Arrays.asList("time", "uses"));
+        } else if (args.length == 5) {
+            if (args[0].equalsIgnoreCase("coupon") && args[1].equalsIgnoreCase("create")) {
+                completions.addAll(Arrays.asList("time", "uses"));
+            }
+        } else if (args.length == 6) {
+            if (args[0].equalsIgnoreCase("coupon") && args[1].equalsIgnoreCase("create")) {
+                completions.add("<giá trị (ms/lượt)>");
+            }
         }
 
         return completions.stream()
