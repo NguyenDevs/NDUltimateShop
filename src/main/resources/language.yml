@@ -1,88 +1,64 @@
-# NDUltimateShop Language File
-prefix: "&6[&eNDShop&6]"
+prefix: "<gradient:#D585FF:#5B008C>UltimateShop</gradient>"
 
-# Thông báo chung
 player-only: "&cLệnh này chỉ dành cho người chơi!"
 no-permission: "&cBạn không có quyền sử dụng lệnh này!"
 invalid-number: "&cSố nhập vào không hợp lệ!"
 invalid-price: "&cGiá nhập vào không hợp lệ!"
 hold-item: "&cBạn cần cầm một vật phẩm trên tay!"
-not-enough-money: "&cBạn cần thêm &e{amount}$ &cđể thực hiện!"
+not-enough-money: "&cBạn cần thêm &e%amount%$ &cđể thực hiện!"
 
-# Đơn vị thời gian
 time-seconds: "giây"
 time-minutes: "phút"
 time-hours: "giờ"
 time-days: "ngày"
 
-# Reload
 reload-success: "&aĐã tải lại toàn bộ cấu hình thành công!"
 
-# Help Messages
 help-header: "&6&l===== &eNDUltimateShop Admin &6&l====="
 help-admin: "&e/ndshop reload &7- Tải lại plugin"
-help-admin-shop: "&e/ndshop shop add <giá> [kho] &7- Thêm vật phẩm trên tay vào Shop"
-help-admin-sell: "&e/ndshop sell setprice <giá> &7- Đặt giá bán cho vật phẩm trên tay"
+help-admin-shop: "&e/ndshop shop add <giá> [kho] &7- Thêm vật phẩm vào Shop"
+help-admin-sell: "&e/ndshop sell setprice <giá> &7- Đặt giá bán cho vật phẩm"
 help-admin-coupon: "&e/ndshop coupon create <code> <giảm%> <time|uses> <giá trị>"
 help-coupon-use: "&e/coupon <code> &7- Sử dụng mã giảm giá"
+help-admin-auction-cancel-hint: "&cBạn không thể mua vật phẩm của chính mình! %hint%"
 
-# Shop Messages
-shop-opened: "&aĐã mở cửa hàng!"
-shop-item-added: "&aĐã thêm &e{item} &avào cửa hàng với giá &e{price}$ &a(Kho: &e{stock}&a)"
-shop-item-removed: "&aĐã xóa vật phẩm &e{id} &akhỏi cửa hàng!"
-shop-item-bought: "&aĐã mua &e{amount}x {item} &avới giá &e{price}$"
+shop-item-added: "&aĐã thêm &e%item% &avào cửa hàng với giá &e%price%$ &a(Kho: &e%stock%&a)"
+shop-item-removed: "&aĐã xóa vật phẩm &e%id% &akhỏi cửa hàng!"
+shop-item-bought: "&aĐã mua &e%amount%x %item% &avới giá &e%price%$"
 shop-not-enough-stock: "&cSản phẩm này đã hết hàng hoặc không đủ số lượng!"
 
-# Auction Messages
 auction-opened: "&aĐã mở Nhà Đấu Giá!"
-auction-item-listed: "&aĐã treo bán &e{item} &avới giá &e{price}$ &a(Hết hạn sau: &e{duration}&a)"
-auction-fee-paid: "&7Bạn đã trả phí hoa hồng: &c{fee}$"
+auction-item-listed: "&aĐã treo bán &e%item% &avới giá &e%price%$ &a(Hết hạn sau: &e%duration%&a)"
+auction-fee-paid: "&7Bạn đã trả phí hoa hồng: &c%fee%$"
 auction-max-listings: "&cBạn đã đạt giới hạn số lượng vật phẩm được treo bán!"
-auction-item-bought: "&aĐã mua &e{item} &atừ &b{seller} &avới giá &e{price}$"
+auction-item-bought: "&aĐã mua &e%item% &atừ &b%seller% &avới giá &e%price%$"
 auction-item-cancelled: "&eĐã hủy bán và nhận lại vật phẩm!"
-auction-item-expired: "&cVật phẩm &e{item} &ccủa bạn đã hết hạn và được trả về kho!"
-auction-seller-received: "&aVật phẩm &e{item} &ccủa bạn đã được bán! Bạn nhận được &e{amount}$"
+auction-item-expired: "&cVật phẩm &e%item% &ccủa bạn đã hết hạn và được trả về kho!"
+auction-seller-received: "&aVật phẩm &e%item% &ccủa bạn đã được bán! Bạn nhận được &e%amount%$"
 
-# Sell Messages
 sell-gui-opened: "&aĐã mở giao diện Bán Vật Phẩm!"
-sell-success: "&aĐã bán thành công! Bạn nhận được &e{amount}$"
+sell-success: "&aĐã bán thành công! Bạn nhận được &e%amount%$"
 sell-cancelled: "&eĐã hủy bán. Vật phẩm đã được trả lại."
 sell-no-items: "&cBạn chưa bỏ vật phẩm nào vào để bán!"
-sell-price-set: "&aĐã cập nhật giá bán cho &e{item} &alà &e{price}$"
+sell-price-set: "&aĐã cập nhật giá bán cho &e%item% &alà &e%price%$"
 
-# Black Shop Messages
 blackshop-opened: "&aĐã mở Chợ Đêm!"
 blackshop-closed: "&cChợ Đêm hiện đang đóng cửa!"
-blackshop-open-time: "&7Thời gian mở cửa: &d{open}h - {close}h"
-blackshop-item-added: "&aĐã thêm &e{item} &avào Chợ Đêm với giá &d{price}$ &a(Kho: &e{stock}&a)"
-blackshop-item-bought: "&aĐã mua &e{amount}x {item} &atừ Chợ Đêm với giá &d{price}$"
+blackshop-open-time: "&7Thời gian mở cửa: &d%open%h - %close%h"
+blackshop-item-added: "&aĐã thêm &e%item% &avào Chợ Đêm với giá &d%price%$ &a(Kho: &e%stock%&a)"
+blackshop-item-bought: "&aĐã mua &e%amount%x %item% &atừ Chợ Đêm với giá &d%price%$"
 blackshop-announce-open: "&5&l[CHỢ ĐÊM] &dĐã mở cửa! Những vật phẩm hiếm đang chờ bạn!"
 blackshop-announce-close: "&5&l[CHỢ ĐÊM] &7Đã đóng cửa. Hẹn gặp lại vào ngày mai!"
 
-# Coupon Messages
-coupon-created: "&aĐã tạo mã &e{code} &agiảm &c{discount}%"
-coupon-removed: "&aĐã xóa mã giảm giá &e{code}"
+coupon-created: "&aĐã tạo mã &e%code% &agiảm &c%discount%%"
+coupon-removed: "&aĐã xóa mã giảm giá &e%code%"
 coupon-not-found: "&cMã giảm giá không tồn tại hoặc sai chính tả!"
 coupon-expired: "&cMã giảm giá này đã hết hạn sử dụng!"
 coupon-already-used: "&cBạn đã sử dụng mã giảm giá này rồi!"
-coupon-applied: "&aÁp dụng mã &e{code} &athành công! Giảm &c{discount}%"
-coupon-time-left: "&7Thời hạn còn lại: &e{time}"
-coupon-uses-left: "&7Lượt dùng còn lại: &e{uses}"
+coupon-applied: "&aÁp dụng mã &e%code% &athành công! Giảm &c%discount%%"
+coupon-time-left: "&7Thời hạn còn lại: &e%time%"
+coupon-uses-left: "&7Lượt dùng còn lại: &e%uses%"
 
-# GUI Buttons (Fallback)
 gui-close: "&c✖ Đóng"
 gui-next-page: "&eTrang Sau ▶"
 gui-previous-page: "&e◀ Trang Trước"
-gui-confirm: "&a✔ Xác Nhận"
-gui-cancel: "&c✖ Hủy Bỏ"
-
-# Lore Messages (Fallback)
-lore-seller: "&7Người bán: &b{seller}"
-lore-price: "&aGiá: &e{price}$"
-lore-original-price: "&7&mGiá gốc: &r&7{original_price}$"
-lore-discount: "&d⚡ Đang giảm: &c-{discount}%"
-lore-stock: "&7Kho: &b{stock}"
-lore-time-left: "&7Hết hạn sau: &e{time}"
-lore-click-buy: "&e▶ Nhấn để mua ngay!"
-lore-click-cancel: "&c▶ Shift + Chuột trái để hủy!"
-lore-rare: "&6✦ VẬT PHẨM HIẾM ✦"

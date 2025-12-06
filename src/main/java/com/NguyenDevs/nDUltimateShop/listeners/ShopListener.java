@@ -2,9 +2,7 @@ package com.NguyenDevs.nDUltimateShop.listeners;
 
 import com.NguyenDevs.nDUltimateShop.NDUltimateShop;
 import com.NguyenDevs.nDUltimateShop.gui.ShopGUI;
-import com.NguyenDevs.nDUltimateShop.managers.GUIConfigManager;
 import com.NguyenDevs.nDUltimateShop.models.ShopItem;
-import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -17,7 +15,6 @@ import java.util.Map;
 public class ShopListener implements Listener {
 
     private final NDUltimateShop plugin;
-    private final Map<Player, ShopGUI> activeGUIs = new HashMap<>();
 
     public ShopListener(NDUltimateShop plugin) {
         this.plugin = plugin;
@@ -25,111 +22,76 @@ public class ShopListener implements Listener {
 
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event) {
-        if (!(event.getWhoClicked() instanceof Player)) return;
-
-        Player player = (Player) event.getWhoClicked();
-        GUIConfigManager.GUIConfig config = plugin.getConfigManager().getGUIConfig("shop");
-        String title = plugin.getPlaceholderManager().replacePlaceholders(player, config.getTitle());
-        title = plugin.getLanguageManager().colorize(title);
-
-        if (!event.getView().getTitle().equals(title)) return;
-
+        if (!(event.getInventory().getHolder() instanceof ShopGUI)) return;
         event.setCancelled(true);
 
-        // FIX: Check session
-        ShopGUI gui = activeGUIs.get(player);
-        if (gui == null) {
-            player.closeInventory();
-            return;
-        }
-
-        ItemStack clickedItem = event.getCurrentItem();
+        ShopGUI gui = (ShopGUI) event.getInventory().getHolder();
+        Player player = (Player) event.getWhoClicked();
         int slot = event.getRawSlot();
-
-        if (clickedItem == null || slot >= event.getInventory().getSize()) return;
-
-        Map<String, Integer> slots = config.getSlotMapping();
+        Map<String, Integer> slots = gui.getConfig().getSlotMapping();
 
         if (slots.containsKey("close") && slot == slots.get("close")) {
-            config.playSound(player, "click");
+            gui.getConfig().playSound(player, "click");
             player.closeInventory();
-            activeGUIs.remove(player);
             return;
         }
 
         if (slots.containsKey("previous") && slot == slots.get("previous")) {
             if (gui.getCurrentPage() > 0) {
-                config.playSound(player, "click");
+                gui.getConfig().playSound(player, "click");
                 gui.setCurrentPage(gui.getCurrentPage() - 1);
                 gui.open();
-            } else {
-                config.playSound(player, "error");
             }
             return;
         }
 
         if (slots.containsKey("next") && slot == slots.get("next")) {
-            config.playSound(player, "click");
+            gui.getConfig().playSound(player, "click");
             gui.setCurrentPage(gui.getCurrentPage() + 1);
             gui.open();
             return;
         }
 
-        ShopItem shopItem = gui.getShopItemAt(slot);
-        if (shopItem != null) {
-            purchaseItem(player, shopItem, gui, config);
-        }
+        ShopItem item = gui.getShopItemAt(slot);
+        if (item != null) purchaseItem(player, item, gui);
     }
 
-    private void purchaseItem(Player player, ShopItem shopItem, ShopGUI gui, GUIConfigManager.GUIConfig config) {
+    private void purchaseItem(Player player, ShopItem shopItem, ShopGUI gui) {
         if (!shopItem.hasStock()) {
-            config.playSound(player, "error");
+            gui.getConfig().playSound(player, "error");
             player.sendMessage(plugin.getLanguageManager().getPrefixedMessage("shop-not-enough-stock"));
             return;
         }
         if (player.getInventory().firstEmpty() == -1) {
-            config.playSound(player, "error");
-            player.sendMessage(plugin.getLanguageManager().getPrefix() + " §cTúi đồ của bạn đã đầy!");
+            gui.getConfig().playSound(player, "error");
+            player.sendMessage(plugin.getLanguageManager().getPrefix() + " §cInventory full!");
             return;
         }
-        double originalPrice = shopItem.getPrice();
-        double finalPrice = plugin.getCouponManager().getDiscountedPrice(player.getUniqueId(), originalPrice);
+
+        double finalPrice = plugin.getCouponManager().getDiscountedPrice(player.getUniqueId(), shopItem.getPrice());
 
         if (plugin.getEconomy().getBalance(player) < finalPrice) {
-            config.playSound(player, "error");
-            Map<String, String> placeholders = new HashMap<>();
-            placeholders.put("amount", String.format("%.2f", finalPrice));
-            player.sendMessage(plugin.getLanguageManager().getPrefixedMessage("not-enough-money", placeholders));
+            gui.getConfig().playSound(player, "error");
+            Map<String, String> ph = new HashMap<>();
+            ph.put("amount", String.format("%,.2f", finalPrice));
+            player.sendMessage(plugin.getLanguageManager().getPrefixedMessage("not-enough-money", ph));
             return;
         }
 
         plugin.getEconomy().withdrawPlayer(player, finalPrice);
-
-        Map<Integer, ItemStack> remaining = player.getInventory().addItem(shopItem.getItemStack());
-        if (!remaining.isEmpty()) {
-            for (ItemStack item : remaining.values()) {
-                player.getWorld().dropItem(player.getLocation(), item);
-            }
+        for (ItemStack drop : player.getInventory().addItem(shopItem.getItemStack()).values()) {
+            player.getWorld().dropItem(player.getLocation(), drop);
         }
 
         plugin.getShopManager().purchaseItem(shopItem.getId(), 1);
+        gui.getConfig().playSound(player, "success");
 
-        config.playSound(player, "success");
-
-        Map<String, String> placeholders = new HashMap<>();
-        placeholders.put("amount", "1");
-        placeholders.put("item", shopItem.getItemStack().getType().name());
-        placeholders.put("price", String.format("%.2f", finalPrice));
-        player.sendMessage(plugin.getLanguageManager().getPrefixedMessage("shop-item-bought", placeholders));
+        Map<String, String> ph = new HashMap<>();
+        ph.put("amount", "1");
+        ph.put("item", shopItem.getItemStack().getType().name());
+        ph.put("price", String.format("%,.2f", finalPrice));
+        player.sendMessage(plugin.getLanguageManager().getPrefixedMessage("shop-item-bought", ph));
 
         gui.open();
-    }
-
-    public void registerGUI(Player player, ShopGUI gui) {
-        activeGUIs.put(player, gui);
-    }
-
-    public void unregisterGUI(Player player) {
-        activeGUIs.remove(player);
     }
 }

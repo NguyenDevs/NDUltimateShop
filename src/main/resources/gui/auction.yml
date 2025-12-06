@@ -1,35 +1,7 @@
-title: "&e&lNHÀ ĐẤU GIÁ - Trang {page}"
+title: "&e&lNHÀ ĐẤU GIÁ - Trang %page%"
 rows: 6
 
-item-slots:
-  - 10
-  - 11
-  - 12
-  - 13
-  - 14
-  - 15
-  - 16
-  - 19
-  - 20
-  - 21
-  - 22
-  - 23
-  - 24
-  - 25
-  - 28
-  - 29
-  - 30
-  - 31
-  - 32
-  - 33
-  - 34
-  - 37
-  - 38
-  - 39
-  - 40
-  - 41
-  - 42
-  - 43
+item-slots: [10, 11, 12, 13, 14, 15, 16, 19, 20, 21, 22, 23, 24, 25, 28, 29, 30, 31, 32, 33, 34, 37, 38, 39, 40, 41, 42, 43]
 
 slots:
   info: 4
@@ -38,41 +10,30 @@ slots:
   next: 53
   close: 49
 
-filler-slots:
-  - 0
-  - 1
-  - 2
-  - 3
-  - 5
-  - 6
-  - 7
-  - 8
-  - 9
-  - 17
-  - 18
-  - 26
-  - 27
-  - 35
-  - 36
-  - 44
-  - 46
-  - 47
-  - 50
-  - 51
-  - 52
-
+filler-slots: [0, 1, 2, 3, 5, 6, 7, 8, 9, 17, 18, 26, 27, 35, 36, 44, 46, 47, 50, 51, 52]
 filler-material: YELLOW_STAINED_GLASS_PANE
+
+item-lore-format:
+  - "%lore%"
+  - ""
+  - "&7Người bán: &b%seller%"
+  - "&7Giá: &e%price%$"
+  - "&7Gốc: &7&m%original_price%$"
+  - "&7Thời gian: &e%time%"
+  - "&7Sale: &c-%discount_percent%%"
+  - ""
+  - "%action_text%"
 
 decorative-items:
   info:
     material: GOLD_INGOT
     name: "&e&lTHÔNG TIN"
     lore:
-      - "&7Tổng tin đăng: &e{total_listings}"
-      - "&7Tin của bạn: &a{player_listings}"
-      - "&7Phí sàn: &c{commission}%"
+      - "&7Tổng tin đăng: &e%total_listings%"
+      - "&7Tin của bạn: &a%player_listings%"
+      - "&7Phí sàn: &c%commission%%"
       - ""
-      - "&7Số dư: &a${balance}"
+      - "&7Số dư: &a%balance%$"
     enchanted: true
 
   my-listings:
@@ -95,13 +56,8 @@ decorative-items:
     name: "&c✖ Đóng"
 
 messages:
-  lore-seller: "&7Người bán: &b{seller}"
-  lore-discount: "&d⚡ Sale: &c-{discount}%"
-  lore-original-price: "&7&mGốc: &r&7{original_price}$"
-  lore-price: "&aGiá: &e{price}$"
-  lore-time-left: "&7Còn lại: &e{time}"
-  lore-click-buy: "&e▶ Click để Mua!"
-  lore-click-cancel: "&c▶ Shift + Click để Gỡ!"
+  action-buy: "&e▶ Click để Mua!"
+  action-cancel: "&c▶ Shift + Click để Gỡ!"
 
 sounds:
   click: UI_BUTTON_CLICK:1:1

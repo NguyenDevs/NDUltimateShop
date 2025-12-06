@@ -1,35 +1,7 @@
 title: "&9&lTHU MUA VẬT PHẨM"
 rows: 6
 
-item-slots:
-  - 10
-  - 11
-  - 12
-  - 13
-  - 14
-  - 15
-  - 16
-  - 19
-  - 20
-  - 21
-  - 22
-  - 23
-  - 24
-  - 25
-  - 28
-  - 29
-  - 30
-  - 31
-  - 32
-  - 33
-  - 34
-  - 37
-  - 38
-  - 39
-  - 40
-  - 41
-  - 42
-  - 43
+item-slots: [10, 11, 12, 13, 14, 15, 16, 19, 20, 21, 22, 23, 24, 25, 28, 29, 30, 31, 32, 33, 34, 37, 38, 39, 40, 41, 42, 43]
 
 slots:
   info: 4
@@ -37,30 +9,7 @@ slots:
   confirm: 48
   cancel: 50
 
-filler-slots:
-  - 0
-  - 1
-  - 2
-  - 3
-  - 5
-  - 6
-  - 7
-  - 8
-  - 9
-  - 17
-  - 18
-  - 26
-  - 27
-  - 35
-  - 36
-  - 44
-  - 45
-  - 46
-  - 47
-  - 51
-  - 52
-  - 53
-
+filler-slots: [0, 1, 2, 3, 5, 6, 7, 8, 9, 17, 18, 26, 27, 35, 36, 44, 45, 46, 47, 51, 52, 53]
 filler-material: BLUE_STAINED_GLASS_PANE
 
 decorative-items:
@@ -77,9 +26,9 @@ decorative-items:
     material: EMERALD
     name: "&a&lTỔNG GIÁ TRỊ"
     lore:
-      - "&7Tổng thu về: &e{total}$"
+      - "&7Tổng thu về: &e%total%$"
       - ""
-      - "&7Số dư hiện tại: &a${balance}"
+      - "&7Số dư hiện tại: &a%balance%$"
     enchanted: true
 
   confirm:
@@ -87,7 +36,7 @@ decorative-items:
     name: "&a✔ XÁC NHẬN BÁN"
     lore:
       - "&7Bán tất cả vật phẩm trong khung"
-      - "&aGiá trị: &e{total}$"
+      - "&aGiá trị: &e%total%$"
 
   cancel:
     material: RED_DYE
@@ -96,7 +45,7 @@ decorative-items:
       - "&7Lấy lại toàn bộ vật phẩm"
 
 messages:
-  sell-success: "&aBán thành công! +{amount}$"
+  sell-success: "&aBán thành công! +%amount%$"
   sell-cancelled: "&eĐã hủy bán."
   sell-no-items: "&cKhông có gì để bán!"
 

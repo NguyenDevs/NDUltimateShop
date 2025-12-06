@@ -1,35 +1,16 @@
-# NDUltimateShop Main Configuration
-# Version: 2.0.0
-
-# Cấu hình Nhà Đấu Giá (Auction House)
 auction:
-  # Số lượng vật phẩm tối đa mỗi người chơi được phép treo bán
   max-listings-per-player: 10
-
-  # Thời gian tồn tại của vật phẩm trên sàn (giây) (86400 = 24 giờ)
   duration: 86400
-
-  # Phí hoa hồng (%) (5 = 5%)
   commission-fee: 5.0
 
-# Cấu hình Chợ Đêm (Black Shop)
 blackshop:
-  # Múi giờ để tính thời gian mở/đóng
   timezone: "Asia/Ho_Chi_Minh"
-
-  # Giờ mở cửa (định dạng 24h)
   open-time: 20
-
-  # Giờ đóng cửa (định dạng 24h)
   close-time: 22
-
-  # Thông báo khi Chợ Đêm mở/đóng
   announce-open: true
   announce-close: true
 
-# Cấu hình Hệ thống Bán (Sell)
 sell:
-  # Giá mặc định cho các material (nếu không có trong itemsell.yml)
   default-prices:
     DIAMOND: 100.0
     EMERALD: 50.0
@@ -42,23 +23,13 @@ sell:
     OAK_LOG: 2.0
     WHEAT: 1.0
 
-# Cấu hình Hiển thị (Display)
-display:
-  # Dòng phân cách giữa Lore gốc của item và Lore của Shop
-  # Để trống [] nếu không muốn dùng
-  lore-separator:
-    - ""
-    - "&8&m----------------------"
-    - ""
+sounds:
+  enabled: true
 
-# Cấu hình Ngôn ngữ
 language:
-  # File ngôn ngữ sử dụng
   file: "language.yml"
 
-# Tích hợp PlaceholderAPI
 placeholderapi:
   enabled: true
 
-# Chế độ Debug (Dành cho dev)
 debug: false

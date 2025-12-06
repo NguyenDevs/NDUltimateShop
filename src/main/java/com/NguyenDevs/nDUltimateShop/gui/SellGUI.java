@@ -1,196 +1,122 @@
 package com.NguyenDevs.nDUltimateShop.gui;
 
 import com.NguyenDevs.nDUltimateShop.NDUltimateShop;
-import com.NguyenDevs.nDUltimateShop.managers.GUIConfigManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-public class SellGUI {
-
-    private final NDUltimateShop plugin;
-    private final Player player;
-    private Inventory inventory;
-    private final GUIConfigManager.GUIConfig config;
+public class SellGUI extends BaseGUI {
 
     public SellGUI(NDUltimateShop plugin, Player player) {
-        this.plugin = plugin;
-        this.player = player;
-        this.config = plugin.getConfigManager().getGUIConfig("sell");
+        super(plugin, player, "sell");
     }
 
+    @Override
     public void open() {
         String title = plugin.getPlaceholderManager().replacePlaceholders(player, config.getTitle());
-        int rows = config.getRows();
-        inventory = Bukkit.createInventory(null, rows * 9,
-                plugin.getLanguageManager().colorize(title));
-
+        inventory = Bukkit.createInventory(this, config.getRows() * 9, plugin.getLanguageManager().colorize(title));
         setupGUI();
         player.openInventory(inventory);
     }
 
     private void setupGUI() {
         Map<String, Integer> slots = config.getSlotMapping();
-
-        if (slots.containsKey("info")) {
-            ItemStack infoItem = config.getDecorativeItem("info");
-            if (infoItem != null) {
-                inventory.setItem(slots.get("info"), infoItem);
-            }
-        }
-
-        if (slots.containsKey("confirm")) {
-            ItemStack confirmButton = createConfirmButton();
-            inventory.setItem(slots.get("confirm"), confirmButton);
-        }
-
-        if (slots.containsKey("cancel")) {
-            ItemStack cancelButton = config.getDecorativeItem("cancel");
-            if (cancelButton != null) {
-                inventory.setItem(slots.get("cancel"), cancelButton);
-            }
-        }
-
-        updateTotalDisplay();
+        if (slots.containsKey("info")) inventory.setItem(slots.get("info"), config.getDecorativeItem("info"));
+        if (slots.containsKey("cancel")) inventory.setItem(slots.get("cancel"), config.getDecorativeItem("cancel"));
+        if (slots.containsKey("confirm")) updateConfirmButton();
+        if (slots.containsKey("total-value")) updateTotalValue();
         fillDecorative();
     }
 
-    public void updateTotalDisplay() {
+    public void updateGUI() {
         Map<String, Integer> slots = config.getSlotMapping();
-        if (!slots.containsKey("total-value")) return;
-
-        double total = calculateTotal();
-
-        ItemStack totalItem = config.getDecorativeItem("total-value");
-        if (totalItem != null) {
-            ItemMeta meta = totalItem.getItemMeta();
-            if (meta != null && meta.hasLore()) {
-                List<String> lore = new ArrayList<>();
-                Map<String, String> placeholders = new HashMap<>();
-                placeholders.put("total", String.format("%.2f", total));
-
-                for (String line : meta.getLore()) {
-                    lore.add(plugin.getPlaceholderManager().replacePlaceholders(player, line, placeholders));
-                }
-                meta.setLore(lore);
-                totalItem.setItemMeta(meta);
-            }
-            inventory.setItem(slots.get("total-value"), totalItem);
-        }
+        if (slots.containsKey("total-value")) updateTotalValue();
+        if (slots.containsKey("confirm")) updateConfirmButton();
     }
 
-    private ItemStack createConfirmButton() {
-        ItemStack button = config.getDecorativeItem("confirm");
-        if (button != null) {
-            ItemMeta meta = button.getItemMeta();
-            if (meta != null && meta.hasLore()) {
-                List<String> lore = new ArrayList<>();
-                Map<String, String> placeholders = new HashMap<>();
-                placeholders.put("total", String.format("%.2f", calculateTotal()));
-
-                for (String line : meta.getLore()) {
-                    lore.add(plugin.getPlaceholderManager().replacePlaceholders(player, line, placeholders));
-                }
-                meta.setLore(lore);
-                button.setItemMeta(meta);
-            }
-        }
-        return button;
+    private void updateTotalValue() {
+        int slot = config.getSlotMapping().get("total-value");
+        ItemStack item = config.getDecorativeItem("total-value");
+        processPlaceholders(item);
+        inventory.setItem(slot, item);
     }
 
-    private double calculateTotal() {
+    private void updateConfirmButton() {
+        int slot = config.getSlotMapping().get("confirm");
+        ItemStack item = config.getDecorativeItem("confirm");
+        processPlaceholders(item);
+        inventory.setItem(slot, item);
+    }
+
+    private void processPlaceholders(ItemStack item) {
+        if (item == null || !item.hasItemMeta()) return;
+        ItemMeta meta = item.getItemMeta();
+        Map<String, String> ph = new HashMap<>();
+        ph.put("total", String.format("%,.2f", calculateTotal()));
+
+        if (meta.hasDisplayName()) {
+            meta.setDisplayName(plugin.getLanguageManager().colorize(
+                    plugin.getPlaceholderManager().replacePlaceholders(player, meta.getDisplayName(), ph)
+            ));
+        }
+        if (meta.hasLore()) {
+            List<String> lore = new ArrayList<>();
+            for (String line : meta.getLore()) {
+                lore.add(plugin.getLanguageManager().colorize(
+                        plugin.getPlaceholderManager().replacePlaceholders(player, line, ph)
+                ));
+            }
+            meta.setLore(lore);
+        }
+        item.setItemMeta(meta);
+    }
+
+    public double calculateTotal() {
         double total = 0.0;
-        List<Integer> itemSlots = config.getItemSlots();
-
-        for (int slot : itemSlots) {
+        for (int slot : config.getItemSlots()) {
             ItemStack item = inventory.getItem(slot);
             if (item != null && item.getType() != Material.AIR) {
                 total += plugin.getSellManager().calculateSellValue(item);
             }
         }
-
         return total;
     }
 
-    private void fillDecorative() {
-        List<Integer> fillerSlots = config.getFillerSlots();
-        if (fillerSlots.isEmpty()) return;
-
-        ItemStack filler = new ItemStack(config.getFillerMaterial());
-        ItemMeta meta = filler.getItemMeta();
-        if (meta != null) {
-            meta.setDisplayName(" ");
-            filler.setItemMeta(meta);
-        }
-
-        for (int slot : fillerSlots) {
-            if (inventory.getItem(slot) == null) {
-                inventory.setItem(slot, filler);
-            }
-        }
-    }
-
     public boolean confirmSell() {
-        double total = 0.0;
-        boolean hasItems = false;
-        List<Integer> itemSlots = config.getItemSlots();
-
-        for (int slot : itemSlots) {
-            ItemStack item = inventory.getItem(slot);
-            if (item != null && item.getType() != Material.AIR) {
-                hasItems = true;
-                total += plugin.getSellManager().calculateSellValue(item);
-                inventory.setItem(slot, null);
-            }
-        }
+        double total = calculateTotal();
+        boolean hasItems = total > 0;
 
         if (!hasItems) {
             player.sendMessage(plugin.getLanguageManager().getPrefixedMessage("sell-no-items"));
             return false;
         }
 
+        for (int slot : config.getItemSlots()) {
+            inventory.setItem(slot, null);
+        }
+
         plugin.getEconomy().depositPlayer(player, total);
-
-        Map<String, String> placeholders = new HashMap<>();
-        placeholders.put("amount", String.format("%.2f", total));
-        player.sendMessage(plugin.getLanguageManager().getPrefixedMessage("sell-success", placeholders));
-
+        Map<String, String> ph = new HashMap<>();
+        ph.put("amount", String.format("%,.2f", total));
+        player.sendMessage(plugin.getLanguageManager().getPrefixedMessage("sell-success", ph));
         return true;
     }
 
     public void cancelSell() {
-        List<Integer> itemSlots = config.getItemSlots();
-
-        for (int slot : itemSlots) {
+        for (int slot : config.getItemSlots()) {
             ItemStack item = inventory.getItem(slot);
             if (item != null && item.getType() != Material.AIR) {
-                Map<Integer, ItemStack> remaining = player.getInventory().addItem(item);
-                if (!remaining.isEmpty()) {
-                    for (ItemStack drop : remaining.values()) {
-                        player.getWorld().dropItem(player.getLocation(), drop);
-                    }
+                for (ItemStack drop : player.getInventory().addItem(item).values()) {
+                    player.getWorld().dropItem(player.getLocation(), drop);
                 }
-                inventory.setItem(slot, null);
             }
         }
-
-        player.sendMessage(plugin.getLanguageManager().getPrefixedMessage("sell-cancelled"));
-    }
-
-    public Player getPlayer() {
-        return player;
-    }
-
-    public Inventory getInventory() {
-        return inventory;
-    }
-
-    public GUIConfigManager.GUIConfig getConfig() {
-        return config;
     }
 }

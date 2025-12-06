@@ -31,12 +31,16 @@ public class SellCommand implements CommandExecutor, TabCompleter {
 
         if (!player.hasPermission("ndshop.sell.use")) {
             player.sendMessage(plugin.getLanguageManager().getMessage("no-permission"));
-            player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_BASS, 1.0f, 0.5f);
+            if (plugin.getConfig().getBoolean("sounds.enabled", true)) {
+                player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_BASS, 1.0f, 0.5f);
+            }
             return true;
         }
 
         new SellGUI(plugin, player).open();
-        player.playSound(player.getLocation(), Sound.BLOCK_CHEST_OPEN, 1.0f, 1.0f);
+        if (plugin.getConfig().getBoolean("sounds.enabled", true)) {
+            player.playSound(player.getLocation(), Sound.BLOCK_CHEST_OPEN, 1.0f, 1.0f);
+        }
         return true;
     }
 

@@ -11,7 +11,10 @@ import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public class AuctionCommand implements CommandExecutor, TabCompleter {
@@ -33,7 +36,7 @@ public class AuctionCommand implements CommandExecutor, TabCompleter {
 
         if (!player.hasPermission("ndshop.auction.use")) {
             player.sendMessage(plugin.getLanguageManager().getMessage("no-permission"));
-            player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_BASS, 1.0f, 0.5f);
+            playSound(player, Sound.BLOCK_NOTE_BLOCK_BASS, 1.0f, 0.5f);
             return true;
         }
 
@@ -42,7 +45,7 @@ public class AuctionCommand implements CommandExecutor, TabCompleter {
         }
 
         new AuctionGUI(plugin, player).open();
-        player.playSound(player.getLocation(), Sound.BLOCK_CHEST_OPEN, 1.0f, 1.0f);
+        playSound(player, Sound.BLOCK_CHEST_OPEN, 1.0f, 1.0f);
         return true;
     }
 
@@ -65,7 +68,7 @@ public class AuctionCommand implements CommandExecutor, TabCompleter {
         ItemStack item = player.getInventory().getItemInMainHand();
         if (item == null || item.getType() == Material.AIR) {
             player.sendMessage(plugin.getLanguageManager().getPrefixedMessage("hold-item"));
-            player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_BASS, 1.0f, 0.5f);
+            playSound(player, Sound.BLOCK_NOTE_BLOCK_BASS, 1.0f, 0.5f);
             return true;
         }
 
@@ -74,12 +77,12 @@ public class AuctionCommand implements CommandExecutor, TabCompleter {
             price = Double.parseDouble(args[1]);
             if (price <= 0) {
                 player.sendMessage(plugin.getLanguageManager().getPrefixedMessage("invalid-price"));
-                player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_BASS, 1.0f, 0.5f);
+                playSound(player, Sound.BLOCK_NOTE_BLOCK_BASS, 1.0f, 0.5f);
                 return true;
             }
         } catch (NumberFormatException e) {
             player.sendMessage(plugin.getLanguageManager().getPrefixedMessage("invalid-number"));
-            player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_BASS, 1.0f, 0.5f);
+            playSound(player, Sound.BLOCK_NOTE_BLOCK_BASS, 1.0f, 0.5f);
             return true;
         }
 
@@ -90,14 +93,14 @@ public class AuctionCommand implements CommandExecutor, TabCompleter {
             Map<String, String> placeholders = new HashMap<>();
             placeholders.put("amount", String.format("%.2f", commission));
             player.sendMessage(plugin.getLanguageManager().getPrefixedMessage("not-enough-money", placeholders));
-            player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_BASS, 1.0f, 0.5f);
+            playSound(player, Sound.BLOCK_NOTE_BLOCK_BASS, 1.0f, 0.5f);
             return true;
         }
 
         String listingId = plugin.getAuctionManager().createListing(player, item.clone(), price);
         if (listingId == null) {
             player.sendMessage(plugin.getLanguageManager().getPrefixedMessage("auction-max-listings"));
-            player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_BASS, 1.0f, 0.5f);
+            playSound(player, Sound.BLOCK_NOTE_BLOCK_BASS, 1.0f, 0.5f);
             return true;
         }
 
@@ -109,7 +112,7 @@ public class AuctionCommand implements CommandExecutor, TabCompleter {
         placeholders.put("price", String.format("%.2f", price));
         placeholders.put("duration", formatDuration(plugin.getConfig().getLong("auction.duration", 86400)));
         player.sendMessage(plugin.getLanguageManager().getPrefixedMessage("auction-item-listed", placeholders));
-        player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1.0f, 2.0f);
+        playSound(player, Sound.ENTITY_PLAYER_LEVELUP, 1.0f, 2.0f);
 
         Map<String, String> feePlaceholders = new HashMap<>();
         feePlaceholders.put("fee", String.format("%.2f", commission));
@@ -121,11 +124,13 @@ public class AuctionCommand implements CommandExecutor, TabCompleter {
     private String formatDuration(long seconds) {
         long hours = seconds / 3600;
         long minutes = (seconds % 3600) / 60;
+        if (hours > 0) return hours + " " + plugin.getLanguageManager().getMessage("time-hours");
+        return minutes + " " + plugin.getLanguageManager().getMessage("time-minutes");
+    }
 
-        if (hours > 0) {
-            return hours + " " + plugin.getLanguageManager().getMessage("time-hours");
-        } else {
-            return minutes + " " + plugin.getLanguageManager().getMessage("time-minutes");
+    private void playSound(Player player, Sound sound, float volume, float pitch) {
+        if (plugin.getConfig().getBoolean("sounds.enabled", true)) {
+            player.playSound(player.getLocation(), sound, volume, pitch);
         }
     }
 }

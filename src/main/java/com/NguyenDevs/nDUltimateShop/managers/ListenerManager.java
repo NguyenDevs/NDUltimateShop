@@ -1,62 +1,44 @@
 package com.NguyenDevs.nDUltimateShop.managers;
 
 import com.NguyenDevs.nDUltimateShop.NDUltimateShop;
-import com.NguyenDevs.nDUltimateShop.gui.*;
-import com.NguyenDevs.nDUltimateShop.listeners.*;
+import com.NguyenDevs.nDUltimateShop.gui.AuctionGUI;
+import com.NguyenDevs.nDUltimateShop.gui.BlackShopGUI;
+import com.NguyenDevs.nDUltimateShop.gui.SellGUI;
+import com.NguyenDevs.nDUltimateShop.gui.ShopGUI;
+import com.NguyenDevs.nDUltimateShop.listeners.AuctionListener;
+import com.NguyenDevs.nDUltimateShop.listeners.BlackShopListener;
+import com.NguyenDevs.nDUltimateShop.listeners.SellListener;
+import com.NguyenDevs.nDUltimateShop.listeners.ShopListener;
 import org.bukkit.entity.Player;
 
 public class ListenerManager {
 
     private final NDUltimateShop plugin;
-    private ShopListener shopListener;
-    private AuctionListener auctionListener;
-    private SellListener sellListener;
-    private BlackShopListener blackShopListener;
 
     public ListenerManager(NDUltimateShop plugin) {
         this.plugin = plugin;
     }
 
     public void registerListeners() {
-        shopListener = new ShopListener(plugin);
-        auctionListener = new AuctionListener(plugin);
-        sellListener = new SellListener(plugin);
-        blackShopListener = new BlackShopListener(plugin);
-
-        plugin.getServer().getPluginManager().registerEvents(shopListener, plugin);
-        plugin.getServer().getPluginManager().registerEvents(auctionListener, plugin);
-        plugin.getServer().getPluginManager().registerEvents(sellListener, plugin);
-        plugin.getServer().getPluginManager().registerEvents(blackShopListener, plugin);
+        plugin.getServer().getPluginManager().registerEvents(new ShopListener(plugin), plugin);
+        plugin.getServer().getPluginManager().registerEvents(new AuctionListener(plugin), plugin);
+        plugin.getServer().getPluginManager().registerEvents(new SellListener(plugin), plugin);
+        plugin.getServer().getPluginManager().registerEvents(new BlackShopListener(plugin), plugin);
     }
 
     public void openShopGUI(Player player) {
-        ShopGUI gui = new ShopGUI(plugin, player);
-        shopListener.registerGUI(player, gui);
-        gui.open();
+        new ShopGUI(plugin, player).open();
     }
 
     public void openAuctionGUI(Player player) {
-        AuctionGUI gui = new AuctionGUI(plugin, player);
-        auctionListener.registerGUI(player, gui);
-        gui.open();
+        new AuctionGUI(plugin, player).open();
     }
 
     public void openSellGUI(Player player) {
-        SellGUI gui = new SellGUI(plugin, player);
-        sellListener.registerGUI(player, gui);
-        gui.open();
+        new SellGUI(plugin, player).open();
     }
 
     public void openBlackShopGUI(Player player) {
-        BlackShopGUI gui = new BlackShopGUI(plugin, player);
-        blackShopListener.registerGUI(player, gui);
-        gui.open();
-    }
-
-    public void unregisterGUI(Player player) {
-        shopListener.unregisterGUI(player);
-        auctionListener.unregisterGUI(player);
-        sellListener.unregisterGUI(player);
-        blackShopListener.unregisterGUI(player);
+        new BlackShopGUI(plugin, player).open();
     }
 }

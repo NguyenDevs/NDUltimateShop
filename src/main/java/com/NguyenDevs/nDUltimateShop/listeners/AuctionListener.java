@@ -2,7 +2,6 @@ package com.NguyenDevs.nDUltimateShop.listeners;
 
 import com.NguyenDevs.nDUltimateShop.NDUltimateShop;
 import com.NguyenDevs.nDUltimateShop.gui.AuctionGUI;
-import com.NguyenDevs.nDUltimateShop.managers.GUIConfigManager;
 import com.NguyenDevs.nDUltimateShop.models.AuctionListing;
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
@@ -19,7 +18,6 @@ import java.util.Map;
 public class AuctionListener implements Listener {
 
     private final NDUltimateShop plugin;
-    private final Map<Player, AuctionGUI> activeGUIs = new HashMap<>();
 
     public AuctionListener(NDUltimateShop plugin) {
         this.plugin = plugin;
@@ -27,56 +25,33 @@ public class AuctionListener implements Listener {
 
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event) {
-        if (!(event.getWhoClicked() instanceof Player)) return;
+        if (!(event.getInventory().getHolder() instanceof AuctionGUI)) return;
+        event.setCancelled(true);
 
+        AuctionGUI gui = (AuctionGUI) event.getInventory().getHolder();
         Player player = (Player) event.getWhoClicked();
-        GUIConfigManager.GUIConfig config = plugin.getConfigManager().getGUIConfig("auction");
-
-        // Logic check title linh hoạt hơn
-        String currentTitle = plugin.getLanguageManager().stripColor(event.getView().getTitle());
-        String baseTitle = config.getTitle().contains("-")
-                ? config.getTitle().split("-")[0].trim()
-                : config.getTitle();
-        baseTitle = plugin.getLanguageManager().stripColor(plugin.getLanguageManager().colorize(baseTitle));
-
-        if (!currentTitle.contains(baseTitle)) return;
-
-        event.setCancelled(true); // Luôn cancel để chặn lấy đồ
-
-        // FIX: Check session
-        AuctionGUI gui = activeGUIs.get(player);
-        if (gui == null) {
-            player.closeInventory();
-            return;
-        }
-
-        ItemStack clickedItem = event.getCurrentItem();
         int slot = event.getRawSlot();
-
-        if (clickedItem == null || slot >= event.getInventory().getSize()) return;
-
-        Map<String, Integer> slots = config.getSlotMapping();
+        Map<String, Integer> slots = gui.getConfig().getSlotMapping();
 
         if (slots.containsKey("close") && slot == slots.get("close")) {
-            config.playSound(player, "click");
+            gui.getConfig().playSound(player, "click");
             player.closeInventory();
-            activeGUIs.remove(player);
             return;
         }
 
         if (slots.containsKey("previous") && slot == slots.get("previous")) {
             if (gui.getCurrentPage() > 0) {
-                config.playSound(player, "click");
+                gui.getConfig().playSound(player, "click");
                 gui.setCurrentPage(gui.getCurrentPage() - 1);
                 gui.open();
             } else {
-                config.playSound(player, "error");
+                gui.getConfig().playSound(player, "error");
             }
             return;
         }
 
         if (slots.containsKey("next") && slot == slots.get("next")) {
-            config.playSound(player, "click");
+            gui.getConfig().playSound(player, "click");
             gui.setCurrentPage(gui.getCurrentPage() + 1);
             gui.open();
             return;
@@ -86,83 +61,67 @@ public class AuctionListener implements Listener {
         if (listing != null) {
             if (listing.getSellerUUID().equals(player.getUniqueId())) {
                 if (event.getClick() == ClickType.SHIFT_LEFT || event.getClick() == ClickType.SHIFT_RIGHT) {
-                    cancelListing(player, listing, gui, config);
+                    cancelListing(player, listing, gui);
                 } else {
-                    // Thông báo nếu click thường vào đồ của mình
-                    config.playSound(player, "error");
-                    player.sendMessage(plugin.getLanguageManager().getMessage("help-admin-auction-cancel-hint",
-                            Map.of("hint", "Shift + Click để hủy")));
+                    gui.getConfig().playSound(player, "error");
+                    Map<String, String> ph = new HashMap<>();
+                    ph.put("hint", "Shift + Click");
+                    player.sendMessage(plugin.getLanguageManager().getMessage("help-admin-auction-cancel-hint", ph));
                 }
             } else {
-                purchaseAuction(player, listing, gui, config);
+                purchaseAuction(player, listing, gui);
             }
         }
     }
 
-    private void purchaseAuction(Player buyer, AuctionListing listing, AuctionGUI gui, GUIConfigManager.GUIConfig config) {
+    private void purchaseAuction(Player buyer, AuctionListing listing, AuctionGUI gui) {
         double originalPrice = listing.getPrice();
         double finalPrice = plugin.getCouponManager().getDiscountedPrice(buyer.getUniqueId(), originalPrice);
 
         if (plugin.getEconomy().getBalance(buyer) < finalPrice) {
-            config.playSound(buyer, "error");
-            Map<String, String> placeholders = new HashMap<>();
-            placeholders.put("amount", String.format("%.2f", finalPrice));
-            buyer.sendMessage(plugin.getLanguageManager().getPrefixedMessage("not-enough-money", placeholders));
+            gui.getConfig().playSound(buyer, "error");
+            Map<String, String> ph = new HashMap<>();
+            ph.put("amount", String.format("%,.2f", finalPrice));
+            buyer.sendMessage(plugin.getLanguageManager().getPrefixedMessage("not-enough-money", ph));
             return;
         }
 
         plugin.getEconomy().withdrawPlayer(buyer, finalPrice);
 
-        Map<Integer, ItemStack> remaining = buyer.getInventory().addItem(listing.getItemStack());
-        if (!remaining.isEmpty()) {
-            for (ItemStack item : remaining.values()) {
-                buyer.getWorld().dropItem(buyer.getLocation(), item);
-            }
+        for (ItemStack item : buyer.getInventory().addItem(listing.getItemStack()).values()) {
+            buyer.getWorld().dropItem(buyer.getLocation(), item);
         }
 
         Player seller = Bukkit.getPlayer(listing.getSellerUUID());
         plugin.getEconomy().depositPlayer(Bukkit.getOfflinePlayer(listing.getSellerUUID()), listing.getPrice());
 
         if (seller != null && seller.isOnline()) {
-            Map<String, String> sellerPlaceholders = new HashMap<>();
-            sellerPlaceholders.put("amount", String.format("%.2f", listing.getPrice()));
-            sellerPlaceholders.put("item", listing.getItemStack().getType().name());
-            seller.sendMessage(plugin.getLanguageManager().getPrefixedMessage("auction-seller-received", sellerPlaceholders));
+            Map<String, String> ph = new HashMap<>();
+            ph.put("amount", String.format("%,.2f", listing.getPrice()));
+            ph.put("item", listing.getItemStack().getType().name());
+            seller.sendMessage(plugin.getLanguageManager().getPrefixedMessage("auction-seller-received", ph));
             seller.playSound(seller.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0f, 1.0f);
         }
 
         plugin.getAuctionManager().removeListing(listing.getId());
-        config.playSound(buyer, "success");
+        gui.getConfig().playSound(buyer, "success");
 
-        Map<String, String> placeholders = new HashMap<>();
-        placeholders.put("item", listing.getItemStack().getType().name());
-        placeholders.put("seller", listing.getSellerName());
-        placeholders.put("price", String.format("%.2f", finalPrice));
-        buyer.sendMessage(plugin.getLanguageManager().getPrefixedMessage("auction-item-bought", placeholders));
+        Map<String, String> ph = new HashMap<>();
+        ph.put("item", listing.getItemStack().getType().name());
+        ph.put("seller", listing.getSellerName());
+        ph.put("price", String.format("%,.2f", finalPrice));
+        buyer.sendMessage(plugin.getLanguageManager().getPrefixedMessage("auction-item-bought", ph));
 
         gui.open();
     }
 
-    private void cancelListing(Player player, AuctionListing listing, AuctionGUI gui, GUIConfigManager.GUIConfig config) {
+    private void cancelListing(Player player, AuctionListing listing, AuctionGUI gui) {
         plugin.getAuctionManager().removeListing(listing.getId());
-
-        Map<Integer, ItemStack> remaining = player.getInventory().addItem(listing.getItemStack());
-        if (!remaining.isEmpty()) {
-            for (ItemStack item : remaining.values()) {
-                player.getWorld().dropItem(player.getLocation(), item);
-            }
+        for (ItemStack item : player.getInventory().addItem(listing.getItemStack()).values()) {
+            player.getWorld().dropItem(player.getLocation(), item);
         }
-
         player.sendMessage(plugin.getLanguageManager().getPrefixedMessage("auction-item-cancelled"));
-        config.playSound(player, "click");
+        gui.getConfig().playSound(player, "click");
         gui.open();
-    }
-
-    public void registerGUI(Player player, AuctionGUI gui) {
-        activeGUIs.put(player, gui);
-    }
-
-    public void unregisterGUI(Player player) {
-        activeGUIs.remove(player);
     }
 }

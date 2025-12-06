@@ -33,7 +33,7 @@ public class BlackShopCommand implements CommandExecutor, TabCompleter {
 
         if (!player.hasPermission("ndshop.blackshop.use")) {
             player.sendMessage(plugin.getLanguageManager().getMessage("no-permission"));
-            player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_BASS, 1.0f, 0.5f);
+            playSound(player, Sound.BLOCK_NOTE_BLOCK_BASS, 1.0f, 0.5f);
             return true;
         }
 
@@ -43,17 +43,23 @@ public class BlackShopCommand implements CommandExecutor, TabCompleter {
             placeholders.put("close", String.valueOf(plugin.getConfig().getInt("blackshop.close-time")));
             player.sendMessage(plugin.getLanguageManager().getPrefixedMessage("blackshop-closed"));
             player.sendMessage(plugin.getLanguageManager().getMessage("blackshop-open-time", placeholders));
-            player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_BASS, 1.0f, 0.5f);
+            playSound(player, Sound.BLOCK_NOTE_BLOCK_BASS, 1.0f, 0.5f);
             return true;
         }
 
         new BlackShopGUI(plugin, player).open();
-        player.playSound(player.getLocation(), Sound.BLOCK_CHEST_OPEN, 1.0f, 1.0f);
+        playSound(player, Sound.BLOCK_CHEST_OPEN, 1.0f, 1.0f);
         return true;
     }
 
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
         return new ArrayList<>();
+    }
+
+    private void playSound(Player player, Sound sound, float volume, float pitch) {
+        if (plugin.getConfig().getBoolean("sounds.enabled", true)) {
+            player.playSound(player.getLocation(), sound, volume, pitch);
+        }
     }
 }

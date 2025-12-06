@@ -3,7 +3,7 @@ package com.NguyenDevs.nDUltimateShop.managers;
 import com.NguyenDevs.nDUltimateShop.NDUltimateShop;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.Sound; // Import Sound
+import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.enchantments.Enchantment;
@@ -29,15 +29,14 @@ public class GUIConfigManager {
 
     public void loadGUIConfig(String guiName) {
         FileConfiguration config = plugin.getConfigManager().getConfig("gui/" + guiName + ".yml");
-        GUIConfig guiConfig = new GUIConfig(guiName, config);
-        guiConfigs.put(guiName, guiConfig);
+        guiConfigs.put(guiName, new GUIConfig(guiName, config));
     }
 
     public GUIConfig getGUIConfig(String guiName) {
         return guiConfigs.get(guiName);
     }
 
-    public static class GUIConfig {
+    public class GUIConfig {
         private final String name;
         private final FileConfiguration config;
         private final Map<String, ItemStack> decorativeItems;
@@ -64,101 +63,64 @@ public class GUIConfigManager {
                 ItemStack item = new ItemStack(material);
                 ItemMeta meta = item.getItemMeta();
                 if (meta != null) {
-                    if (!displayName.isEmpty()) {
-                        meta.setDisplayName(LanguageManager.colorize(displayName));
-                    }
+                    if (!displayName.isEmpty()) meta.setDisplayName(LanguageManager.colorize(displayName));
                     if (!lore.isEmpty()) {
                         List<String> coloredLore = new ArrayList<>();
-                        for (String line : lore) {
-                            coloredLore.add(LanguageManager.colorize(line));
-                        }
+                        for (String line : lore) coloredLore.add(LanguageManager.colorize(line));
                         meta.setLore(coloredLore);
                     }
-                    if (customModelData > 0) {
-                        meta.setCustomModelData(customModelData);
-                    }
+                    if (customModelData > 0) meta.setCustomModelData(customModelData);
                     if (enchanted) {
                         meta.addEnchant(Enchantment.DURABILITY, 1, true);
                         meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
                     }
                     item.setItemMeta(meta);
                 }
-
                 decorativeItems.put(key, item);
             }
         }
 
-        public String getTitle() {
-            return config.getString("title", "&6GUI");
-        }
-
-        public int getRows() {
-            return config.getInt("rows", 6);
-        }
+        public String getTitle() { return config.getString("title", "&6GUI"); }
+        public int getRows() { return config.getInt("rows", 6); }
 
         public Map<String, Integer> getSlotMapping() {
             Map<String, Integer> mapping = new HashMap<>();
             ConfigurationSection slotsSection = config.getConfigurationSection("slots");
             if (slotsSection != null) {
-                for (String key : slotsSection.getKeys(false)) {
-                    mapping.put(key, slotsSection.getInt(key));
-                }
+                for (String key : slotsSection.getKeys(false)) mapping.put(key, slotsSection.getInt(key));
             }
             return mapping;
         }
 
-        public List<Integer> getItemSlots() {
-            return config.getIntegerList("item-slots");
-        }
-
+        public List<Integer> getItemSlots() { return config.getIntegerList("item-slots"); }
         public ItemStack getDecorativeItem(String key) {
-            ItemStack item = decorativeItems.get(key);
-            return item != null ? item.clone() : null;
+            return decorativeItems.containsKey(key) ? decorativeItems.get(key).clone() : null;
         }
+        public List<Integer> getFillerSlots() { return config.getIntegerList("filler-slots"); }
+        public Material getFillerMaterial() { return Material.valueOf(config.getString("filler-material", "GRAY_STAINED_GLASS_PANE")); }
+        public FileConfiguration getConfig() { return config; }
 
-        public List<Integer> getFillerSlots() {
-            return config.getIntegerList("filler-slots");
-        }
-
-        public Material getFillerMaterial() {
-            return Material.valueOf(config.getString("filler-material", "GRAY_STAINED_GLASS_PANE"));
-        }
-
-        public FileConfiguration getConfig() {
-            return config;
-        }
-
-        public String getMessage(String key) {
-            return config.getString("messages." + key, "");
-        }
-
-        public String getMessage(String key, Map<String, String> placeholders) {
-            String message = getMessage(key);
-            for (Map.Entry<String, String> entry : placeholders.entrySet()) {
-                message = message.replace("{" + entry.getKey() + "}", entry.getValue());
-            }
-            return message;
-        }
-
-        // --- ADDED: Hàm phát âm thanh từ config ---
         public void playSound(Player player, String key) {
+            if (!plugin.getConfig().getBoolean("sounds.enabled", true)) return;
             String path = "sounds." + key;
             if (!config.contains(path)) return;
-
             String soundStr = config.getString(path);
             if (soundStr == null || soundStr.isEmpty()) return;
-
             try {
-                // Format: SOUND_NAME:VOLUME:PITCH
                 String[] parts = soundStr.split(":");
                 Sound sound = Sound.valueOf(parts[0].toUpperCase());
                 float volume = parts.length > 1 ? Float.parseFloat(parts[1]) : 1.0f;
                 float pitch = parts.length > 2 ? Float.parseFloat(parts[2]) : 1.0f;
-
                 player.playSound(player.getLocation(), sound, volume, pitch);
-            } catch (Exception e) {
-                Bukkit.getLogger().warning("Invalid sound config in GUI " + name + ": " + soundStr);
-            }
+            } catch (Exception ignored) {}
+        }
+
+        public List<String> getLoreFormat() {
+            return config.getStringList("item-lore-format");
+        }
+
+        public String getMessage(String key) {
+            return config.getString("messages." + key, "");
         }
     }
 }

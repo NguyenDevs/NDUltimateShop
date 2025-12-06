@@ -26,9 +26,7 @@ public class AdminCommand implements CommandExecutor, TabCompleter {
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!sender.hasPermission("ndshop.admin")) {
             sender.sendMessage(plugin.getLanguageManager().getMessage("no-permission"));
-            if (sender instanceof Player player) {
-                player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_BASS, 1.0f, 0.5f);
-            }
+            playSound(sender, Sound.BLOCK_NOTE_BLOCK_BASS, 1.0f, 0.5f);
             return true;
         }
 
@@ -59,9 +57,7 @@ public class AdminCommand implements CommandExecutor, TabCompleter {
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
         List<String> completions = new ArrayList<>();
 
-        if (!sender.hasPermission("ndshop.admin")) {
-            return completions;
-        }
+        if (!sender.hasPermission("ndshop.admin")) return completions;
 
         if (args.length == 1) {
             completions.addAll(Arrays.asList("reload", "shop", "sell", "coupon", "blackshop"));
@@ -115,9 +111,7 @@ public class AdminCommand implements CommandExecutor, TabCompleter {
         plugin.getCouponManager().loadCoupons();
 
         sender.sendMessage(plugin.getLanguageManager().getPrefixedMessage("reload-success"));
-        if (sender instanceof Player player) {
-            player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1.0f, 2.0f);
-        }
+        playSound(sender, Sound.ENTITY_PLAYER_LEVELUP, 1.0f, 2.0f);
         return true;
     }
 
@@ -133,7 +127,7 @@ public class AdminCommand implements CommandExecutor, TabCompleter {
             ItemStack item = player.getInventory().getItemInMainHand();
             if (item == null || item.getType() == Material.AIR) {
                 player.sendMessage(plugin.getLanguageManager().getPrefixedMessage("hold-item"));
-                player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_BASS, 1.0f, 0.5f);
+                playSound(player, Sound.BLOCK_NOTE_BLOCK_BASS, 1.0f, 0.5f);
                 return true;
             }
 
@@ -149,10 +143,10 @@ public class AdminCommand implements CommandExecutor, TabCompleter {
                 placeholders.put("price", String.format("%.2f", price));
                 placeholders.put("stock", String.valueOf(stock));
                 player.sendMessage(plugin.getLanguageManager().getPrefixedMessage("shop-item-added", placeholders));
-                player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0f, 1.0f);
+                playSound(player, Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0f, 1.0f);
             } catch (NumberFormatException e) {
                 player.sendMessage(plugin.getLanguageManager().getPrefixedMessage("invalid-number"));
-                player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_BASS, 1.0f, 0.5f);
+                playSound(player, Sound.BLOCK_NOTE_BLOCK_BASS, 1.0f, 0.5f);
             }
             return true;
         }
@@ -162,7 +156,7 @@ public class AdminCommand implements CommandExecutor, TabCompleter {
             Map<String, String> placeholders = new HashMap<>();
             placeholders.put("id", args[2]);
             player.sendMessage(plugin.getLanguageManager().getPrefixedMessage("shop-item-removed", placeholders));
-            player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0f, 1.0f);
+            playSound(player, Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0f, 1.0f);
             return true;
         }
 
@@ -181,7 +175,7 @@ public class AdminCommand implements CommandExecutor, TabCompleter {
             ItemStack item = player.getInventory().getItemInMainHand();
             if (item == null || item.getType() == Material.AIR) {
                 player.sendMessage(plugin.getLanguageManager().getPrefixedMessage("hold-item"));
-                player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_BASS, 1.0f, 0.5f);
+                playSound(player, Sound.BLOCK_NOTE_BLOCK_BASS, 1.0f, 0.5f);
                 return true;
             }
 
@@ -193,10 +187,10 @@ public class AdminCommand implements CommandExecutor, TabCompleter {
                 placeholders.put("item", item.getType().name());
                 placeholders.put("price", String.format("%.2f", price));
                 player.sendMessage(plugin.getLanguageManager().getPrefixedMessage("sell-price-set", placeholders));
-                player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0f, 1.0f);
+                playSound(player, Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0f, 1.0f);
             } catch (NumberFormatException e) {
                 player.sendMessage(plugin.getLanguageManager().getPrefixedMessage("invalid-number"));
-                player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_BASS, 1.0f, 0.5f);
+                playSound(player, Sound.BLOCK_NOTE_BLOCK_BASS, 1.0f, 0.5f);
             }
             return true;
         }
@@ -226,9 +220,7 @@ public class AdminCommand implements CommandExecutor, TabCompleter {
             placeholders.put("code", code);
             placeholders.put("discount", String.format("%.0f", discount));
             sender.sendMessage(plugin.getLanguageManager().getPrefixedMessage("coupon-created", placeholders));
-            if (sender instanceof Player player) {
-                player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1.0f, 2.0f);
-            }
+            playSound(sender, Sound.ENTITY_PLAYER_LEVELUP, 1.0f, 2.0f);
             return true;
         }
 
@@ -238,14 +230,10 @@ public class AdminCommand implements CommandExecutor, TabCompleter {
                 Map<String, String> placeholders = new HashMap<>();
                 placeholders.put("code", code);
                 sender.sendMessage(plugin.getLanguageManager().getPrefixedMessage("coupon-removed", placeholders));
-                if (sender instanceof Player player) {
-                    player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0f, 1.0f);
-                }
+                playSound(sender, Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0f, 1.0f);
             } else {
                 sender.sendMessage(plugin.getLanguageManager().getPrefixedMessage("coupon-not-found"));
-                if (sender instanceof Player player) {
-                    player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_BASS, 1.0f, 0.5f);
-                }
+                playSound(sender, Sound.BLOCK_NOTE_BLOCK_BASS, 1.0f, 0.5f);
             }
             return true;
         }
@@ -265,7 +253,7 @@ public class AdminCommand implements CommandExecutor, TabCompleter {
             ItemStack item = player.getInventory().getItemInMainHand();
             if (item == null || item.getType() == Material.AIR) {
                 player.sendMessage(plugin.getLanguageManager().getPrefixedMessage("hold-item"));
-                player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_BASS, 1.0f, 0.5f);
+                playSound(player, Sound.BLOCK_NOTE_BLOCK_BASS, 1.0f, 0.5f);
                 return true;
             }
 
@@ -281,10 +269,10 @@ public class AdminCommand implements CommandExecutor, TabCompleter {
                 placeholders.put("price", String.format("%.2f", price));
                 placeholders.put("stock", String.valueOf(stock));
                 player.sendMessage(plugin.getLanguageManager().getPrefixedMessage("blackshop-item-added", placeholders));
-                player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0f, 1.0f);
+                playSound(player, Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0f, 1.0f);
             } catch (NumberFormatException e) {
                 player.sendMessage(plugin.getLanguageManager().getPrefixedMessage("invalid-number"));
-                player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_BASS, 1.0f, 0.5f);
+                playSound(player, Sound.BLOCK_NOTE_BLOCK_BASS, 1.0f, 0.5f);
             }
             return true;
         }
@@ -298,8 +286,12 @@ public class AdminCommand implements CommandExecutor, TabCompleter {
         sender.sendMessage(plugin.getLanguageManager().getMessage("help-admin-coupon"));
         sender.sendMessage(plugin.getLanguageManager().getMessage("help-admin-shop"));
         sender.sendMessage(plugin.getLanguageManager().getMessage("help-admin-sell"));
-        if (sender instanceof Player player) {
-            player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 1.0f, 1.0f);
+        playSound(sender, Sound.UI_BUTTON_CLICK, 1.0f, 1.0f);
+    }
+
+    private void playSound(CommandSender sender, Sound sound, float volume, float pitch) {
+        if (sender instanceof Player && plugin.getConfig().getBoolean("sounds.enabled", true)) {
+            ((Player) sender).playSound(((Player) sender).getLocation(), sound, volume, pitch);
         }
     }
 }

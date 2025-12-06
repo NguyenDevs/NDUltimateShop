@@ -9,7 +9,10 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public class CouponCommand implements CommandExecutor, TabCompleter {
@@ -31,13 +34,13 @@ public class CouponCommand implements CommandExecutor, TabCompleter {
 
         if (!player.hasPermission("ndshop.coupon.use")) {
             player.sendMessage(plugin.getLanguageManager().getMessage("no-permission"));
-            player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_BASS, 1.0f, 0.5f);
+            playSound(player, Sound.BLOCK_NOTE_BLOCK_BASS, 1.0f, 0.5f);
             return true;
         }
 
         if (args.length == 0) {
             player.sendMessage(plugin.getLanguageManager().getMessage("help-coupon-use"));
-            player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 1.0f, 1.0f);
+            playSound(player, Sound.UI_BUTTON_CLICK, 1.0f, 1.0f);
             return true;
         }
 
@@ -46,19 +49,19 @@ public class CouponCommand implements CommandExecutor, TabCompleter {
 
         if (coupon == null) {
             player.sendMessage(plugin.getLanguageManager().getPrefixedMessage("coupon-not-found"));
-            player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_BASS, 1.0f, 0.5f);
+            playSound(player, Sound.BLOCK_NOTE_BLOCK_BASS, 1.0f, 0.5f);
             return true;
         }
 
         if (coupon.isExpired()) {
             player.sendMessage(plugin.getLanguageManager().getPrefixedMessage("coupon-expired"));
-            player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_BASS, 1.0f, 0.5f);
+            playSound(player, Sound.BLOCK_NOTE_BLOCK_BASS, 1.0f, 0.5f);
             return true;
         }
 
         if (!coupon.canUse(player.getUniqueId())) {
             player.sendMessage(plugin.getLanguageManager().getPrefixedMessage("coupon-already-used"));
-            player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_BASS, 1.0f, 0.5f);
+            playSound(player, Sound.BLOCK_NOTE_BLOCK_BASS, 1.0f, 0.5f);
             return true;
         }
 
@@ -67,7 +70,7 @@ public class CouponCommand implements CommandExecutor, TabCompleter {
             placeholders.put("code", code);
             placeholders.put("discount", String.format("%.0f", coupon.getDiscount()));
             player.sendMessage(plugin.getLanguageManager().getPrefixedMessage("coupon-applied", placeholders));
-            player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1.0f, 2.0f);
+            playSound(player, Sound.ENTITY_PLAYER_LEVELUP, 1.0f, 2.0f);
 
             if (coupon.getType() == Coupon.CouponType.TIME) {
                 Map<String, String> timePlaceholders = new HashMap<>();
@@ -113,6 +116,12 @@ public class CouponCommand implements CommandExecutor, TabCompleter {
             return minutes + " " + plugin.getLanguageManager().getMessage("time-minutes");
         } else {
             return seconds + " " + plugin.getLanguageManager().getMessage("time-seconds");
+        }
+    }
+
+    private void playSound(Player player, Sound sound, float volume, float pitch) {
+        if (plugin.getConfig().getBoolean("sounds.enabled", true)) {
+            player.playSound(player.getLocation(), sound, volume, pitch);
         }
     }
 }
