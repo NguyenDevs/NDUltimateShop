@@ -1,5 +1,7 @@
+# Prefix hiển thị trước mỗi tin nhắn (hỗ trợ màu Gradient Hex)
 prefix: "&7[<gradient:#D585FF:#5B008C>UltimateShop</gradient>&7]"
 
+# Các thông báo lỗi chung
 player-only: "&cLệnh này chỉ dành cho người chơi!"
 no-permission: "&cBạn không có quyền sử dụng lệnh này!"
 invalid-number: "&cSố nhập vào không hợp lệ!"
@@ -7,17 +9,16 @@ invalid-price: "&cGiá nhập vào không hợp lệ!"
 hold-item: "&cBạn cần cầm một vật phẩm trên tay!"
 not-enough-money: "&cBạn cần thêm &e%amount%$ &cđể thực hiện!"
 
+# Đơn vị thời gian
 time-seconds: "giây"
 time-minutes: "phút"
 time-hours: "giờ"
 time-days: "ngày"
 
-reload-success: "&aĐã tải lại toàn bộ cấu hình thành công!"
+# Thông báo Admin
+reload-success: "&aĐã tải lại toàn bộ cấu hình và dữ liệu thành công!"
 
-help-header: "&6&l===== &eUltimateShop Admin &6&l====="
-help-coupon-use: "&e/coupon <code> &7- Sử dụng mã giảm giá"
-help-admin-auction-cancel-hint: "&cBạn không thể mua vật phẩm của chính mình! &e%hint%"
-
+# GUI Text
 gui-sort-name: "&eSắp xếp: &f%type%"
 gui-sort-az: "A - Z"
 gui-sort-za: "Z - A"
@@ -32,30 +33,37 @@ gui-action-left: "&7Click Trái: Đổi chế độ sắp xếp"
 gui-action-right: "&7Click Phải: Đổi loại vật phẩm"
 gui-current-priority: "&7Hiện tại ưu tiên: &f%type%"
 
+# Thông báo Shop
 shop-item-added: "&aĐã thêm &e%item% &avào cửa hàng với giá &e%price%$ &a(Kho: &e%stock%&a)"
 shop-item-removed: "&aĐã xóa vật phẩm &e%id% &akhỏi cửa hàng!"
 shop-item-bought: "&aĐã mua &e%amount%x %item% &avới giá &e%price%$"
 shop-not-enough-stock: "&cSản phẩm này đã hết hàng hoặc không đủ số lượng!"
 
+# Thông báo Đấu Giá (Auction)
+help-admin-auction-cancel-hint: "&cBạn không thể mua vật phẩm của chính mình! &e%hint%"
 auction-item-listed: "&aĐã treo bán &e%item% &avới giá &e%price%$ &a(Hết hạn sau: &e%duration%&a)"
-auction-fee-paid: "&7Bạn đã trả phí hoa hồng: &c%fee%$"
+auction-fee-paid: "&7Bạn đã trả phí hoa hồng sàn: &c%fee%$"
 auction-max-listings: "&cBạn đã đạt giới hạn số lượng vật phẩm được treo bán!"
 auction-item-bought: "&aĐã mua &e%item% &atừ &b%seller% &avới giá &e%price%$"
 auction-item-cancelled: "&eĐã hủy bán và nhận lại vật phẩm!"
 auction-item-expired: "&cVật phẩm &e%item% &ccủa bạn đã hết hạn và được trả về kho!"
 auction-seller-received: "&aVật phẩm &e%item% &ccủa bạn đã được bán! Bạn nhận được &e%amount%$"
 
+# Thông báo Bán đồ (Sell)
 sell-success: "&aĐã bán thành công! Bạn nhận được &e%amount%$"
 sell-no-items: "&cBạn chưa bỏ vật phẩm nào vào để bán!"
 sell-price-set: "&aĐã cập nhật giá bán cho &e%item% &alà &e%price%$"
 
+# Thông báo Chợ Đêm (NightShop)
 nightshop-closed: "&cChợ Đêm hiện đang đóng cửa!"
 nightshop-open-time: "&7Thời gian mở cửa: &d%open%h - %close%h"
 nightshop-item-added: "&aĐã thêm &e%item% &avào Chợ Đêm với giá &d%price%$ &a(Kho: &e%stock%&a)"
 nightshop-item-bought: "&aĐã mua &e%amount%x %item% &atừ Chợ Đêm với giá &d%price%$"
-nightshop-announce-open: "&5&l[CHỢ ĐÊM] &dĐã mở cửa! Những vật phẩm hiếm đang chờ bạn!"
+nightshop-announce-open: "&5&l[CHỢ ĐÊM] &dĐã mở cửa! Những vật phẩm hiếm đang chờ bạn! (/nightshop)"
 nightshop-announce-close: "&5&l[CHỢ ĐÊM] &7Đã đóng cửa. Hẹn gặp lại vào ngày mai!"
 
+# Thông báo Coupon
+help-coupon-use: "&e/coupon <code> &7- Sử dụng mã giảm giá"
 coupon-created: "&aĐã tạo mã &e%code% &agiảm &c%discount%%"
 coupon-removed: "&aĐã xóa mã giảm giá &e%code%"
 coupon-not-found: "&cMã giảm giá không tồn tại hoặc sai chính tả!"

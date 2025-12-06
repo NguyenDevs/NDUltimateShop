@@ -14,12 +14,16 @@ public class ConfigManager {
     private final NDUltimateShop plugin;
     private final Map<String, FileConfiguration> configs;
     private final Map<String, File> configFiles;
+    private final Map<String, FileConfiguration> dataConfigs;
+    private final Map<String, File> dataFiles;
     private GUIConfigManager guiConfigManager;
 
     public ConfigManager(NDUltimateShop plugin) {
         this.plugin = plugin;
         this.configs = new HashMap<>();
         this.configFiles = new HashMap<>();
+        this.dataConfigs = new HashMap<>();
+        this.dataFiles = new HashMap<>();
         this.guiConfigManager = new GUIConfigManager(plugin);
     }
 
@@ -27,22 +31,22 @@ public class ConfigManager {
         plugin.saveDefaultConfig();
 
         createConfig("itemsell.yml");
-        createConfig("coupons.yml");
         createConfig("language.yml");
-
-        File guiFolder = new File(plugin.getDataFolder(), "gui");
-        if (!guiFolder.exists()) {
-            guiFolder.mkdirs();
-        }
 
         createGUIConfig("shop.yml");
         createGUIConfig("auction.yml");
         createGUIConfig("sell.yml");
         createGUIConfig("nightshop.yml");
 
+        createDataConfig("shops.yml");
+        createDataConfig("auctions.yml");
+        createDataConfig("nightshop_data.yml");
+        createDataConfig("coupons.yml");
+        createDataConfig("sell_data.yml");
+
         loadGUIConfigs();
 
-        plugin.getLogger().info("Đã tải tất cả các file cấu hình!");
+        plugin.getLogger().info("Da tai tat ca file cau hinh va du lieu!");
     }
 
     private void createConfig(String fileName) {
@@ -69,6 +73,24 @@ public class ConfigManager {
         configs.put(key, YamlConfiguration.loadConfiguration(file));
     }
 
+    private void createDataConfig(String fileName) {
+        File dataFolder = new File(plugin.getDataFolder(), "data");
+        if (!dataFolder.exists()) {
+            dataFolder.mkdirs();
+        }
+
+        File file = new File(dataFolder, fileName);
+        if (!file.exists()) {
+            try {
+                file.createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        dataFiles.put(fileName, file);
+        dataConfigs.put(fileName, YamlConfiguration.loadConfiguration(file));
+    }
+
     private void loadGUIConfigs() {
         guiConfigManager.loadGUIConfig("shop");
         guiConfigManager.loadGUIConfig("auction");
@@ -80,6 +102,10 @@ public class ConfigManager {
         return configs.getOrDefault(fileName, plugin.getConfig());
     }
 
+    public FileConfiguration getDataConfig(String fileName) {
+        return dataConfigs.get(fileName);
+    }
+
     public void saveConfig(String fileName) {
         File file = configFiles.get(fileName);
         FileConfiguration config = configs.get(fileName);
@@ -87,22 +113,32 @@ public class ConfigManager {
             try {
                 config.save(file);
             } catch (IOException e) {
-                plugin.getLogger().severe("Không thể lưu file " + fileName + ": " + e.getMessage());
+                plugin.getLogger().severe("Khong the luu file config " + fileName + ": " + e.getMessage());
             }
         }
     }
 
-    public void reloadConfig(String fileName) {
-        File file = configFiles.get(fileName);
-        if (file != null) {
-            configs.put(fileName, YamlConfiguration.loadConfiguration(file));
+    public void saveData(String fileName) {
+        File file = dataFiles.get(fileName);
+        FileConfiguration config = dataConfigs.get(fileName);
+        if (file != null && config != null) {
+            try {
+                config.save(file);
+            } catch (IOException e) {
+                plugin.getLogger().severe("Khong the luu file data " + fileName + ": " + e.getMessage());
+            }
         }
     }
 
     public void reloadAllConfigs() {
         plugin.reloadConfig();
         for (String fileName : configFiles.keySet()) {
-            reloadConfig(fileName);
+            File file = configFiles.get(fileName);
+            if (file != null) configs.put(fileName, YamlConfiguration.loadConfiguration(file));
+        }
+        for (String fileName : dataFiles.keySet()) {
+            File file = dataFiles.get(fileName);
+            if (file != null) dataConfigs.put(fileName, YamlConfiguration.loadConfiguration(file));
         }
         loadGUIConfigs();
     }

@@ -1,3 +1,4 @@
+# Tiêu đề GUI Đấu Giá
 title: "&eĐấu giá - Trang %page%"
 rows: 6
 
@@ -9,6 +10,7 @@ slots:
   previous: 45
   next: 53
   close: 49
+  sort: 52
 
 filler-slots: [0, 1, 2, 3, 5, 6, 7, 8, 9, 17, 18, 26, 27, 35, 36, 44, 46, 47, 50, 51, 52]
 filler-material: YELLOW_STAINED_GLASS_PANE
@@ -19,7 +21,7 @@ item-lore-format:
   - "&7Người bán: &b%seller%"
   - "&7Giá: &e%price%$"
   - "&7Gốc: &7&m%original_price%$"
-  - "&7Thời gian: &e%time%"
+  - "&7Thời gian còn: &e%time%"
   - "&7Sale: &c-%discount_percent%%"
   - ""
   - "%action_text%"
@@ -27,7 +29,7 @@ item-lore-format:
 decorative-items:
   info:
     material: GOLD_INGOT
-    name: "&e&lTHÔNG TIN"
+    name: "&e&lTHÔNG TIN SÀN"
     lore:
       - "&7Tổng tin đăng: &e%total_listings%"
       - "&7Tin của bạn: &a%player_listings%"

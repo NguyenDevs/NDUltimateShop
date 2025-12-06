@@ -1,33 +1,45 @@
+# Tiêu đề của GUI Cửa Hàng (%page% là số trang hiện tại)
 title: "&2Cửa hàng - Trang %page%"
+
+# Số hàng trong GUI (tối đa 6 hàng)
 rows: 6
 
+# Các ô (slot) sẽ hiển thị vật phẩm bán
+# Slot được tính từ 0 đến 53
 item-slots: [10, 11, 12, 13, 14, 15, 16, 19, 20, 21, 22, 23, 24, 25, 28, 29, 30, 31, 32, 33, 34, 37, 38, 39, 40, 41, 42, 43]
 
+# Vị trí các nút chức năng
 slots:
-  info: 4
-  previous: 48
-  next: 50
-  close: 49
+  info: 4         # Nút thông tin
+  previous: 48    # Nút trang trước
+  next: 50        # Nút trang sau
+  close: 49       # Nút đóng GUI
+  sort: 52        # Nút sắp xếp
 
+# Các ô để trang trí (lấp đầy khoảng trống)
 filler-slots: [0, 1, 2, 3, 5, 6, 7, 8, 9, 17, 18, 26, 27, 35, 36, 44, 45, 46, 47, 51, 52, 53]
+
+# Loại block dùng để lấp đầy (Ví dụ: Kính màu)
 filler-material: LIME_STAINED_GLASS_PANE
 
+# Định dạng Lore (thông tin) hiển thị trên vật phẩm bán
 item-lore-format:
-  - "%lore%"
+  - "%lore%"                             # Giữ nguyên lore gốc của item
   - ""
-  - "&7Giá: &a%price%$"
-  - "&7Kho: &e%stock%"
-  - "&7Giảm giá: &c-%discount_percent%%"
+  - "&7Giá: &a%price%$"                  # Hiển thị giá
+  - "&7Kho: &e%stock%"                   # Hiển thị số lượng tồn kho
+  - "&7Giảm giá: &c-%discount_percent%%" # Hiển thị % giảm giá nếu có coupon
   - ""
   - "&eClick để mua!"
 
+# Cấu hình chi tiết các item trang trí
 decorative-items:
   info:
     material: BOOK
     name: "&a&lTHÔNG TIN"
     lore:
       - "&7Số dư: &a%balance%$"
-      - "&7Mã giảm giá: &d%coupon%"
+      - "&7Mã giảm giá đang dùng: &d%coupon%"
     enchanted: true
   previous-button:
     material: ARROW
@@ -39,6 +51,7 @@ decorative-items:
     material: BARRIER
     name: "&c✖ Đóng"
 
+# Âm thanh khi tương tác GUI
 sounds:
   enable: true
   click: UI_BUTTON_CLICK:1:1

@@ -25,9 +25,9 @@ public class NightShopManager {
 
     public void loadBlackShop() {
         nightShopItems.clear();
-        FileConfiguration config = plugin.getConfigManager().getConfig("gui/nightshop.yml");
+        FileConfiguration data = plugin.getConfigManager().getDataConfig("nightshop_data.yml");
 
-        ConfigurationSection itemsSection = config.getConfigurationSection("items");
+        ConfigurationSection itemsSection = data.getConfigurationSection("items");
         if (itemsSection != null) {
             for (String key : itemsSection.getKeys(false)) {
                 ItemStack item = itemsSection.getItemStack(key + ".item");
@@ -40,23 +40,23 @@ public class NightShopManager {
             }
         }
 
-        plugin.getLogger().info("Đã tải " + nightShopItems.size() + " vật phẩm trong chợ đêm!");
+        plugin.getLogger().info("Da tai " + nightShopItems.size() + " vat pham cho dem tu data/nightshop_data.yml!");
     }
 
     public void saveBlackShop() {
-        FileConfiguration config = plugin.getConfigManager().getConfig("gui/nightshop.yml");
-        config.set("items", null);
+        FileConfiguration data = plugin.getConfigManager().getDataConfig("nightshop_data.yml");
+        data.set("items", null);
 
         for (Map.Entry<String, ShopItem> entry : nightShopItems.entrySet()) {
             String key = "items." + entry.getKey();
             ShopItem item = entry.getValue();
 
-            config.set(key + ".item", item.getItemStack());
-            config.set(key + ".price", item.getPrice());
-            config.set(key + ".stock", item.getStock());
+            data.set(key + ".item", item.getItemStack());
+            data.set(key + ".price", item.getPrice());
+            data.set(key + ".stock", item.getStock());
         }
 
-        plugin.getConfigManager().saveConfig("gui/nightshop.yml");
+        plugin.getConfigManager().saveData("nightshop_data.yml");
     }
 
     public boolean isSystemEnabled() {

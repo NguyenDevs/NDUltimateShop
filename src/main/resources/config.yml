@@ -1,22 +1,54 @@
+# =============================================================
+#           CẤU HÌNH CHÍNH CỦA ULTIMATESHOP
+# =============================================================
+
+# Cấu hình cho tính năng Đấu Giá (Auction House)
 auction:
+  # Số lượng vật phẩm tối đa một người chơi có thể treo bán
+  # Người chơi có permission 'ndshop.auction.limit.X' sẽ được ưu tiên số lượng X
   max-listings-per-player: 10
+
+  # Thời gian tồn tại của vật phẩm trên sàn đấu giá (tính bằng giây)
+  # Mặc định: 86400 giây = 24 giờ
   duration: 86400
+
+  # Phí hoa hồng (%) người bán phải trả khi đăng bán vật phẩm
   commission-fee: 5.0
 
+# Cấu hình cho tính năng Chợ Đêm (Night Shop/Black Market)
 nightshop:
-  timezone: "Asia/Ho_Chi_Minh"
-  open-time: 20
-  close-time: 22
-  announce-open: true
-  announce-close: true
-
-sounds:
+  # Bật/Tắt tính năng chợ đêm (true = bật, false = tắt)
   enabled: true
 
+  # Múi giờ sử dụng để tính thời gian mở cửa
+  # Việt Nam là 'Asia/Ho_Chi_Minh'
+  timezone: "Asia/Ho_Chi_Minh"
+
+  # Giờ mở cửa (24h format). Ví dụ: 20 là 8 giờ tối.
+  open-time: 20
+
+  # Giờ đóng cửa (24h format). Ví dụ: 22 là 10 giờ tối.
+  close-time: 22
+
+  # Thông báo trên toàn server khi chợ đêm mở cửa
+  announce-open: true
+
+  # Thông báo trên toàn server khi chợ đêm đóng cửa
+  announce-close: true
+
+# Cấu hình âm thanh
+sounds:
+  # Bật/Tắt toàn bộ âm thanh của plugin
+  enabled: true
+
+# Cấu hình ngôn ngữ
 language:
+  # Tên file ngôn ngữ trong thư mục plugin (mặc định language.yml)
   file: "language.yml"
 
+# Hỗ trợ PlaceholderAPI (Hiển thị %player%, %balance%...)
 placeholderapi:
   enabled: true
 
+# Chế độ debug (dành cho dev, spam console)
 debug: false

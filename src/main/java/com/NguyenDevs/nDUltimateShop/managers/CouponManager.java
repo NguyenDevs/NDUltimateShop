@@ -22,9 +22,9 @@ public class CouponManager {
 
     public void loadCoupons() {
         coupons.clear();
-        FileConfiguration config = plugin.getConfigManager().getConfig("coupons.yml");
+        FileConfiguration data = plugin.getConfigManager().getDataConfig("coupons.yml");
 
-        ConfigurationSection couponsSection = config.getConfigurationSection("coupons");
+        ConfigurationSection couponsSection = data.getConfigurationSection("coupons");
         if (couponsSection != null) {
             for (String code : couponsSection.getKeys(false)) {
                 double discount = couponsSection.getDouble(code + ".discount");
@@ -47,28 +47,28 @@ public class CouponManager {
             }
         }
 
-        plugin.getLogger().info("Đã tải " + coupons.size() + " mã giảm giá!");
+        plugin.getLogger().info("Da tai " + coupons.size() + " ma giam gia tu data/coupons.yml!");
     }
 
     public void saveCoupons() {
-        FileConfiguration config = plugin.getConfigManager().getConfig("coupons.yml");
-        config.set("coupons", null);
+        FileConfiguration data = plugin.getConfigManager().getDataConfig("coupons.yml");
+        data.set("coupons", null);
 
         for (Coupon coupon : coupons.values()) {
             String path = "coupons." + coupon.getCode();
-            config.set(path + ".discount", coupon.getDiscount());
-            config.set(path + ".type", coupon.getType().name());
-            config.set(path + ".value", coupon.getValue());
-            config.set(path + ".created", coupon.getCreatedTime());
+            data.set(path + ".discount", coupon.getDiscount());
+            data.set(path + ".type", coupon.getType().name());
+            data.set(path + ".value", coupon.getValue());
+            data.set(path + ".created", coupon.getCreatedTime());
 
             List<String> usedByList = new ArrayList<>();
             for (UUID uuid : coupon.getUsedBy()) {
                 usedByList.add(uuid.toString());
             }
-            config.set(path + ".usedBy", usedByList);
+            data.set(path + ".usedBy", usedByList);
         }
 
-        plugin.getConfigManager().saveConfig("coupons.yml");
+        plugin.getConfigManager().saveData("coupons.yml");
     }
 
     public void createCoupon(String code, double discount, Coupon.CouponType type, long value) {

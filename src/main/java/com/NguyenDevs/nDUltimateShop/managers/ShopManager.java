@@ -20,9 +20,9 @@ public class ShopManager {
 
     public void loadShops() {
         shopItems.clear();
-        FileConfiguration config = plugin.getConfigManager().getConfig("gui/shop.yml");
+        FileConfiguration data = plugin.getConfigManager().getDataConfig("shops.yml");
 
-        ConfigurationSection itemsSection = config.getConfigurationSection("items");
+        ConfigurationSection itemsSection = data.getConfigurationSection("items");
         if (itemsSection != null) {
             for (String key : itemsSection.getKeys(false)) {
                 ItemStack item = itemsSection.getItemStack(key + ".item");
@@ -35,23 +35,23 @@ public class ShopManager {
             }
         }
 
-        plugin.getLogger().info("Đã tải " + shopItems.size() + " vật phẩm trong cửa hàng!");
+        plugin.getLogger().info("Da tai " + shopItems.size() + " vat pham Shop tu data/shops.yml!");
     }
 
     public void saveShops() {
-        FileConfiguration config = plugin.getConfigManager().getConfig("gui/shop.yml");
-        config.set("items", null);
+        FileConfiguration data = plugin.getConfigManager().getDataConfig("shops.yml");
+        data.set("items", null);
 
         for (Map.Entry<String, ShopItem> entry : shopItems.entrySet()) {
             String key = "items." + entry.getKey();
             ShopItem item = entry.getValue();
 
-            config.set(key + ".item", item.getItemStack());
-            config.set(key + ".price", item.getPrice());
-            config.set(key + ".stock", item.getStock());
+            data.set(key + ".item", item.getItemStack());
+            data.set(key + ".price", item.getPrice());
+            data.set(key + ".stock", item.getStock());
         }
 
-        plugin.getConfigManager().saveConfig("gui/shop.yml");
+        plugin.getConfigManager().saveData("shops.yml");
     }
 
     public void addShopItem(String id, ItemStack item, double price, int stock) {

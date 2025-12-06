@@ -7,10 +7,10 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.permissions.PermissionAttachmentInfo;
 
 import java.util.*;
 import java.util.stream.Collectors;
-import org.bukkit.permissions.PermissionAttachmentInfo;
 
 public class AuctionManager {
 
@@ -48,9 +48,9 @@ public class AuctionManager {
 
     public void loadAuctions() {
         activeListings.clear();
-        FileConfiguration config = plugin.getConfigManager().getConfig("gui/auction.yml");
+        FileConfiguration data = plugin.getConfigManager().getDataConfig("auctions.yml");
 
-        ConfigurationSection listingsSection = config.getConfigurationSection("listings");
+        ConfigurationSection listingsSection = data.getConfigurationSection("listings");
         if (listingsSection != null) {
             for (String key : listingsSection.getKeys(false)) {
                 UUID sellerUUID = UUID.fromString(listingsSection.getString(key + ".seller"));
@@ -65,25 +65,25 @@ public class AuctionManager {
             }
         }
 
-        plugin.getLogger().info("Đã tải " + activeListings.size() + " mặt hàng đấu giá!");
+        plugin.getLogger().info("Da tai " + activeListings.size() + " mat hang dau gia tu data/auctions.yml!");
     }
 
     public void saveAuctions() {
-        FileConfiguration config = plugin.getConfigManager().getConfig("gui/auction.yml");
-        config.set("listings", null);
+        FileConfiguration data = plugin.getConfigManager().getDataConfig("auctions.yml");
+        data.set("listings", null);
 
         for (Map.Entry<String, AuctionListing> entry : activeListings.entrySet()) {
             String key = "listings." + entry.getKey();
             AuctionListing listing = entry.getValue();
 
-            config.set(key + ".seller", listing.getSellerUUID().toString());
-            config.set(key + ".sellerName", listing.getSellerName());
-            config.set(key + ".item", listing.getItemStack());
-            config.set(key + ".price", listing.getPrice());
-            config.set(key + ".expiration", listing.getExpirationTime());
+            data.set(key + ".seller", listing.getSellerUUID().toString());
+            data.set(key + ".sellerName", listing.getSellerName());
+            data.set(key + ".item", listing.getItemStack());
+            data.set(key + ".price", listing.getPrice());
+            data.set(key + ".expiration", listing.getExpirationTime());
         }
 
-        plugin.getConfigManager().saveConfig("gui/auction.yml");
+        plugin.getConfigManager().saveData("auctions.yml");
     }
 
     public String createListing(Player seller, ItemStack item, double price) {
