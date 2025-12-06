@@ -109,9 +109,9 @@ public class NightShopManager {
         LocalTime closeTime = LocalTime.of(closeHour, 0);
 
         if (closeTime.isAfter(openTime)) {
-            return now.isAfter(openTime) && now.isBefore(closeTime);
+            return !now.isBefore(openTime) && !now.isAfter(closeTime);
         } else {
-            return now.isAfter(openTime) || now.isBefore(closeTime);
+            return !now.isBefore(openTime) || !now.isAfter(closeTime);
         }
     }
 

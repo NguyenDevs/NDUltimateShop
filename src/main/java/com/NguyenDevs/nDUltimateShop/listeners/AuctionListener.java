@@ -33,6 +33,7 @@ public class AuctionListener implements Listener {
         Player player = (Player) event.getWhoClicked();
         int slot = event.getRawSlot();
         Map<String, Integer> slots = gui.getConfig().getSlotMapping();
+        ItemStack clickedItem = event.getCurrentItem();
 
         if (slots.containsKey("close") && slot == slots.get("close")) {
             gui.getConfig().playSound(player, "click");
@@ -41,8 +42,8 @@ public class AuctionListener implements Listener {
         }
 
         if (slots.containsKey("previous") && slot == slots.get("previous")) {
-            // FIX: Check null/AIR
-            if (event.getCurrentItem() == null || event.getCurrentItem().getType() == Material.AIR) return;
+            if (clickedItem == null || clickedItem.getType() == Material.AIR) return;
+            if (clickedItem.getType() == gui.getConfig().getFillerMaterial()) return;
 
             if (gui.getCurrentPage() > 0) {
                 gui.getConfig().playSound(player, "click");
@@ -55,8 +56,8 @@ public class AuctionListener implements Listener {
         }
 
         if (slots.containsKey("next") && slot == slots.get("next")) {
-            // FIX: Check null/AIR
-            if (event.getCurrentItem() == null || event.getCurrentItem().getType() == Material.AIR) return;
+            if (clickedItem == null || clickedItem.getType() == Material.AIR) return;
+            if (clickedItem.getType() == gui.getConfig().getFillerMaterial()) return;
 
             gui.getConfig().playSound(player, "click");
             gui.setCurrentPage(gui.getCurrentPage() + 1);

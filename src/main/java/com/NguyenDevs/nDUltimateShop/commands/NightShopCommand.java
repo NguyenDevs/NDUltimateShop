@@ -39,10 +39,10 @@ public class NightShopCommand implements CommandExecutor, TabCompleter {
 
         if (!plugin.getBlackShopManager().isOpen()) {
             Map<String, String> placeholders = new HashMap<>();
-            placeholders.put("open", String.valueOf(plugin.getConfig().getInt("blackshop.open-time")));
-            placeholders.put("close", String.valueOf(plugin.getConfig().getInt("blackshop.close-time")));
-            player.sendMessage(plugin.getLanguageManager().getPrefixedMessage("blackshop-closed"));
-            player.sendMessage(plugin.getLanguageManager().getPrefixedMessage("blackshop-open-time", placeholders));
+            placeholders.put("open", String.valueOf(plugin.getConfig().getInt("nightshop.open-time")));
+            placeholders.put("close", String.valueOf(plugin.getConfig().getInt("nightshop.close-time")));
+            player.sendMessage(plugin.getLanguageManager().getPrefixedMessage("nightshop-closed"));
+            player.sendMessage(plugin.getLanguageManager().getPrefixedMessage("nightshop-open-time", placeholders));
             playSound(player, Sound.BLOCK_NOTE_BLOCK_BASS, 1.0f, 0.5f);
             return true;
         }

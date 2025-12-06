@@ -30,6 +30,7 @@ public class NightShopListener implements Listener {
         Player player = (Player) event.getWhoClicked();
         int slot = event.getRawSlot();
         Map<String, Integer> slots = gui.getConfig().getSlotMapping();
+        ItemStack clickedItem = event.getCurrentItem();
 
         if (slots.containsKey("close") && slot == slots.get("close")) {
             gui.getConfig().playSound(player, "click");
@@ -38,8 +39,8 @@ public class NightShopListener implements Listener {
         }
 
         if (slots.containsKey("previous") && slot == slots.get("previous")) {
-            // FIX: Check null/AIR
-            if (event.getCurrentItem() == null || event.getCurrentItem().getType() == Material.AIR) return;
+            if (clickedItem == null || clickedItem.getType() == Material.AIR) return;
+            if (clickedItem.getType() == gui.getConfig().getFillerMaterial()) return;
 
             if (gui.getCurrentPage() > 0) {
                 gui.getConfig().playSound(player, "click");
@@ -52,8 +53,8 @@ public class NightShopListener implements Listener {
         }
 
         if (slots.containsKey("next") && slot == slots.get("next")) {
-            // FIX: Check null/AIR
-            if (event.getCurrentItem() == null || event.getCurrentItem().getType() == Material.AIR) return;
+            if (clickedItem == null || clickedItem.getType() == Material.AIR) return;
+            if (clickedItem.getType() == gui.getConfig().getFillerMaterial()) return;
 
             gui.getConfig().playSound(player, "click");
             gui.setCurrentPage(gui.getCurrentPage() + 1);
@@ -102,7 +103,7 @@ public class NightShopListener implements Listener {
         ph.put("amount", "1");
         ph.put("item", shopItem.getItemStack().getType().name());
         ph.put("price", String.format("%,.2f", price));
-        player.sendMessage(plugin.getLanguageManager().getPrefixedMessage("blackshop-item-bought", ph));
+        player.sendMessage(plugin.getLanguageManager().getPrefixedMessage("nightshop-item-bought", ph));
 
         gui.open();
     }

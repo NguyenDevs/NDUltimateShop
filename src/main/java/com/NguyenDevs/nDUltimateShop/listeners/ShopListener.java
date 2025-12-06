@@ -30,18 +30,17 @@ public class ShopListener implements Listener {
         Player player = (Player) event.getWhoClicked();
         int slot = event.getRawSlot();
         Map<String, Integer> slots = gui.getConfig().getSlotMapping();
+        ItemStack clickedItem = event.getCurrentItem();
 
-        // Xử lý nút Đóng
         if (slots.containsKey("close") && slot == slots.get("close")) {
             gui.getConfig().playSound(player, "click");
             player.closeInventory();
             return;
         }
 
-        // Xử lý nút Trang Trước
         if (slots.containsKey("previous") && slot == slots.get("previous")) {
-            // FIX: Kiểm tra nếu nút không tồn tại (AIR) thì không làm gì cả
-            if (event.getCurrentItem() == null || event.getCurrentItem().getType() == Material.AIR) return;
+            if (clickedItem == null || clickedItem.getType() == Material.AIR) return;
+            if (clickedItem.getType() == gui.getConfig().getFillerMaterial()) return;
 
             if (gui.getCurrentPage() > 0) {
                 gui.getConfig().playSound(player, "click");
@@ -51,10 +50,9 @@ public class ShopListener implements Listener {
             return;
         }
 
-        // Xử lý nút Trang Sau
         if (slots.containsKey("next") && slot == slots.get("next")) {
-            // FIX: Kiểm tra nếu nút không tồn tại (AIR) thì không làm gì cả
-            if (event.getCurrentItem() == null || event.getCurrentItem().getType() == Material.AIR) return;
+            if (clickedItem == null || clickedItem.getType() == Material.AIR) return;
+            if (clickedItem.getType() == gui.getConfig().getFillerMaterial()) return;
 
             gui.getConfig().playSound(player, "click");
             gui.setCurrentPage(gui.getCurrentPage() + 1);

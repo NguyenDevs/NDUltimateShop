@@ -348,7 +348,7 @@ public class AdminCommand implements CommandExecutor, TabCompleter {
                 placeholders.put("item", item.getType().name());
                 placeholders.put("price", String.format("%.2f", price));
                 placeholders.put("stock", String.valueOf(stock));
-                player.sendMessage(plugin.getLanguageManager().getPrefixedMessage("blackshop-item-added", placeholders));
+                player.sendMessage(plugin.getLanguageManager().getPrefixedMessage("nightshop-item-added", placeholders));
                 playSound(player, Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0f, 1.0f);
             } catch (NumberFormatException e) {
                 player.sendMessage(plugin.getLanguageManager().getPrefixedMessage("invalid-number"));
