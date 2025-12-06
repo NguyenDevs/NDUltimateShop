@@ -109,3 +109,9 @@ messages:
   shop-item-bought: "&aĐã mua &e{amount}x {item} &avới giá &e{price}$"
   shop-not-enough-stock: "&cKhông đủ hàng trong kho!"
   not-enough-money: "&cBạn cần thêm &e{amount}$ &cđể mua vật phẩm này!"
+
+sounds:
+  click: UI_BUTTON_CLICK:1:1
+  success: ENTITY_PLAYER_LEVELUP:1:2
+  error: ENTITY_VILLAGER_NO:1:1
+  open: BLOCK_CHEST_OPEN:1:1

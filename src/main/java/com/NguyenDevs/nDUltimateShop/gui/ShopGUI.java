@@ -83,6 +83,18 @@ public class ShopGUI {
         if (meta != null) {
             List<String> lore = meta.hasLore() ? new ArrayList<>(meta.getLore()) : new ArrayList<>();
 
+            // --- ADDED: Tách Lore ---
+            // Thêm dòng phân cách từ config nếu item có lore gốc
+            if (!lore.isEmpty()) {
+                List<String> separator = plugin.getConfig().getStringList("display.lore-separator");
+                if (separator != null && !separator.isEmpty()) {
+                    for (String line : separator) {
+                        lore.add(plugin.getLanguageManager().colorize(line));
+                    }
+                }
+            }
+            // -----------------------
+
             double originalPrice = shopItem.getPrice();
             double finalPrice = plugin.getCouponManager().getDiscountedPrice(player.getUniqueId(), originalPrice);
 

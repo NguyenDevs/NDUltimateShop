@@ -3,6 +3,7 @@ package com.NguyenDevs.nDUltimateShop.commands;
 import com.NguyenDevs.nDUltimateShop.NDUltimateShop;
 import com.NguyenDevs.nDUltimateShop.models.Coupon;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -25,6 +26,9 @@ public class AdminCommand implements CommandExecutor, TabCompleter {
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!sender.hasPermission("ndshop.admin")) {
             sender.sendMessage(plugin.getLanguageManager().getMessage("no-permission"));
+            if (sender instanceof Player player) {
+                player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_BASS, 1.0f, 0.5f);
+            }
             return true;
         }
 

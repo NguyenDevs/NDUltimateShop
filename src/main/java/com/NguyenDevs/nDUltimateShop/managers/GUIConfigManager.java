@@ -1,10 +1,13 @@
 package com.NguyenDevs.nDUltimateShop.managers;
 
 import com.NguyenDevs.nDUltimateShop.NDUltimateShop;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.Sound; // Import Sound
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -135,6 +138,27 @@ public class GUIConfigManager {
                 message = message.replace("{" + entry.getKey() + "}", entry.getValue());
             }
             return message;
+        }
+
+        // --- ADDED: Hàm phát âm thanh từ config ---
+        public void playSound(Player player, String key) {
+            String path = "sounds." + key;
+            if (!config.contains(path)) return;
+
+            String soundStr = config.getString(path);
+            if (soundStr == null || soundStr.isEmpty()) return;
+
+            try {
+                // Format: SOUND_NAME:VOLUME:PITCH
+                String[] parts = soundStr.split(":");
+                Sound sound = Sound.valueOf(parts[0].toUpperCase());
+                float volume = parts.length > 1 ? Float.parseFloat(parts[1]) : 1.0f;
+                float pitch = parts.length > 2 ? Float.parseFloat(parts[2]) : 1.0f;
+
+                player.playSound(player.getLocation(), sound, volume, pitch);
+            } catch (Exception e) {
+                Bukkit.getLogger().warning("Invalid sound config in GUI " + name + ": " + soundStr);
+            }
         }
     }
 }

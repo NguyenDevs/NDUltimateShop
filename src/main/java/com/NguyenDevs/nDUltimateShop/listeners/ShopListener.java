@@ -46,6 +46,7 @@ public class ShopListener implements Listener {
         Map<String, Integer> slots = config.getSlotMapping();
 
         if (slots.containsKey("close") && slot == slots.get("close")) {
+            config.playSound(player, "click"); // ADDED: Sound click
             player.closeInventory();
             activeGUIs.remove(player);
             return;
@@ -53,13 +54,17 @@ public class ShopListener implements Listener {
 
         if (slots.containsKey("previous") && slot == slots.get("previous")) {
             if (gui.getCurrentPage() > 0) {
+                config.playSound(player, "click"); // ADDED: Sound click
                 gui.setCurrentPage(gui.getCurrentPage() - 1);
                 gui.open();
+            } else {
+                config.playSound(player, "error"); // ADDED: Sound lỗi khi hết trang
             }
             return;
         }
 
         if (slots.containsKey("next") && slot == slots.get("next")) {
+            config.playSound(player, "click"); // ADDED: Sound click
             gui.setCurrentPage(gui.getCurrentPage() + 1);
             gui.open();
             return;
@@ -67,16 +72,18 @@ public class ShopListener implements Listener {
 
         ShopItem shopItem = gui.getShopItemAt(slot);
         if (shopItem != null) {
-            purchaseItem(player, shopItem, gui);
+            purchaseItem(player, shopItem, gui, config);
         }
     }
 
-    private void purchaseItem(Player player, ShopItem shopItem, ShopGUI gui) {
+    private void purchaseItem(Player player, ShopItem shopItem, ShopGUI gui, GUIConfigManager.GUIConfig config) {
         if (!shopItem.hasStock()) {
+            config.playSound(player, "error"); // ADDED: Sound lỗi
             player.sendMessage(plugin.getLanguageManager().getPrefixedMessage("shop-not-enough-stock"));
             return;
         }
         if (player.getInventory().firstEmpty() == -1) {
+            config.playSound(player, "error"); // ADDED: Sound lỗi
             player.sendMessage(plugin.getLanguageManager().getPrefix() + " §cTúi đồ của bạn đã đầy!");
             return;
         }
@@ -84,6 +91,7 @@ public class ShopListener implements Listener {
         double finalPrice = plugin.getCouponManager().getDiscountedPrice(player.getUniqueId(), originalPrice);
 
         if (plugin.getEconomy().getBalance(player) < finalPrice) {
+            config.playSound(player, "error"); // ADDED: Sound lỗi
             Map<String, String> placeholders = new HashMap<>();
             placeholders.put("amount", String.format("%.2f", finalPrice));
             player.sendMessage(plugin.getLanguageManager().getPrefixedMessage("not-enough-money", placeholders));
@@ -100,6 +108,8 @@ public class ShopListener implements Listener {
         }
 
         plugin.getShopManager().purchaseItem(shopItem.getId(), 1);
+
+        config.playSound(player, "success"); // ADDED: Sound mua thành công
 
         Map<String, String> placeholders = new HashMap<>();
         placeholders.put("amount", "1");

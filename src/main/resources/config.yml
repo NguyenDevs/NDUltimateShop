@@ -42,6 +42,15 @@ sell:
     OAK_LOG: 2.0
     WHEAT: 1.0
 
+# Shop Display Settings
+display:
+  # Dòng phân cách giữa Lore gốc của item và Lore của Shop
+  # Để trống [] nếu không muốn dùng
+  lore-separator:
+    - ""
+    - "&8&m----------------------"
+    - ""
+
 # Language Settings
 language:
   # Language file to use
