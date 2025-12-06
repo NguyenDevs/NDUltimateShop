@@ -53,21 +53,6 @@ public class SellManager {
             }
         }
 
-        ConfigurationSection defaultSection = plugin.getConfig().getConfigurationSection("sell.default-prices");
-        if (defaultSection != null) {
-            for (String key : defaultSection.getKeys(false)) {
-                try {
-                    Material material = Material.valueOf(key);
-                    double price = defaultSection.getDouble(key);
-                    if (!materialPrices.containsKey(material)) {
-                        materialPrices.put(material, price);
-                    }
-                } catch (IllegalArgumentException e) {
-                    plugin.getLogger().warning("Material không hợp lệ trong default-prices: " + key);
-                }
-            }
-        }
-
         plugin.getLogger().info("Đã tải " + itemPrices.size() + " giá vật phẩm custom và " + materialPrices.size() + " giá material!");
     }
 

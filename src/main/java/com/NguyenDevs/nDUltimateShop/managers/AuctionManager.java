@@ -10,6 +10,7 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import org.bukkit.permissions.PermissionAttachmentInfo;
 
 public class AuctionManager {
 
@@ -20,6 +21,29 @@ public class AuctionManager {
     public AuctionManager(NDUltimateShop plugin) {
         this.plugin = plugin;
         this.activeListings = new HashMap<>();
+    }
+
+    public int getPlayerListingLimit(Player player) {
+        String prefix = "ndshop.auction.limit.";
+        int maxLimit = -1;
+
+        for (PermissionAttachmentInfo pai : player.getEffectivePermissions()) {
+            String perm = pai.getPermission();
+            if (perm.startsWith(prefix)) {
+                try {
+                    int amount = Integer.parseInt(perm.substring(prefix.length()));
+                    if (amount > maxLimit) {
+                        maxLimit = amount;
+                    }
+                } catch (NumberFormatException ignored) {
+                }
+            }
+        }
+        if (maxLimit != -1) {
+            return maxLimit;
+        }
+
+        return plugin.getConfig().getInt("auction.max-listings-per-player", 10);
     }
 
     public void loadAuctions() {
@@ -63,7 +87,7 @@ public class AuctionManager {
     }
 
     public String createListing(Player seller, ItemStack item, double price) {
-        int maxListings = plugin.getConfig().getInt("auction.max-listings-per-player", 10);
+        int maxListings = getPlayerListingLimit(seller);
         long playerListings = activeListings.values().stream()
                 .filter(l -> l.getSellerUUID().equals(seller.getUniqueId()))
                 .count();

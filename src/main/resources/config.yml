@@ -10,18 +10,6 @@ nightshop:
   announce-open: true
   announce-close: true
 
-sell:
-  default-prices:
-    DIAMOND: 100.0
-    EMERALD: 50.0
-    GOLD_INGOT: 25.0
-    IRON_INGOT: 10.0
-    COAL: 5.0
-    COBBLESTONE: 0.5
-    DIRT: 0.1
-    STONE: 0.5
-    OAK_LOG: 2.0
-    WHEAT: 1.0
 sounds:
   enabled: true
 
