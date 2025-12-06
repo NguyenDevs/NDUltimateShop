@@ -1,7 +1,6 @@
 package com.NguyenDevs.nDUltimateShop.commands;
 
 import com.NguyenDevs.nDUltimateShop.NDUltimateShop;
-import com.NguyenDevs.nDUltimateShop.gui.ShopGUI;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -33,7 +32,7 @@ public class ShopCommand implements CommandExecutor, TabCompleter {
             return true;
         }
 
-        new ShopGUI(plugin, player).open();
+        plugin.getListenerManager().openShopGUI(player);
         return true;
     }
 

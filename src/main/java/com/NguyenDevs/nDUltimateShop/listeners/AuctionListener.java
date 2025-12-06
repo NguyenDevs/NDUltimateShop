@@ -2,6 +2,7 @@ package com.NguyenDevs.nDUltimateShop.listeners;
 
 import com.NguyenDevs.nDUltimateShop.NDUltimateShop;
 import com.NguyenDevs.nDUltimateShop.gui.AuctionGUI;
+import com.NguyenDevs.nDUltimateShop.managers.GUIConfigManager;
 import com.NguyenDevs.nDUltimateShop.models.AuctionListing;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -17,6 +18,7 @@ import java.util.Map;
 public class AuctionListener implements Listener {
 
     private final NDUltimateShop plugin;
+    private final Map<Player, AuctionGUI> activeGUIs = new HashMap<>();
 
     public AuctionListener(NDUltimateShop plugin) {
         this.plugin = plugin;
@@ -26,40 +28,58 @@ public class AuctionListener implements Listener {
     public void onInventoryClick(InventoryClickEvent event) {
         if (!(event.getWhoClicked() instanceof Player)) return;
 
-        String title = event.getView().getTitle();
-        if (!title.contains("NHÀ ĐẤU GIÁ")) return;
+        Player player = (Player) event.getWhoClicked();
+        GUIConfigManager.GUIConfig config = plugin.getConfigManager().getGUIConfig("auction");
+
+        Map<String, String> titlePlaceholders = new HashMap<>();
+        String title = plugin.getPlaceholderManager().replacePlaceholders(player, config.getTitle(), titlePlaceholders);
+        title = plugin.getLanguageManager().colorize(title);
+
+        if (!event.getView().getTitle().contains(plugin.getLanguageManager().stripColor(title).split(" - ")[0])) return;
 
         event.setCancelled(true);
 
-        Player player = (Player) event.getWhoClicked();
         ItemStack clickedItem = event.getCurrentItem();
+        int slot = event.getRawSlot();
 
-        if (clickedItem == null || !clickedItem.hasItemMeta()) return;
+        if (clickedItem == null || slot >= event.getInventory().getSize()) return;
 
-        // Handle navigation buttons
-        String displayName = clickedItem.getItemMeta().getDisplayName();
-        if (displayName.equals(plugin.getLanguageManager().getMessage("gui-close"))) {
+        AuctionGUI gui = activeGUIs.get(player);
+        if (gui == null) return;
+
+        Map<String, Integer> slots = config.getSlotMapping();
+
+        if (slots.containsKey("close") && slot == slots.get("close")) {
             player.closeInventory();
+            activeGUIs.remove(player);
             return;
         }
 
-        // Find matching listing
-        for (AuctionListing listing : plugin.getAuctionManager().getAllListings()) {
-            if (isSameItem(clickedItem, listing.getItemStack())) {
-                if (event.getClick() == ClickType.SHIFT_LEFT &&
-                        listing.getSellerUUID().equals(player.getUniqueId())) {
-                    // Cancel listing
-                    cancelListing(player, listing);
-                } else if (!listing.getSellerUUID().equals(player.getUniqueId())) {
-                    // Buy item
-                    purchaseAuction(player, listing);
-                }
-                return;
+        if (slots.containsKey("previous") && slot == slots.get("previous")) {
+            if (gui.getCurrentPage() > 0) {
+                gui.setCurrentPage(gui.getCurrentPage() - 1);
+                gui.open();
+            }
+            return;
+        }
+
+        if (slots.containsKey("next") && slot == slots.get("next")) {
+            gui.setCurrentPage(gui.getCurrentPage() + 1);
+            gui.open();
+            return;
+        }
+
+        AuctionListing listing = gui.getAuctionListingAt(slot);
+        if (listing != null) {
+            if (event.getClick() == ClickType.SHIFT_LEFT && listing.getSellerUUID().equals(player.getUniqueId())) {
+                cancelListing(player, listing, gui);
+            } else if (!listing.getSellerUUID().equals(player.getUniqueId())) {
+                purchaseAuction(player, listing, gui);
             }
         }
     }
 
-    private void purchaseAuction(Player buyer, AuctionListing listing) {
+    private void purchaseAuction(Player buyer, AuctionListing listing, AuctionGUI gui) {
         double originalPrice = listing.getPrice();
         double finalPrice = plugin.getCouponManager().getDiscountedPrice(buyer.getUniqueId(), originalPrice);
 
@@ -70,11 +90,15 @@ public class AuctionListener implements Listener {
             return;
         }
 
-        // Process purchase
         plugin.getEconomy().withdrawPlayer(buyer, finalPrice);
-        buyer.getInventory().addItem(listing.getItemStack());
 
-        // Pay seller
+        Map<Integer, ItemStack> remaining = buyer.getInventory().addItem(listing.getItemStack());
+        if (!remaining.isEmpty()) {
+            for (ItemStack item : remaining.values()) {
+                buyer.getWorld().dropItem(buyer.getLocation(), item);
+            }
+        }
+
         Player seller = Bukkit.getPlayer(listing.getSellerUUID());
         plugin.getEconomy().depositPlayer(Bukkit.getOfflinePlayer(listing.getSellerUUID()), listing.getPrice());
 
@@ -85,7 +109,6 @@ public class AuctionListener implements Listener {
             seller.sendMessage(plugin.getLanguageManager().getPrefixedMessage("auction-seller-received", sellerPlaceholders));
         }
 
-        // Remove listing
         plugin.getAuctionManager().removeListing(listing.getId());
 
         Map<String, String> placeholders = new HashMap<>();
@@ -94,23 +117,28 @@ public class AuctionListener implements Listener {
         placeholders.put("price", String.format("%.2f", finalPrice));
         buyer.sendMessage(plugin.getLanguageManager().getPrefixedMessage("auction-item-bought", placeholders));
 
-        // Reopen GUI
-        new AuctionGUI(plugin, buyer).open();
+        gui.open();
     }
 
-    private void cancelListing(Player player, AuctionListing listing) {
+    private void cancelListing(Player player, AuctionListing listing, AuctionGUI gui) {
         plugin.getAuctionManager().removeListing(listing.getId());
-        player.getInventory().addItem(listing.getItemStack());
-        player.sendMessage(plugin.getLanguageManager().getPrefixedMessage("auction-item-cancelled"));
 
-        new AuctionGUI(plugin, player).open();
+        Map<Integer, ItemStack> remaining = player.getInventory().addItem(listing.getItemStack());
+        if (!remaining.isEmpty()) {
+            for (ItemStack item : remaining.values()) {
+                player.getWorld().dropItem(player.getLocation(), item);
+            }
+        }
+
+        player.sendMessage(plugin.getLanguageManager().getPrefixedMessage("auction-item-cancelled"));
+        gui.open();
     }
 
-    private boolean isSameItem(ItemStack item1, ItemStack item2) {
-        if (item1.getType() != item2.getType()) return false;
-        if (!item1.hasItemMeta() && !item2.hasItemMeta()) return true;
-        if (!item1.hasItemMeta() || !item2.hasItemMeta()) return false;
+    public void registerGUI(Player player, AuctionGUI gui) {
+        activeGUIs.put(player, gui);
+    }
 
-        return item1.getItemMeta().getDisplayName().equals(item2.getItemMeta().getDisplayName());
+    public void unregisterGUI(Player player) {
+        activeGUIs.remove(player);
     }
 }

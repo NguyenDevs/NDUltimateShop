@@ -25,7 +25,7 @@ public class BlackShopManager {
 
     public void loadBlackShop() {
         blackShopItems.clear();
-        FileConfiguration config = plugin.getConfigManager().getConfig("blackshop.yml");
+        FileConfiguration config = plugin.getConfigManager().getConfig("gui/blackshop.yml");
 
         ConfigurationSection itemsSection = config.getConfigurationSection("items");
         if (itemsSection != null) {
@@ -44,7 +44,7 @@ public class BlackShopManager {
     }
 
     public void saveBlackShop() {
-        FileConfiguration config = plugin.getConfigManager().getConfig("blackshop.yml");
+        FileConfiguration config = plugin.getConfigManager().getConfig("gui/blackshop.yml");
         config.set("items", null);
 
         for (Map.Entry<String, ShopItem> entry : blackShopItems.entrySet()) {
@@ -56,7 +56,7 @@ public class BlackShopManager {
             config.set(key + ".stock", item.getStock());
         }
 
-        plugin.getConfigManager().saveConfig("blackshop.yml");
+        plugin.getConfigManager().saveConfig("gui/blackshop.yml");
     }
 
     public void startScheduler() {

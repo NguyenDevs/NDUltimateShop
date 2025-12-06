@@ -14,14 +14,14 @@ repositories {
     }
     maven { url 'https://jitpack.io' }
     maven {
-        url = 'https://repo.extendedclip.com/content/repositories/placeholderapi/'
+        url = 'https://repo.extendedclip.com/releases/'
     }
 }
 
 dependencies {
     compileOnly("org.spigotmc:spigot-api:1.20.1-R0.1-SNAPSHOT")
     compileOnly "com.github.MilkBowl:VaultAPI:1.7"
-    compileOnly 'me.clip:placeholderapi:2.10.9'
+    compileOnly 'me.clip:placeholderapi:2.11.7'
 }
 
 tasks {
@@ -56,6 +56,7 @@ processResources {
     inputs.properties props
     filteringCharset 'UTF-8'
     filesMatching('plugin.yml') {
-        expand props
+        expand(project.properties)
     }
+    duplicatesStrategy = DuplicatesStrategy.INCLUDE
 }

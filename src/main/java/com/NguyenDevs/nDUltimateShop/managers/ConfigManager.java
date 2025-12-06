@@ -26,10 +26,10 @@ public class ConfigManager {
     public void loadAllConfigs() {
         plugin.saveDefaultConfig();
 
-        createConfig("shops.yml");
-        createConfig("auction.yml");
+        createConfig("gui/shop.yml");
+        createConfig("gui/auction.yml");
         createConfig("itemsell.yml");
-        createConfig("blackshop.yml");
+        createConfig("gui/blackshop.yml");
         createConfig("coupons.yml");
         createConfig("language.yml");
 
@@ -38,10 +38,10 @@ public class ConfigManager {
             guiFolder.mkdirs();
         }
 
-        createGUIConfig("shop.yml");
-        createGUIConfig("auction.yml");
-        createGUIConfig("sell.yml");
-        createGUIConfig("blackshop.yml");
+        createGUIConfig("gui/shop.yml");
+        createGUIConfig("gui/auction.yml");
+        createGUIConfig("gui/sell.yml");
+        createGUIConfig("gui/blackshop.yml");
 
         loadGUIConfigs();
 
@@ -58,8 +58,14 @@ public class ConfigManager {
     }
 
     private void createGUIConfig(String fileName) {
-        File file = new File(plugin.getDataFolder(), "gui/" + fileName);
+        File guiFolder = new File(plugin.getDataFolder(), "gui");
+        if (!guiFolder.exists()) {
+            guiFolder.mkdirs();
+        }
+
+        File file = new File(guiFolder, fileName);
         if (!file.exists()) {
+            // Sửa lại đây - chỉ cần "gui/" + fileName
             plugin.saveResource("gui/" + fileName, false);
         }
         String key = "gui/" + fileName;

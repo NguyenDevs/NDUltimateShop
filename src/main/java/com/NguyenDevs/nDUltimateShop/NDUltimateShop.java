@@ -1,9 +1,10 @@
 package com.NguyenDevs.nDUltimateShop;
 
 import com.NguyenDevs.nDUltimateShop.commands.*;
-import com.NguyenDevs.nDUltimateShop.listeners.*;
 import com.NguyenDevs.nDUltimateShop.managers.*;
 import net.milkbowl.vault.economy.Economy;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -18,6 +19,7 @@ public class NDUltimateShop extends JavaPlugin {
     private BlackShopManager blackShopManager;
     private CouponManager couponManager;
     private PlaceholderManager placeholderManager;
+    private ListenerManager listenerManager;
 
     @Override
     public void onEnable() {
@@ -52,10 +54,12 @@ public class NDUltimateShop extends JavaPlugin {
         couponManager = new CouponManager(this);
         couponManager.loadCoupons();
 
-        registerCommands();
-        registerListeners();
+        listenerManager = new ListenerManager(this);
+        listenerManager.registerListeners();
 
-        getLogger().info("NDUltimateShop đã được kích hoạt!");
+        registerCommands();
+        printLogo();
+        Bukkit.getConsoleSender().sendMessage(ChatColor.translateAlternateColorCodes('&',"&7[&dUltimate&5Shop&7] UltimateShop plugin enabled successfully!"));
     }
 
     @Override
@@ -77,7 +81,7 @@ public class NDUltimateShop extends JavaPlugin {
             sellManager.saveSellPrices();
         }
 
-        getLogger().info("NDUltimateShop đã bị vô hiệu hóa!");
+        Bukkit.getConsoleSender().sendMessage(ChatColor.translateAlternateColorCodes('&',"&7[&dUltimate&5Shop&7] UltimateShop plugin has been disabled!"));
     }
 
     private void registerCommands() {
@@ -104,13 +108,6 @@ public class NDUltimateShop extends JavaPlugin {
         CouponCommand couponCommand = new CouponCommand(this);
         getCommand("coupon").setExecutor(couponCommand);
         getCommand("coupon").setTabCompleter(couponCommand);
-    }
-
-    private void registerListeners() {
-        getServer().getPluginManager().registerEvents(new ShopListener(this), this);
-        getServer().getPluginManager().registerEvents(new AuctionListener(this), this);
-        getServer().getPluginManager().registerEvents(new SellListener(this), this);
-        getServer().getPluginManager().registerEvents(new BlackShopListener(this), this);
     }
 
     private boolean setupEconomy() {
@@ -159,5 +156,31 @@ public class NDUltimateShop extends JavaPlugin {
 
     public PlaceholderManager getPlaceholderManager() {
         return placeholderManager;
+    }
+
+    public ListenerManager getListenerManager() {
+        return listenerManager;
+    }
+
+    public void printLogo() {
+        Bukkit.getConsoleSender().sendMessage(ChatColor.translateAlternateColorCodes('&', ""));
+        Bukkit.getConsoleSender().sendMessage(ChatColor.translateAlternateColorCodes('&', "&d   ██╗   ██╗██╗  ████████╗██╗███╗   ███╗ █████╗ ████████╗███████╗"));
+        Bukkit.getConsoleSender().sendMessage(ChatColor.translateAlternateColorCodes('&', "&d   ██║   ██║██║  ╚══██╔══╝██║████╗ ████║██╔══██╗╚══██╔══╝██╔════╝"));
+        Bukkit.getConsoleSender().sendMessage(ChatColor.translateAlternateColorCodes('&', "&d   ██║   ██║██║     ██║   ██║██╔████╔██║███████║   ██║   █████╗  "));
+        Bukkit.getConsoleSender().sendMessage(ChatColor.translateAlternateColorCodes('&', "&d   ██║   ██║██║     ██║   ██║██║╚██╔╝██║██╔══██║   ██║   ██╔══╝  "));
+        Bukkit.getConsoleSender().sendMessage(ChatColor.translateAlternateColorCodes('&', "&d   ╚██████╔╝███████╗██║   ██║██║ ╚═╝ ██║██║  ██║   ██║   ███████╗"));
+        Bukkit.getConsoleSender().sendMessage(ChatColor.translateAlternateColorCodes('&', "&d    ╚═════╝ ╚══════╝╚═╝   ╚═╝╚═╝     ╚═╝╚═╝  ╚═╝   ╚═╝   ╚══════╝"));
+        Bukkit.getConsoleSender().sendMessage(ChatColor.translateAlternateColorCodes('&', ""));
+        Bukkit.getConsoleSender().sendMessage(ChatColor.translateAlternateColorCodes('&', "&5   ███████╗██╗  ██╗ ██████╗ ██████╗ "));
+        Bukkit.getConsoleSender().sendMessage(ChatColor.translateAlternateColorCodes('&', "&5   ██╔════╝██║  ██║██╔═══██╗██╔══██╗"));
+        Bukkit.getConsoleSender().sendMessage(ChatColor.translateAlternateColorCodes('&', "&5   ███████╗███████║██║   ██║██████╔╝"));
+        Bukkit.getConsoleSender().sendMessage(ChatColor.translateAlternateColorCodes('&', "&5   ╚════██║██╔══██║██║   ██║██╔═══╝ "));
+        Bukkit.getConsoleSender().sendMessage(ChatColor.translateAlternateColorCodes('&', "&5   ███████║██║  ██║╚██████╔╝██║     "));
+        Bukkit.getConsoleSender().sendMessage(ChatColor.translateAlternateColorCodes('&', "&5   ╚══════╝╚═╝  ╚═╝ ╚═════╝ ╚═╝     "));
+        Bukkit.getConsoleSender().sendMessage(ChatColor.translateAlternateColorCodes('&', ""));
+        Bukkit.getConsoleSender().sendMessage(ChatColor.translateAlternateColorCodes('&', "&d         Ultimate Shop"));
+        Bukkit.getConsoleSender().sendMessage(ChatColor.translateAlternateColorCodes('&', "&5         Version " + getDescription().getVersion()));
+        Bukkit.getConsoleSender().sendMessage(ChatColor.translateAlternateColorCodes('&', "&b         Development by NguyenDevs"));
+        Bukkit.getConsoleSender().sendMessage(ChatColor.translateAlternateColorCodes('&', ""));
     }
 }

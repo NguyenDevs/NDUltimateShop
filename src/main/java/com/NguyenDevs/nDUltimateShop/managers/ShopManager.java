@@ -20,7 +20,7 @@ public class ShopManager {
 
     public void loadShops() {
         shopItems.clear();
-        FileConfiguration config = plugin.getConfigManager().getConfig("shops.yml");
+        FileConfiguration config = plugin.getConfigManager().getConfig("gui/shop.yml");
 
         ConfigurationSection itemsSection = config.getConfigurationSection("items");
         if (itemsSection != null) {
@@ -39,7 +39,7 @@ public class ShopManager {
     }
 
     public void saveShops() {
-        FileConfiguration config = plugin.getConfigManager().getConfig("shops.yml");
+        FileConfiguration config = plugin.getConfigManager().getConfig("gui/shop.yml");
         config.set("items", null);
 
         for (Map.Entry<String, ShopItem> entry : shopItems.entrySet()) {
@@ -51,7 +51,7 @@ public class ShopManager {
             config.set(key + ".stock", item.getStock());
         }
 
-        plugin.getConfigManager().saveConfig("shops.yml");
+        plugin.getConfigManager().saveConfig("gui/shop.yml");
     }
 
     public void addShopItem(String id, ItemStack item, double price, int stock) {
