@@ -5,6 +5,7 @@ import com.NguyenDevs.nDUltimateShop.gui.AuctionGUI;
 import com.NguyenDevs.nDUltimateShop.managers.GUIConfigManager;
 import com.NguyenDevs.nDUltimateShop.models.AuctionListing;
 import org.bukkit.Bukkit;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -53,6 +54,7 @@ public class AuctionListener implements Listener {
         Map<String, Integer> slots = config.getSlotMapping();
 
         if (slots.containsKey("close") && slot == slots.get("close")) {
+            player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 1.0f, 1.0f);
             player.closeInventory();
             activeGUIs.remove(player);
             return;
@@ -60,13 +62,17 @@ public class AuctionListener implements Listener {
 
         if (slots.containsKey("previous") && slot == slots.get("previous")) {
             if (gui.getCurrentPage() > 0) {
+                player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 1.0f, 1.0f);
                 gui.setCurrentPage(gui.getCurrentPage() - 1);
                 gui.open();
+            } else {
+                player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_BASS, 1.0f, 0.5f);
             }
             return;
         }
 
         if (slots.containsKey("next") && slot == slots.get("next")) {
+            player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 1.0f, 1.0f);
             gui.setCurrentPage(gui.getCurrentPage() + 1);
             gui.open();
             return;
@@ -87,6 +93,7 @@ public class AuctionListener implements Listener {
         double finalPrice = plugin.getCouponManager().getDiscountedPrice(buyer.getUniqueId(), originalPrice);
 
         if (plugin.getEconomy().getBalance(buyer) < finalPrice) {
+            buyer.playSound(buyer.getLocation(), Sound.BLOCK_NOTE_BLOCK_BASS, 1.0f, 0.5f);
             Map<String, String> placeholders = new HashMap<>();
             placeholders.put("amount", String.format("%.2f", finalPrice));
             buyer.sendMessage(plugin.getLanguageManager().getPrefixedMessage("not-enough-money", placeholders));
@@ -110,9 +117,11 @@ public class AuctionListener implements Listener {
             sellerPlaceholders.put("amount", String.format("%.2f", listing.getPrice()));
             sellerPlaceholders.put("item", listing.getItemStack().getType().name());
             seller.sendMessage(plugin.getLanguageManager().getPrefixedMessage("auction-seller-received", sellerPlaceholders));
+            seller.playSound(seller.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0f, 1.0f);
         }
 
         plugin.getAuctionManager().removeListing(listing.getId());
+        buyer.playSound(buyer.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1.0f, 2.0f);
 
         Map<String, String> placeholders = new HashMap<>();
         placeholders.put("item", listing.getItemStack().getType().name());
@@ -134,6 +143,7 @@ public class AuctionListener implements Listener {
         }
 
         player.sendMessage(plugin.getLanguageManager().getPrefixedMessage("auction-item-cancelled"));
+        player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 1.0f, 1.0f);
         gui.open();
     }
 

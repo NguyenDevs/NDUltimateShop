@@ -67,44 +67,47 @@ filler-material: YELLOW_STAINED_GLASS_PANE
 decorative-items:
   info:
     material: GOLD_INGOT
-    name: "&e&lTHÔNG TIN ĐẤU GIÁ"
+    name: "&e&lTHỐNG KÊ ĐẤU GIÁ"
     lore:
-      - "&7Tổng đấu giá: &e{total_listings}"
-      - "&7Đấu giá của bạn: &a{player_listings}"
-      - "&7Phí hoa hồng: &c{commission}%"
+      - "&7Tổng số tin đăng: &e{total_listings}"
+      - "&7Tin đăng của bạn: &a{player_listings}"
+      - "&7Phí sàn: &c{commission}%"
       - ""
       - "&7Số dư: &a${balance}"
-      - "&7Mã giảm giá: &d{coupon}"
     enchanted: true
-  
+
   my-listings:
     material: CHEST
-    name: "&aĐấu Giá Của Tôi"
+    name: "&6Vật phẩm đang bán"
     lore:
-      - "&7Xem các vật phẩm bạn đang bán"
-      - "&eShift + Click &7để hủy đấu giá"
-  
+      - "&7Danh sách vật phẩm bạn đang treo"
+      - "&7Số lượng: &e{count}"
+      - ""
+      - "&eShift + Chuột trái &7vào vật phẩm để gỡ xuống"
+
   previous-button:
     material: ARROW
     name: "&e◀ Trang Trước"
-  
+
   next-button:
     material: ARROW
     name: "&eTrang Tiếp ▶"
-  
+
   close-button:
     material: BARRIER
     name: "&c✖ Đóng"
 
 messages:
   lore-seller: "&7Người bán: &b{seller}"
-  lore-discount: "&d⚡ Giảm giá: &c-{discount}%"
+  lore-discount: "&d⚡ Ưu đãi: &c-{discount}%"
   lore-original-price: "&7&mGiá gốc: &r&7{original_price}$"
   lore-price: "&aGiá: &e{price}$"
   lore-time-left: "&7Còn lại: &e{time}"
-  lore-click-buy: "&e▶ Click để mua!"
-  lore-click-cancel: "&c▶ Shift + Click để hủy!"
-  
-  auction-item-bought: "&aĐã mua &e{item} &atừ &b{seller} &avới giá &e{price}$"
-  auction-item-cancelled: "&eĐã hủy đấu giá và hoàn trả vật phẩm!"
-  auction-seller-received: "&aVật phẩm &e{item} &ađã được bán! Bạn nhận &e{amount}$"
+  lore-click-buy: "&e▶ Nhấn để Mua ngay!"
+  lore-click-cancel: "&c▶ Shift + Chuột trái để Gỡ!"
+
+sounds:
+  click: UI_BUTTON_CLICK:1:1
+  success: ENTITY_EXPERIENCE_ORB_PICKUP:1:1
+  error: BLOCK_NOTE_BLOCK_BASS:1:0.5
+  open: BLOCK_CHEST_OPEN:1:1

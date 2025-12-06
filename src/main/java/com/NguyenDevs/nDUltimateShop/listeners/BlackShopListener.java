@@ -4,6 +4,7 @@ import com.NguyenDevs.nDUltimateShop.NDUltimateShop;
 import com.NguyenDevs.nDUltimateShop.gui.BlackShopGUI;
 import com.NguyenDevs.nDUltimateShop.managers.GUIConfigManager;
 import com.NguyenDevs.nDUltimateShop.models.ShopItem;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -48,6 +49,7 @@ public class BlackShopListener implements Listener {
         Map<String, Integer> slots = config.getSlotMapping();
 
         if (slots.containsKey("close") && slot == slots.get("close")) {
+            player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 1.0f, 1.0f);
             player.closeInventory();
             activeGUIs.remove(player);
             return;
@@ -55,13 +57,17 @@ public class BlackShopListener implements Listener {
 
         if (slots.containsKey("previous") && slot == slots.get("previous")) {
             if (gui.getCurrentPage() > 0) {
+                player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 1.0f, 1.0f);
                 gui.setCurrentPage(gui.getCurrentPage() - 1);
                 gui.open();
+            } else {
+                player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_BASS, 1.0f, 0.5f);
             }
             return;
         }
 
         if (slots.containsKey("next") && slot == slots.get("next")) {
+            player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 1.0f, 1.0f);
             gui.setCurrentPage(gui.getCurrentPage() + 1);
             gui.open();
             return;
@@ -75,11 +81,13 @@ public class BlackShopListener implements Listener {
 
     private void purchaseItem(Player player, ShopItem shopItem, BlackShopGUI gui) {
         if (!shopItem.hasStock()) {
+            player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_BASS, 1.0f, 0.5f);
             player.sendMessage(plugin.getLanguageManager().getPrefixedMessage("shop-not-enough-stock"));
             return;
         }
 
         if (player.getInventory().firstEmpty() == -1) {
+            player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_BASS, 1.0f, 0.5f);
             player.sendMessage(plugin.getLanguageManager().getPrefix() + " §cTúi đồ của bạn đã đầy!");
             return;
         }
@@ -87,6 +95,7 @@ public class BlackShopListener implements Listener {
         double price = shopItem.getPrice();
 
         if (plugin.getEconomy().getBalance(player) < price) {
+            player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_BASS, 1.0f, 0.5f);
             Map<String, String> placeholders = new HashMap<>();
             placeholders.put("amount", String.format("%.2f", price));
             player.sendMessage(plugin.getLanguageManager().getPrefixedMessage("not-enough-money", placeholders));
@@ -103,6 +112,8 @@ public class BlackShopListener implements Listener {
         }
 
         plugin.getBlackShopManager().purchaseItem(shopItem.getId(), 1);
+
+        player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1.0f, 2.0f);
 
         Map<String, String> placeholders = new HashMap<>();
         placeholders.put("amount", "1");

@@ -1,8 +1,8 @@
 # Sell GUI Configuration
-title: "&e&lBÁN VẬT PHẨM"
+title: "&9&lTHU MUA VẬT PHẨM"
 rows: 6
 
-# Slots where players can place items to sell
+# Các slot người chơi có thể đặt đồ vào
 item-slots:
   - 10
   - 11
@@ -63,43 +63,49 @@ filler-slots:
   - 52
   - 53
 
-filler-material: GRAY_STAINED_GLASS_PANE
+filler-material: BLUE_STAINED_GLASS_PANE
 
 decorative-items:
   info:
     material: BOOK
-    name: "&e&lHƯỚNG DẪN"
+    name: "&9&lHƯỚNG DẪN BÁN"
     lore:
-      - "&7Kéo thả vật phẩm vào đây"
-      - "&7Nhấn nút xác nhận để bán"
+      - "&7Kéo thả vật phẩm vào ô trống"
+      - "&7Hệ thống sẽ tự động định giá"
+      - "&7Nhấn &aXác Nhận &7để nhận tiền"
       - ""
-      - "&eGiá bán sẽ được tính tự động!"
+      - "&eChỉ bán được các vật phẩm có trong danh sách thu mua!"
     enchanted: false
 
   total-value:
-    material: GOLD_INGOT
-    name: "&6&lTỔNG GIÁ TRỊ"
+    material: EMERALD
+    name: "&a&lTỔNG GIÁ TRỊ"
     lore:
-      - "&aTổng: &e{total}$"
+      - "&7Giá trị đơn hàng: &e{total}$"
       - ""
       - "&7Số dư hiện tại: &a${balance}"
     enchanted: true
 
   confirm:
-    material: EMERALD
-    name: "&a✔ Xác Nhận Bán"
+    material: LIME_DYE
+    name: "&a✔ XÁC NHẬN BÁN"
     lore:
       - "&7Nhấn để bán tất cả vật phẩm"
-      - "&aGiá trị: &e{total}$"
+      - "&aTổng thu về: &e{total}$"
 
   cancel:
-    material: REDSTONE
-    name: "&c✖ Hủy"
+    material: RED_DYE
+    name: "&c✖ HỦY GIAO DỊCH"
     lore:
-      - "&7Nhấn để hủy và lấy lại vật phẩm"
+      - "&7Nhấn để lấy lại toàn bộ vật phẩm"
 
 messages:
-  sell-success: "&aĐã bán thành công! Nhận được &e{amount}$"
-  sell-cancelled: "&eĐã hủy và hoàn trả vật phẩm!"
-  sell-no-items: "&cKhông có vật phẩm để bán!"
-  sell-gui-opened: "&aĐã mở giao diện bán vật phẩm!"
+  sell-success: "&aGiao dịch thành công! +{amount}$"
+  sell-cancelled: "&eĐã hủy giao dịch."
+  sell-no-items: "&cChưa có vật phẩm nào để bán!"
+
+sounds:
+  click: UI_BUTTON_CLICK:1:1
+  success: ENTITY_PLAYER_LEVELUP:1:2
+  error: BLOCK_NOTE_BLOCK_BASS:1:0.5
+  open: BLOCK_CHEST_OPEN:1:1

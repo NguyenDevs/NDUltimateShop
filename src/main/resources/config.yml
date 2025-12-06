@@ -1,35 +1,35 @@
 # NDUltimateShop Main Configuration
 # Version: 2.0.0
 
-# Auction House Settings
+# Cấu hình Nhà Đấu Giá (Auction House)
 auction:
-  # Maximum listings per player
+  # Số lượng vật phẩm tối đa mỗi người chơi được phép treo bán
   max-listings-per-player: 10
 
-  # Listing duration in seconds (86400 = 24 hours)
+  # Thời gian tồn tại của vật phẩm trên sàn (giây) (86400 = 24 giờ)
   duration: 86400
 
-  # Commission fee percentage (5 = 5%)
+  # Phí hoa hồng (%) (5 = 5%)
   commission-fee: 5.0
 
-# Black Shop Settings
+# Cấu hình Chợ Đêm (Black Shop)
 blackshop:
-  # Timezone for open/close times
+  # Múi giờ để tính thời gian mở/đóng
   timezone: "Asia/Ho_Chi_Minh"
 
-  # Opening time (24-hour format)
+  # Giờ mở cửa (định dạng 24h)
   open-time: 20
 
-  # Closing time (24-hour format)
+  # Giờ đóng cửa (định dạng 24h)
   close-time: 22
 
-  # Announce when black shop opens/closes
+  # Thông báo khi Chợ Đêm mở/đóng
   announce-open: true
   announce-close: true
 
-# Sell System Settings
+# Cấu hình Hệ thống Bán (Sell)
 sell:
-  # Default prices for materials (if not in itemsell.yml)
+  # Giá mặc định cho các material (nếu không có trong itemsell.yml)
   default-prices:
     DIAMOND: 100.0
     EMERALD: 50.0
@@ -42,7 +42,7 @@ sell:
     OAK_LOG: 2.0
     WHEAT: 1.0
 
-# Shop Display Settings
+# Cấu hình Hiển thị (Display)
 display:
   # Dòng phân cách giữa Lore gốc của item và Lore của Shop
   # Để trống [] nếu không muốn dùng
@@ -51,15 +51,14 @@ display:
     - "&8&m----------------------"
     - ""
 
-# Language Settings
+# Cấu hình Ngôn ngữ
 language:
-  # Language file to use
+  # File ngôn ngữ sử dụng
   file: "language.yml"
 
-# PlaceholderAPI Integration
+# Tích hợp PlaceholderAPI
 placeholderapi:
-  # Enable PlaceholderAPI support
   enabled: true
 
-# Debug Mode
+# Chế độ Debug (Dành cho dev)
 debug: false

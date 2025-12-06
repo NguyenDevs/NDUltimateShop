@@ -1,8 +1,8 @@
 # Shop GUI Configuration
-title: "&6&lCỬA HÀNG - Trang {page}"
+title: "&2&lCỬA HÀNG - Trang {page}"
 rows: 6
 
-# Item display slots (where shop items will be shown)
+# Các ô hiển thị vật phẩm
 item-slots:
   - 10
   - 11
@@ -33,14 +33,14 @@ item-slots:
   - 42
   - 43
 
-# Special slots mapping
+# Mapping các ô chức năng
 slots:
   info: 4
   previous: 48
   next: 50
   close: 49
 
-# Filler slots (decorative glass panes)
+# Các ô trang trí (kính màu)
 filler-slots:
   - 0
   - 1
@@ -65,53 +65,50 @@ filler-slots:
   - 52
   - 53
 
-filler-material: GRAY_STAINED_GLASS_PANE
+filler-material: LIME_STAINED_GLASS_PANE
 
-# Decorative items
+# Vật phẩm trang trí & nút bấm
 decorative-items:
   info:
     material: BOOK
-    name: "&e&lTHÔNG TIN CỬA HÀNG"
+    name: "&a&lTHÔNG TIN"
     lore:
-      - "&7Số dư: &a${balance}"
+      - "&7Số dư của bạn: &a${balance}"
       - "&7Mã giảm giá: &d{coupon}"
-      - "&7Giảm giá: &c{coupon_discount}%"
+      - "&7Mức giảm: &c{coupon_discount}%"
       - ""
       - "&eNhấn vào vật phẩm để mua!"
     enchanted: true
-  
+
   previous-button:
     material: ARROW
-    name: "&e◀ Trang Trước"
+    name: "&a◀ Trang Trước"
     lore:
-      - "&7Nhấn để xem trang trước"
-  
+      - "&7Quay lại trang trước đó"
+
   next-button:
     material: ARROW
-    name: "&eTrang Tiếp ▶"
+    name: "&aTrang Tiếp ▶"
     lore:
-      - "&7Nhấn để xem trang tiếp"
-  
+      - "&7Sang trang kế tiếp"
+
   close-button:
     material: BARRIER
-    name: "&c✖ Đóng"
+    name: "&c✖ Đóng Cửa Hàng"
     lore:
-      - "&7Nhấn để đóng cửa hàng"
+      - "&7Nhấn để thoát"
 
-# Lore messages for shop items
+# Messages hiển thị trong Lore
 messages:
-  lore-discount: "&d⚡ Giảm giá: &c-{discount}%"
+  lore-discount: "&d⚡ Khuyến mãi: &c-{discount}%"
   lore-original-price: "&7&mGiá gốc: &r&7{original_price}$"
-  lore-price: "&aGiá: &e{price}$"
-  lore-stock: "&7Còn lại: &b{stock}"
-  lore-click-buy: "&e▶ Nhấn để mua!"
-  
-  shop-item-bought: "&aĐã mua &e{amount}x {item} &avới giá &e{price}$"
-  shop-not-enough-stock: "&cKhông đủ hàng trong kho!"
-  not-enough-money: "&cBạn cần thêm &e{amount}$ &cđể mua vật phẩm này!"
+  lore-price: "&aGiá bán: &e{price}$"
+  lore-stock: "&7Tồn kho: &b{stock}"
+  lore-click-buy: "&e▶ Nhấn chuột để Mua!"
 
+# Âm thanh tương tác (Format: SOUND_NAME:VOLUME:PITCH)
 sounds:
   click: UI_BUTTON_CLICK:1:1
   success: ENTITY_PLAYER_LEVELUP:1:2
-  error: ENTITY_VILLAGER_NO:1:1
+  error: BLOCK_NOTE_BLOCK_BASS:1:0.5
   open: BLOCK_CHEST_OPEN:1:1

@@ -2,6 +2,7 @@ package com.NguyenDevs.nDUltimateShop.commands;
 
 import com.NguyenDevs.nDUltimateShop.NDUltimateShop;
 import com.NguyenDevs.nDUltimateShop.gui.SellGUI;
+import org.bukkit.Sound;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -30,10 +31,12 @@ public class SellCommand implements CommandExecutor, TabCompleter {
 
         if (!player.hasPermission("ndshop.sell.use")) {
             player.sendMessage(plugin.getLanguageManager().getMessage("no-permission"));
+            player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_BASS, 1.0f, 0.5f);
             return true;
         }
 
         new SellGUI(plugin, player).open();
+        player.playSound(player.getLocation(), Sound.BLOCK_CHEST_OPEN, 1.0f, 1.0f);
         return true;
     }
 

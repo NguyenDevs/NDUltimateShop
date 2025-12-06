@@ -3,6 +3,7 @@ package com.NguyenDevs.nDUltimateShop.listeners;
 import com.NguyenDevs.nDUltimateShop.NDUltimateShop;
 import com.NguyenDevs.nDUltimateShop.gui.SellGUI;
 import com.NguyenDevs.nDUltimateShop.managers.GUIConfigManager;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -51,8 +52,11 @@ public class SellListener implements Listener {
         if (slots.containsKey("confirm") && slot == slots.get("confirm")) {
             event.setCancelled(true);
             if (gui.confirmSell()) {
+                player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1.0f, 2.0f);
                 player.closeInventory();
                 activeGUIs.remove(player);
+            } else {
+                player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_BASS, 1.0f, 0.5f);
             }
             return;
         }
@@ -60,6 +64,7 @@ public class SellListener implements Listener {
         if (slots.containsKey("cancel") && slot == slots.get("cancel")) {
             event.setCancelled(true);
             gui.cancelSell();
+            player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 1.0f, 1.0f);
             player.closeInventory();
             activeGUIs.remove(player);
             return;
@@ -71,6 +76,7 @@ public class SellListener implements Listener {
                     event.setCancelled(true);
                     return;
                 }
+                player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 1.0f, 1.0f);
                 plugin.getServer().getScheduler().runTaskLater(plugin, gui::updateTotalDisplay, 1L);
                 return;
             }
@@ -80,6 +86,11 @@ public class SellListener implements Listener {
             event.setCancelled(true);
         } else if (event.isShiftClick()) {
             event.setCancelled(true);
+        } else {
+            // Player inventory click to add item
+            plugin.getServer().getScheduler().runTaskLater(plugin, () -> {
+                player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 1.0f, 1.0f);
+            }, 1L);
         }
     }
 
@@ -107,6 +118,7 @@ public class SellListener implements Listener {
         }
 
         if (affectsItemSlots) {
+            player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 1.0f, 1.0f);
             plugin.getServer().getScheduler().runTaskLater(plugin, gui::updateTotalDisplay, 1L);
         }
     }

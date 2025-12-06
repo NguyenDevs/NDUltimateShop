@@ -2,6 +2,7 @@ package com.NguyenDevs.nDUltimateShop.commands;
 
 import com.NguyenDevs.nDUltimateShop.NDUltimateShop;
 import com.NguyenDevs.nDUltimateShop.gui.BlackShopGUI;
+import org.bukkit.Sound;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -32,6 +33,7 @@ public class BlackShopCommand implements CommandExecutor, TabCompleter {
 
         if (!player.hasPermission("ndshop.blackshop.use")) {
             player.sendMessage(plugin.getLanguageManager().getMessage("no-permission"));
+            player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_BASS, 1.0f, 0.5f);
             return true;
         }
 
@@ -41,10 +43,12 @@ public class BlackShopCommand implements CommandExecutor, TabCompleter {
             placeholders.put("close", String.valueOf(plugin.getConfig().getInt("blackshop.close-time")));
             player.sendMessage(plugin.getLanguageManager().getPrefixedMessage("blackshop-closed"));
             player.sendMessage(plugin.getLanguageManager().getMessage("blackshop-open-time", placeholders));
+            player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_BASS, 1.0f, 0.5f);
             return true;
         }
 
         new BlackShopGUI(plugin, player).open();
+        player.playSound(player.getLocation(), Sound.BLOCK_CHEST_OPEN, 1.0f, 1.0f);
         return true;
     }
 

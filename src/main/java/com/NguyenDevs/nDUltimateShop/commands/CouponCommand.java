@@ -2,6 +2,7 @@ package com.NguyenDevs.nDUltimateShop.commands;
 
 import com.NguyenDevs.nDUltimateShop.NDUltimateShop;
 import com.NguyenDevs.nDUltimateShop.models.Coupon;
+import org.bukkit.Sound;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -30,11 +31,13 @@ public class CouponCommand implements CommandExecutor, TabCompleter {
 
         if (!player.hasPermission("ndshop.coupon.use")) {
             player.sendMessage(plugin.getLanguageManager().getMessage("no-permission"));
+            player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_BASS, 1.0f, 0.5f);
             return true;
         }
 
         if (args.length == 0) {
             player.sendMessage(plugin.getLanguageManager().getMessage("help-coupon-use"));
+            player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 1.0f, 1.0f);
             return true;
         }
 
@@ -43,16 +46,19 @@ public class CouponCommand implements CommandExecutor, TabCompleter {
 
         if (coupon == null) {
             player.sendMessage(plugin.getLanguageManager().getPrefixedMessage("coupon-not-found"));
+            player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_BASS, 1.0f, 0.5f);
             return true;
         }
 
         if (coupon.isExpired()) {
             player.sendMessage(plugin.getLanguageManager().getPrefixedMessage("coupon-expired"));
+            player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_BASS, 1.0f, 0.5f);
             return true;
         }
 
         if (!coupon.canUse(player.getUniqueId())) {
             player.sendMessage(plugin.getLanguageManager().getPrefixedMessage("coupon-already-used"));
+            player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_BASS, 1.0f, 0.5f);
             return true;
         }
 
@@ -61,6 +67,7 @@ public class CouponCommand implements CommandExecutor, TabCompleter {
             placeholders.put("code", code);
             placeholders.put("discount", String.format("%.0f", coupon.getDiscount()));
             player.sendMessage(plugin.getLanguageManager().getPrefixedMessage("coupon-applied", placeholders));
+            player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1.0f, 2.0f);
 
             if (coupon.getType() == Coupon.CouponType.TIME) {
                 Map<String, String> timePlaceholders = new HashMap<>();

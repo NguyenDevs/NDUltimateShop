@@ -1,6 +1,7 @@
 package com.NguyenDevs.nDUltimateShop.commands;
 
 import com.NguyenDevs.nDUltimateShop.NDUltimateShop;
+import org.bukkit.Sound;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -29,10 +30,12 @@ public class ShopCommand implements CommandExecutor, TabCompleter {
 
         if (!player.hasPermission("ndshop.shop.use")) {
             player.sendMessage(plugin.getLanguageManager().getMessage("no-permission"));
+            player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_BASS, 1.0f, 0.5f);
             return true;
         }
 
         plugin.getListenerManager().openShopGUI(player);
+        player.playSound(player.getLocation(), Sound.BLOCK_CHEST_OPEN, 1.0f, 1.0f);
         return true;
     }
 
