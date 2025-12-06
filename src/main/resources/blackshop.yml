@@ -1,0 +1,26 @@
+items:
+  enchanted_diamond_sword:
+    item:
+      ==: org.bukkit.inventory.ItemStack
+      v: 2230
+      type: DIAMOND_SWORD
+      meta:
+        ==: ItemMeta
+        meta-type: UNSPECIFIC
+        display-name: '{"text":"Kiếm Kim Cương Ma Thuật"}'
+        enchants:
+          DAMAGE_ALL: 5
+          FIRE_ASPECT: 2
+    price: 300.0  # Giá rẻ hơn shop thường
+    stock: 10
+  rare_potion:
+    item:
+      ==: org.bukkit.inventory.ItemStack
+      v: 2230
+      type: POTION
+      meta:
+        ==: ItemMeta
+        meta-type: POTION
+        display-name: '{"text":"Thuốc Hiếm"}'
+    price: 50.0
+    stock: 20

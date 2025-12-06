@@ -1,0 +1,13 @@
+coupons:
+  SUMMER2024:
+    discount: 20.0  # 20% discount
+    type: TIME
+    value: 86400000  # 24 hours in milliseconds
+    created: 1234567890000
+    usedBy: []
+  WELCOME:
+    discount: 10.0
+    type: USES
+    value: 100  # Can be used 100 times
+    created: 1234567890000
+    usedBy: []

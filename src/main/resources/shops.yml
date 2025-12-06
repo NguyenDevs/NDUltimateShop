@@ -1,0 +1,15 @@
+items:
+  diamond_sword:
+    item:
+      ==: org.bukkit.inventory.ItemStack
+      v: 2230
+      type: DIAMOND_SWORD
+    price: 500.0
+    stock: -1  # -1 = unlimited
+  golden_apple:
+    item:
+      ==: org.bukkit.inventory.ItemStack
+      v: 2230
+      type: GOLDEN_APPLE
+    price: 100.0
+    stock: 50

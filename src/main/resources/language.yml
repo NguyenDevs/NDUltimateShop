@@ -1,0 +1,92 @@
+# Language File - Vietnamese
+
+prefix: "&7[&6NDShop&7]"
+
+# General messages
+no-permission: "&cBạn không có quyền sử dụng lệnh này!"
+player-only: "&cChỉ người chơi mới có thể sử dụng lệnh này!"
+reload-success: "&aĐã tải lại cấu hình thành công!"
+invalid-player: "&cNgười chơi không tồn tại!"
+not-enough-money: "&cBạn không đủ tiền! Cần: &e{amount}"
+insufficient-funds: "&cSố tiền không đủ!"
+
+# Shop messages
+shop-opened: "&aĐã mở cửa hàng!"
+shop-item-bought: "&aĐã mua &e{amount}x {item} &avới giá &e{price}$"
+shop-item-added: "&aĐã thêm vật phẩm vào cửa hàng!"
+shop-item-removed: "&aĐã xóa vật phẩm khỏi cửa hàng!"
+shop-not-enough-stock: "&cVật phẩm này không đủ số lượng!"
+
+# Auction messages
+auction-opened: "&aĐã mở nhà đấu giá!"
+auction-item-listed: "&aĐã treo bán &e{item} &avới giá &e{price}$ &atrong &e{duration}"
+auction-fee-paid: "&7Đã trả phí hoa hồng: &e{fee}$"
+auction-item-bought: "&aĐã mua &e{item} &atừ &e{seller} &avới giá &e{price}$"
+auction-item-expired: "&cMặt hàng &e{item} &ccủa bạn đã hết hạn!"
+auction-max-listings: "&cBạn đã đạt giới hạn số lượng treo bán!"
+auction-item-cancelled: "&aĐã hủy mặt hàng treo bán!"
+auction-seller-received: "&aĐã nhận &e{amount}$ &atừ việc bán &e{item}"
+auction-invalid-price: "&cGiá không hợp lệ! Vui lòng nhập số dương."
+auction-min-price: "&cGiá tối thiểu là &e{min}$"
+
+# Sell messages
+sell-gui-opened: "&aĐã mở giao diện bán vật phẩm!"
+sell-place-items: "&eKéo thả vật phẩm vào để bán"
+sell-confirm: "&aXác nhận bán?"
+sell-success: "&aĐã bán thành công! Nhận được: &e{amount}$"
+sell-cancelled: "&cĐã hủy giao dịch!"
+sell-no-items: "&cKhông có vật phẩm nào để bán!"
+sell-price-set: "&aĐã đặt giá bán cho &e{item}&a: &e{price}$"
+
+# Coupon messages
+coupon-created: "&aĐã tạo mã giảm giá &e{code} &a{discount}%"
+coupon-applied: "&aĐã áp dụng mã giảm giá &e{code} &a- Giảm &e{discount}%"
+coupon-expired: "&cMã giảm giá đã hết hạn!"
+coupon-not-found: "&cMã giảm giá không tồn tại!"
+coupon-already-used: "&cBạn đã sử dụng mã giảm giá này rồi!"
+coupon-max-uses: "&cMã giảm giá đã hết lượt sử dụng!"
+coupon-removed: "&aĐã xóa mã giảm giá &e{code}"
+coupon-active: "&aMã giảm giá đang hoạt động: &e{code} &a- Giảm &e{discount}%"
+coupon-time-left: "&eThời gian còn lại: &a{time}"
+coupon-uses-left: "&eSố lần sử dụng còn lại: &a{uses}"
+
+# Black Shop messages
+blackshop-opened: "&5Chào mừng đến Chợ Đêm!"
+blackshop-closed: "&cChợ đêm hiện đang đóng cửa!"
+blackshop-open-time: "&eChợ đêm mở cửa từ &a{open}h &eđến &a{close}h"
+blackshop-announce-open: "&5&l[CHỢ ĐÊM] &eChợ đêm đã mở cửa! Nhanh tay mua sắm!"
+blackshop-announce-close: "&5&l[CHỢ ĐÊM] &cChợ đêm đã đóng cửa!"
+blackshop-item-bought: "&5Đã mua &e{amount}x {item} &5với giá &e{price}$"
+blackshop-out-of-stock: "&cVật phẩm này đã hết hàng!"
+
+# GUI messages
+gui-previous-page: "&eTrang trước"
+gui-next-page: "&aTrang sau"
+gui-current-page: "&7Trang &e{page}&7/&e{maxPage}"
+gui-close: "&cĐóng"
+gui-back: "&cQuay lại"
+gui-confirm: "&aXác nhận"
+gui-cancel: "&cHủy"
+
+# Item lore
+lore-price: "&7Giá: &e{price}$"
+lore-stock: "&7Còn lại: &e{stock}"
+lore-seller: "&7Người bán: &e{seller}"
+lore-time-left: "&7Thời gian: &e{time}"
+lore-click-buy: "&eClick để mua"
+lore-click-cancel: "&cShift + Click để hủy"
+lore-discount: "&a&lGIẢM GIÁ {discount}%"
+lore-original-price: "&7&mGiá gốc: {price}$"
+
+# Help messages
+help-header: "&6&l===== NDUltimateShop Help ====="
+help-shop: "&e/shop &7- Mở cửa hàng"
+help-auction: "&e/auction hoặc /ah &7- Mở nhà đấu giá"
+help-ah-sell: "&e/ah sell <giá> &7- Treo bán vật phẩm đang cầm"
+help-sell: "&e/sell &7- Mở giao diện bán vật phẩm"
+help-coupon-use: "&e/coupon <mã> &7- Sử dụng mã giảm giá"
+help-blackshop: "&e/blackshop &7- Mở chợ đêm"
+help-admin: "&e/ndshop reload &7- Tải lại plugin"
+help-admin-coupon: "&e/ndshop coupon create <mã> <giảm%> <thời gian|số lần> <giá trị> &7- Tạo mã"
+help-admin-shop: "&e/ndshop shop add <giá> [số lượng] &7- Thêm item vào shop"
+help-admin-sell: "&e/ndshop sell setprice <giá> &7- Đặt giá bán item"
