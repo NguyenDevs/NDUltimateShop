@@ -23,14 +23,14 @@ public class SellCommand implements CommandExecutor, TabCompleter {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!(sender instanceof Player)) {
-            sender.sendMessage(plugin.getLanguageManager().getMessage("player-only"));
+            sender.sendMessage(plugin.getLanguageManager().getPrefixedMessage("player-only"));
             return true;
         }
 
         Player player = (Player) sender;
 
         if (!player.hasPermission("ndshop.sell.use")) {
-            player.sendMessage(plugin.getLanguageManager().getMessage("no-permission"));
+            player.sendMessage(plugin.getLanguageManager().getPrefixedMessage("no-permission"));
             if (plugin.getConfig().getBoolean("sounds.enabled", true)) {
                 player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_BASS, 1.0f, 0.5f);
             }

@@ -12,7 +12,7 @@ commands:
     description: Main admin command
     usage: /ndshop <reload|shop|sell|coupon|nightshop>
     permission: ndshop.admin
-    aliases: [ndsa, shopadmin]
+    aliases: [shopadmin, ndus]
 
   shop:
     description: Open the shop GUI
@@ -30,13 +30,13 @@ commands:
     description: Open sell GUI
     usage: /sell
     permission: ndshop.sell.use
-    aliases: [bán, ban]
+    aliases: [bán]
 
   nightshop:
     description: Open night shop
     usage: /nightshop
     permission: ndshop.nightshop.use
-    aliases: [chợđêm, cd, bs, blackshop]
+    aliases: [chợđêm, cd, ns]
 
   coupon:
     description: Use a coupon code

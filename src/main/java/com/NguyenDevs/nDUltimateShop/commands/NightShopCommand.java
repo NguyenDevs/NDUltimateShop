@@ -25,14 +25,14 @@ public class NightShopCommand implements CommandExecutor, TabCompleter {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!(sender instanceof Player)) {
-            sender.sendMessage(plugin.getLanguageManager().getMessage("player-only"));
+            sender.sendMessage(plugin.getLanguageManager().getPrefixedMessage("player-only"));
             return true;
         }
 
         Player player = (Player) sender;
 
         if (!player.hasPermission("ndshop.nightshop.use")) {
-            player.sendMessage(plugin.getLanguageManager().getMessage("no-permission"));
+            player.sendMessage(plugin.getLanguageManager().getPrefixedMessage("no-permission"));
             playSound(player, Sound.BLOCK_NOTE_BLOCK_BASS, 1.0f, 0.5f);
             return true;
         }
@@ -42,7 +42,7 @@ public class NightShopCommand implements CommandExecutor, TabCompleter {
             placeholders.put("open", String.valueOf(plugin.getConfig().getInt("blackshop.open-time")));
             placeholders.put("close", String.valueOf(plugin.getConfig().getInt("blackshop.close-time")));
             player.sendMessage(plugin.getLanguageManager().getPrefixedMessage("blackshop-closed"));
-            player.sendMessage(plugin.getLanguageManager().getMessage("blackshop-open-time", placeholders));
+            player.sendMessage(plugin.getLanguageManager().getPrefixedMessage("blackshop-open-time", placeholders));
             playSound(player, Sound.BLOCK_NOTE_BLOCK_BASS, 1.0f, 0.5f);
             return true;
         }

@@ -52,13 +52,30 @@ public class AuctionGUI extends BaseGUI {
 
         Map<String, Integer> slots = config.getSlotMapping();
 
-        if (currentPage > 0 && slots.containsKey("previous")) {
-            inventory.setItem(slots.get("previous"), config.getDecorativeItem("previous-button"));
+        ItemStack filler = new ItemStack(config.getFillerMaterial());
+        ItemMeta fillerMeta = filler.getItemMeta();
+        if (fillerMeta != null) {
+            fillerMeta.setDisplayName(" ");
+            filler.setItemMeta(fillerMeta);
         }
 
-        int maxItemsPerPage = itemSlots.size();
-        if ((currentPage + 1) * maxItemsPerPage < listings.size() && slots.containsKey("next")) {
-            inventory.setItem(slots.get("next"), config.getDecorativeItem("next-button"));
+        if (slots.containsKey("previous")) {
+            int prevSlot = slots.get("previous");
+            if (currentPage > 0) {
+                inventory.setItem(prevSlot, config.getDecorativeItem("previous-button"));
+            } else {
+                inventory.setItem(prevSlot, filler);
+            }
+        }
+
+        if (slots.containsKey("next")) {
+            int nextSlot = slots.get("next");
+            int maxItemsPerPage = itemSlots.size();
+            if ((currentPage + 1) * maxItemsPerPage < listings.size()) {
+                inventory.setItem(nextSlot, config.getDecorativeItem("next-button"));
+            } else {
+                inventory.setItem(nextSlot, filler);
+            }
         }
 
         if (slots.containsKey("close")) {

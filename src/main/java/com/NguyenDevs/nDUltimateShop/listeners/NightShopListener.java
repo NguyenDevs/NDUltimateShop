@@ -3,6 +3,7 @@ package com.NguyenDevs.nDUltimateShop.listeners;
 import com.NguyenDevs.nDUltimateShop.NDUltimateShop;
 import com.NguyenDevs.nDUltimateShop.gui.NightShopGUI;
 import com.NguyenDevs.nDUltimateShop.models.ShopItem;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -37,6 +38,9 @@ public class NightShopListener implements Listener {
         }
 
         if (slots.containsKey("previous") && slot == slots.get("previous")) {
+            // FIX: Check null/AIR
+            if (event.getCurrentItem() == null || event.getCurrentItem().getType() == Material.AIR) return;
+
             if (gui.getCurrentPage() > 0) {
                 gui.getConfig().playSound(player, "click");
                 gui.setCurrentPage(gui.getCurrentPage() - 1);
@@ -48,6 +52,9 @@ public class NightShopListener implements Listener {
         }
 
         if (slots.containsKey("next") && slot == slots.get("next")) {
+            // FIX: Check null/AIR
+            if (event.getCurrentItem() == null || event.getCurrentItem().getType() == Material.AIR) return;
+
             gui.getConfig().playSound(player, "click");
             gui.setCurrentPage(gui.getCurrentPage() + 1);
             gui.open();

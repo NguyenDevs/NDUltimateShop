@@ -26,7 +26,7 @@ public class AdminCommand implements CommandExecutor, TabCompleter {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!sender.hasPermission("ndshop.admin")) {
-            sender.sendMessage(plugin.getLanguageManager().getMessage("no-permission"));
+            sender.sendMessage(plugin.getLanguageManager().getPrefixedMessage("no-permission"));
             playSound(sender, Sound.BLOCK_NOTE_BLOCK_BASS, 1.0f, 0.5f);
             return true;
         }
@@ -149,7 +149,7 @@ public class AdminCommand implements CommandExecutor, TabCompleter {
         }
 
         if (!(sender instanceof Player)) {
-            sender.sendMessage(plugin.getLanguageManager().getMessage("player-only"));
+            sender.sendMessage(plugin.getLanguageManager().getPrefixedMessage("player-only"));
             return true;
         }
 
@@ -203,7 +203,7 @@ public class AdminCommand implements CommandExecutor, TabCompleter {
         }
 
         if (!(sender instanceof Player)) {
-            sender.sendMessage(plugin.getLanguageManager().getMessage("player-only"));
+            sender.sendMessage(plugin.getLanguageManager().getPrefixedMessage("player-only"));
             return true;
         }
 
@@ -323,7 +323,7 @@ public class AdminCommand implements CommandExecutor, TabCompleter {
         }
 
         if (!(sender instanceof Player)) {
-            sender.sendMessage(plugin.getLanguageManager().getMessage("player-only"));
+            sender.sendMessage(plugin.getLanguageManager().getPrefixedMessage("player-only"));
             return true;
         }
 

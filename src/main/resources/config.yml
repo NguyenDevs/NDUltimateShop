@@ -3,7 +3,7 @@ auction:
   duration: 86400
   commission-fee: 5.0
 
-blackshop:
+nightshop:
   timezone: "Asia/Ho_Chi_Minh"
   open-time: 20
   close-time: 22

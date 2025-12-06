@@ -42,7 +42,7 @@ public class LanguageManager {
     }
 
     public String getPrefix() {
-        return colorize("<gradient:#D585FF:#5B008C>UltimateShop</gradient>");
+        return getMessage("prefix");
     }
 
     public String getPrefixedMessage(String key) {

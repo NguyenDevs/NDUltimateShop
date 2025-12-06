@@ -4,6 +4,7 @@ import com.NguyenDevs.nDUltimateShop.NDUltimateShop;
 import com.NguyenDevs.nDUltimateShop.gui.AuctionGUI;
 import com.NguyenDevs.nDUltimateShop.models.AuctionListing;
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -40,6 +41,9 @@ public class AuctionListener implements Listener {
         }
 
         if (slots.containsKey("previous") && slot == slots.get("previous")) {
+            // FIX: Check null/AIR
+            if (event.getCurrentItem() == null || event.getCurrentItem().getType() == Material.AIR) return;
+
             if (gui.getCurrentPage() > 0) {
                 gui.getConfig().playSound(player, "click");
                 gui.setCurrentPage(gui.getCurrentPage() - 1);
@@ -51,6 +55,9 @@ public class AuctionListener implements Listener {
         }
 
         if (slots.containsKey("next") && slot == slots.get("next")) {
+            // FIX: Check null/AIR
+            if (event.getCurrentItem() == null || event.getCurrentItem().getType() == Material.AIR) return;
+
             gui.getConfig().playSound(player, "click");
             gui.setCurrentPage(gui.getCurrentPage() + 1);
             gui.open();

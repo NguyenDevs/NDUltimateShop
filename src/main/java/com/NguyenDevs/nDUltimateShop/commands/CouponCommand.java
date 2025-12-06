@@ -26,20 +26,20 @@ public class CouponCommand implements CommandExecutor, TabCompleter {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!(sender instanceof Player)) {
-            sender.sendMessage(plugin.getLanguageManager().getMessage("player-only"));
+            sender.sendMessage(plugin.getLanguageManager().getPrefixedMessage("player-only"));
             return true;
         }
 
         Player player = (Player) sender;
 
         if (!player.hasPermission("ndshop.coupon.use")) {
-            player.sendMessage(plugin.getLanguageManager().getMessage("no-permission"));
+            player.sendMessage(plugin.getLanguageManager().getPrefixedMessage("no-permission"));
             playSound(player, Sound.BLOCK_NOTE_BLOCK_BASS, 1.0f, 0.5f);
             return true;
         }
 
         if (args.length == 0) {
-            player.sendMessage(plugin.getLanguageManager().getMessage("help-coupon-use"));
+            player.sendMessage(plugin.getLanguageManager().getPrefixedMessage("help-coupon-use"));
             playSound(player, Sound.UI_BUTTON_CLICK, 1.0f, 1.0f);
             return true;
         }
@@ -75,11 +75,11 @@ public class CouponCommand implements CommandExecutor, TabCompleter {
             if (coupon.getType() == Coupon.CouponType.TIME) {
                 Map<String, String> timePlaceholders = new HashMap<>();
                 timePlaceholders.put("time", formatTime(coupon.getTimeLeft()));
-                player.sendMessage(plugin.getLanguageManager().getMessage("coupon-time-left", timePlaceholders));
+                player.sendMessage(plugin.getLanguageManager().getPrefixedMessage("coupon-time-left", timePlaceholders));
             } else {
                 Map<String, String> usesPlaceholders = new HashMap<>();
                 usesPlaceholders.put("uses", String.valueOf(coupon.getUsesLeft()));
-                player.sendMessage(plugin.getLanguageManager().getMessage("coupon-uses-left", usesPlaceholders));
+                player.sendMessage(plugin.getLanguageManager().getPrefixedMessage("coupon-uses-left", usesPlaceholders));
             }
         }
 

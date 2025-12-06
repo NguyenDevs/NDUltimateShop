@@ -74,7 +74,7 @@ public class ConfigManager {
         guiConfigManager.loadGUIConfig("shop");
         guiConfigManager.loadGUIConfig("auction");
         guiConfigManager.loadGUIConfig("sell");
-        guiConfigManager.loadGUIConfig("blackshop");
+        guiConfigManager.loadGUIConfig("nightshop");
     }
 
     public FileConfiguration getConfig(String fileName) {

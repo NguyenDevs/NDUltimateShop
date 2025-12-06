@@ -25,7 +25,7 @@ public class NightShopManager {
 
     public void loadBlackShop() {
         nightShopItems.clear();
-        FileConfiguration config = plugin.getConfigManager().getConfig("gui/blackshop.yml");
+        FileConfiguration config = plugin.getConfigManager().getConfig("gui/nightshop.yml");
 
         ConfigurationSection itemsSection = config.getConfigurationSection("items");
         if (itemsSection != null) {
@@ -44,7 +44,7 @@ public class NightShopManager {
     }
 
     public void saveBlackShop() {
-        FileConfiguration config = plugin.getConfigManager().getConfig("gui/blackshop.yml");
+        FileConfiguration config = plugin.getConfigManager().getConfig("gui/nightshop.yml");
         config.set("items", null);
 
         for (Map.Entry<String, ShopItem> entry : nightShopItems.entrySet()) {
@@ -56,15 +56,15 @@ public class NightShopManager {
             config.set(key + ".stock", item.getStock());
         }
 
-        plugin.getConfigManager().saveConfig("gui/blackshop.yml");
+        plugin.getConfigManager().saveConfig("gui/nightshop.yml");
     }
 
     public boolean isSystemEnabled() {
-        return plugin.getConfig().getBoolean("blackshop.enabled", true);
+        return plugin.getConfig().getBoolean("nightshop.enabled", true);
     }
 
     public void setSystemEnabled(boolean enabled) {
-        plugin.getConfig().set("blackshop.enabled", enabled);
+        plugin.getConfig().set("nightshop.enabled", enabled);
         plugin.saveConfig();
         if (!enabled && isOpen) {
             closeBlackShop();
@@ -100,9 +100,9 @@ public class NightShopManager {
     }
 
     private boolean isWithinOpenHours() {
-        String timezone = plugin.getConfig().getString("blackshop.timezone", "Asia/Ho_Chi_Minh");
-        int openHour = plugin.getConfig().getInt("blackshop.open-time", 20);
-        int closeHour = plugin.getConfig().getInt("blackshop.close-time", 22);
+        String timezone = plugin.getConfig().getString("nightshop.timezone", "Asia/Ho_Chi_Minh");
+        int openHour = plugin.getConfig().getInt("nightshop.open-time", 20);
+        int closeHour = plugin.getConfig().getInt("nightshop.close-time", 22);
 
         LocalTime now = LocalTime.now(ZoneId.of(timezone));
         LocalTime openTime = LocalTime.of(openHour, 0);
@@ -117,15 +117,15 @@ public class NightShopManager {
 
     private void openBlackShop() {
         isOpen = true;
-        if (plugin.getConfig().getBoolean("blackshop.announce-open", true)) {
-            Bukkit.broadcastMessage(plugin.getLanguageManager().getMessage("blackshop-announce-open"));
+        if (plugin.getConfig().getBoolean("nightshop.announce-open", true)) {
+            Bukkit.broadcastMessage(plugin.getLanguageManager().getMessage("nightshop-announce-open"));
         }
     }
 
     private void closeBlackShop() {
         isOpen = false;
-        if (plugin.getConfig().getBoolean("blackshop.announce-close", true)) {
-            Bukkit.broadcastMessage(plugin.getLanguageManager().getMessage("blackshop-announce-close"));
+        if (plugin.getConfig().getBoolean("nightshop.announce-close", true)) {
+            Bukkit.broadcastMessage(plugin.getLanguageManager().getMessage("nightshop-announce-close"));
         }
     }
 
@@ -163,8 +163,8 @@ public class NightShopManager {
     }
 
     public String getOpenTimeString() {
-        int openHour = plugin.getConfig().getInt("blackshop.open-time", 20);
-        int closeHour = plugin.getConfig().getInt("blackshop.close-time", 22);
+        int openHour = plugin.getConfig().getInt("nightshop.open-time", 20);
+        int closeHour = plugin.getConfig().getInt("nightshop.close-time", 22);
         return openHour + "h - " + closeHour + "h";
     }
 }
