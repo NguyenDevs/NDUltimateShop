@@ -31,12 +31,15 @@ public class AuctionListener implements Listener {
         Player player = (Player) event.getWhoClicked();
         GUIConfigManager.GUIConfig config = plugin.getConfigManager().getGUIConfig("auction");
 
-        Map<String, String> titlePlaceholders = new HashMap<>();
-        String title = plugin.getPlaceholderManager().replacePlaceholders(player, config.getTitle(), titlePlaceholders);
-        title = plugin.getLanguageManager().colorize(title);
+        String configTitle = plugin.getLanguageManager().stripColor(
+                plugin.getLanguageManager().colorize(config.getTitle())
+        );
+        String currentTitle = event.getView().getTitle();
 
-        if (!event.getView().getTitle().contains(plugin.getLanguageManager().stripColor(title).split(" - ")[0])) return;
+        String baseTitle = config.getTitle().split("-")[0].trim();
+        baseTitle = plugin.getLanguageManager().stripColor(plugin.getLanguageManager().colorize(baseTitle));
 
+        if (!plugin.getLanguageManager().stripColor(currentTitle).contains(baseTitle)) return;
         event.setCancelled(true);
 
         ItemStack clickedItem = event.getCurrentItem();

@@ -28,10 +28,12 @@ public class BlackShopListener implements Listener {
 
         Player player = (Player) event.getWhoClicked();
         GUIConfigManager.GUIConfig config = plugin.getConfigManager().getGUIConfig("blackshop");
-        String title = plugin.getPlaceholderManager().replacePlaceholders(player, config.getTitle());
-        title = plugin.getLanguageManager().colorize(title);
 
-        if (!event.getView().getTitle().equals(title)) return;
+        String configTitleRaw = config.getTitle();
+        String mainTitlePart = configTitleRaw.split("\\[")[0].trim();
+        mainTitlePart = plugin.getLanguageManager().colorize(mainTitlePart);
+
+        if (!event.getView().getTitle().startsWith(mainTitlePart)) return;
 
         event.setCancelled(true);
 
@@ -74,6 +76,11 @@ public class BlackShopListener implements Listener {
     private void purchaseItem(Player player, ShopItem shopItem, BlackShopGUI gui) {
         if (!shopItem.hasStock()) {
             player.sendMessage(plugin.getLanguageManager().getPrefixedMessage("shop-not-enough-stock"));
+            return;
+        }
+
+        if (player.getInventory().firstEmpty() == -1) {
+            player.sendMessage(plugin.getLanguageManager().getPrefix() + " §cTúi đồ của bạn đã đầy!");
             return;
         }
 

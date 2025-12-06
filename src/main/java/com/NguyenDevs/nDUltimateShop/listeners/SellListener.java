@@ -36,9 +36,12 @@ public class SellListener implements Listener {
 
         if (!event.getView().getTitle().equals(title)) return;
 
-        int slot = event.getRawSlot();
-        ItemStack clickedItem = event.getCurrentItem();
+        if (event.getClick() == ClickType.DOUBLE_CLICK) {
+            event.setCancelled(true);
+            return;
+        }
 
+        int slot = event.getRawSlot();
         SellGUI gui = activeGUIs.get(player);
         if (gui == null) return;
 
@@ -62,26 +65,20 @@ public class SellListener implements Listener {
             return;
         }
 
-        if (slots.containsKey("info") && slot == slots.get("info")) {
-            event.setCancelled(true);
-            return;
-        }
-
-        if (slots.containsKey("total-value") && slot == slots.get("total-value")) {
-            event.setCancelled(true);
-            return;
-        }
-
         if (itemSlots.contains(slot)) {
             if (slot < event.getInventory().getSize()) {
-                plugin.getServer().getScheduler().runTaskLater(plugin, () -> {
-                    gui.updateTotalDisplay();
-                }, 1L);
+                if (event.getClick() == ClickType.NUMBER_KEY) {
+                    event.setCancelled(true);
+                    return;
+                }
+                plugin.getServer().getScheduler().runTaskLater(plugin, gui::updateTotalDisplay, 1L);
                 return;
             }
         }
 
         if (slot < event.getInventory().getSize()) {
+            event.setCancelled(true);
+        } else if (event.isShiftClick()) {
             event.setCancelled(true);
         }
     }
@@ -101,20 +98,16 @@ public class SellListener implements Listener {
         if (gui == null) return;
 
         List<Integer> itemSlots = config.getItemSlots();
-        boolean affectsItemSlots = event.getRawSlots().stream()
-                .anyMatch(itemSlots::contains);
+        boolean affectsItemSlots = event.getRawSlots().stream().anyMatch(itemSlots::contains);
+        boolean affectsOtherSlots = event.getRawSlots().stream().anyMatch(s -> !itemSlots.contains(s) && s < event.getInventory().getSize());
+
+        if (affectsOtherSlots) {
+            event.setCancelled(true);
+            return;
+        }
 
         if (affectsItemSlots) {
-            plugin.getServer().getScheduler().runTaskLater(plugin, () -> {
-                gui.updateTotalDisplay();
-            }, 1L);
-        } else {
-            for (int slot : event.getRawSlots()) {
-                if (slot < event.getInventory().getSize()) {
-                    event.setCancelled(true);
-                    return;
-                }
-            }
+            plugin.getServer().getScheduler().runTaskLater(plugin, gui::updateTotalDisplay, 1L);
         }
     }
 

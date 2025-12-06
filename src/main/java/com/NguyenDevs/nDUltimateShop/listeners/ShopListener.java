@@ -76,7 +76,10 @@ public class ShopListener implements Listener {
             player.sendMessage(plugin.getLanguageManager().getPrefixedMessage("shop-not-enough-stock"));
             return;
         }
-
+        if (player.getInventory().firstEmpty() == -1) {
+            player.sendMessage(plugin.getLanguageManager().getPrefix() + " §cTúi đồ của bạn đã đầy!");
+            return;
+        }
         double originalPrice = shopItem.getPrice();
         double finalPrice = plugin.getCouponManager().getDiscountedPrice(player.getUniqueId(), originalPrice);
 
