@@ -102,8 +102,12 @@ public class GUIConfigManager {
 
         public void playSound(Player player, String key) {
             if (!plugin.getConfig().getBoolean("sounds.enabled", true)) return;
+
+            if (!config.getBoolean("sounds.enable", true)) return;
+
             String path = "sounds." + key;
             if (!config.contains(path)) return;
+
             String soundStr = config.getString(path);
             if (soundStr == null || soundStr.isEmpty()) return;
             try {

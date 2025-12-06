@@ -17,6 +17,7 @@ filler-material: PURPLE_STAINED_GLASS_PANE
 
 item-lore-format:
   - "%lore%"
+  - ''
   - "%rare_tag%"
   - ""
   - "&dGiá: &5%price%$"
@@ -52,7 +53,8 @@ messages:
   lore-rare: "&6✦ HÀNG HIẾM ✦"
 
 sounds:
+  enable: true
   click: UI_BUTTON_CLICK:1:1
-  success: ENTITY_WITHER_SPAWN:0.5:1
+  success: BLOCK_RESPAWN_ANCHOR_CHARGE:1:1.5
   error: BLOCK_NOTE_BLOCK_BASS:1:0.5
-  open: BLOCK_ENDER_CHEST_OPEN:1:0.5
+  open: BLOCK_TRIAL_SPAWNER_OMINOUS_ACTIVE:1:0.5

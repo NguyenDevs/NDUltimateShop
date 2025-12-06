@@ -2,7 +2,7 @@ package com.NguyenDevs.nDUltimateShop.commands;
 
 import com.NguyenDevs.nDUltimateShop.NDUltimateShop;
 import com.NguyenDevs.nDUltimateShop.gui.NightShopGUI;
-import org.bukkit.Sound;
+import com.NguyenDevs.nDUltimateShop.managers.GUIConfigManager;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -22,6 +22,13 @@ public class NightShopCommand implements CommandExecutor, TabCompleter {
         this.plugin = plugin;
     }
 
+    private void playConfigSound(Player player, String key) {
+        GUIConfigManager.GUIConfig guiConfig = plugin.getConfigManager().getGUIConfig("nightshop");
+        if (guiConfig != null) {
+            guiConfig.playSound(player, key);
+        }
+    }
+
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!(sender instanceof Player)) {
@@ -33,7 +40,7 @@ public class NightShopCommand implements CommandExecutor, TabCompleter {
 
         if (!player.hasPermission("ndshop.nightshop.use")) {
             player.sendMessage(plugin.getLanguageManager().getPrefixedMessage("no-permission"));
-            playSound(player, Sound.BLOCK_NOTE_BLOCK_BASS, 1.0f, 0.5f);
+            playConfigSound(player, "error");
             return true;
         }
 
@@ -43,23 +50,19 @@ public class NightShopCommand implements CommandExecutor, TabCompleter {
             placeholders.put("close", String.valueOf(plugin.getConfig().getInt("nightshop.close-time")));
             player.sendMessage(plugin.getLanguageManager().getPrefixedMessage("nightshop-closed"));
             player.sendMessage(plugin.getLanguageManager().getPrefixedMessage("nightshop-open-time", placeholders));
-            playSound(player, Sound.BLOCK_NOTE_BLOCK_BASS, 1.0f, 0.5f);
+            playConfigSound(player, "error");
             return true;
         }
 
-        new NightShopGUI(plugin, player).open();
-        playSound(player, Sound.BLOCK_CHEST_OPEN, 1.0f, 1.0f);
+        NightShopGUI gui = new NightShopGUI(plugin, player);
+        gui.open();
+        gui.getConfig().playSound(player, "open");
+
         return true;
     }
 
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
         return new ArrayList<>();
-    }
-
-    private void playSound(Player player, Sound sound, float volume, float pitch) {
-        if (plugin.getConfig().getBoolean("sounds.enabled", true)) {
-            player.playSound(player.getLocation(), sound, volume, pitch);
-        }
     }
 }

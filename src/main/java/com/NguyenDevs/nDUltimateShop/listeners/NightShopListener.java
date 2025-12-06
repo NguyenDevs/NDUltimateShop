@@ -101,7 +101,13 @@ public class NightShopListener implements Listener {
 
         Map<String, String> ph = new HashMap<>();
         ph.put("amount", "1");
-        ph.put("item", shopItem.getItemStack().getType().name());
+
+        ItemStack item = shopItem.getItemStack();
+        String itemName = item.getType().name();
+        if (item.hasItemMeta() && item.getItemMeta().hasDisplayName()) {
+            itemName = item.getItemMeta().getDisplayName();
+        }
+        ph.put("item", itemName);
         ph.put("price", String.format("%,.2f", price));
         player.sendMessage(plugin.getLanguageManager().getPrefixedMessage("nightshop-item-bought", ph));
 

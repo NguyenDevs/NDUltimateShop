@@ -2,8 +2,8 @@ package com.NguyenDevs.nDUltimateShop.commands;
 
 import com.NguyenDevs.nDUltimateShop.NDUltimateShop;
 import com.NguyenDevs.nDUltimateShop.gui.AuctionGUI;
+import com.NguyenDevs.nDUltimateShop.managers.GUIConfigManager;
 import org.bukkit.Material;
-import org.bukkit.Sound;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -25,6 +25,13 @@ public class AuctionCommand implements CommandExecutor, TabCompleter {
         this.plugin = plugin;
     }
 
+    private void playConfigSound(Player player, String key) {
+        GUIConfigManager.GUIConfig guiConfig = plugin.getConfigManager().getGUIConfig("auction");
+        if (guiConfig != null) {
+            guiConfig.playSound(player, key);
+        }
+    }
+
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!(sender instanceof Player)) {
@@ -36,7 +43,7 @@ public class AuctionCommand implements CommandExecutor, TabCompleter {
 
         if (!player.hasPermission("ndshop.auction.use")) {
             player.sendMessage(plugin.getLanguageManager().getPrefixedMessage("no-permission"));
-            playSound(player, Sound.BLOCK_NOTE_BLOCK_BASS, 1.0f, 0.5f);
+            playConfigSound(player, "error");
             return true;
         }
 
@@ -44,8 +51,10 @@ public class AuctionCommand implements CommandExecutor, TabCompleter {
             return handleSell(player, args);
         }
 
-        new AuctionGUI(plugin, player).open();
-        playSound(player, Sound.BLOCK_CHEST_OPEN, 1.0f, 1.0f);
+        AuctionGUI gui = new AuctionGUI(plugin, player);
+        gui.open();
+        gui.getConfig().playSound(player, "open");
+
         return true;
     }
 
@@ -68,7 +77,7 @@ public class AuctionCommand implements CommandExecutor, TabCompleter {
         ItemStack item = player.getInventory().getItemInMainHand();
         if (item == null || item.getType() == Material.AIR) {
             player.sendMessage(plugin.getLanguageManager().getPrefixedMessage("hold-item"));
-            playSound(player, Sound.BLOCK_NOTE_BLOCK_BASS, 1.0f, 0.5f);
+            playConfigSound(player, "error");
             return true;
         }
 
@@ -77,12 +86,12 @@ public class AuctionCommand implements CommandExecutor, TabCompleter {
             price = Double.parseDouble(args[1]);
             if (price <= 0) {
                 player.sendMessage(plugin.getLanguageManager().getPrefixedMessage("invalid-price"));
-                playSound(player, Sound.BLOCK_NOTE_BLOCK_BASS, 1.0f, 0.5f);
+                playConfigSound(player, "error");
                 return true;
             }
         } catch (NumberFormatException e) {
             player.sendMessage(plugin.getLanguageManager().getPrefixedMessage("invalid-number"));
-            playSound(player, Sound.BLOCK_NOTE_BLOCK_BASS, 1.0f, 0.5f);
+            playConfigSound(player, "error");
             return true;
         }
 
@@ -93,14 +102,14 @@ public class AuctionCommand implements CommandExecutor, TabCompleter {
             Map<String, String> placeholders = new HashMap<>();
             placeholders.put("amount", String.format("%.2f", commission));
             player.sendMessage(plugin.getLanguageManager().getPrefixedMessage("not-enough-money", placeholders));
-            playSound(player, Sound.BLOCK_NOTE_BLOCK_BASS, 1.0f, 0.5f);
+            playConfigSound(player, "error");
             return true;
         }
 
         String listingId = plugin.getAuctionManager().createListing(player, item.clone(), price);
         if (listingId == null) {
             player.sendMessage(plugin.getLanguageManager().getPrefixedMessage("auction-max-listings"));
-            playSound(player, Sound.BLOCK_NOTE_BLOCK_BASS, 1.0f, 0.5f);
+            playConfigSound(player, "error");
             return true;
         }
 
@@ -108,11 +117,18 @@ public class AuctionCommand implements CommandExecutor, TabCompleter {
         player.getInventory().setItemInMainHand(null);
 
         Map<String, String> placeholders = new HashMap<>();
-        placeholders.put("item", item.getType().name());
+
+        String itemName = item.getType().name();
+        if (item.hasItemMeta() && item.getItemMeta().hasDisplayName()) {
+            itemName = item.getItemMeta().getDisplayName();
+        }
+        placeholders.put("item", itemName);
+
         placeholders.put("price", String.format("%.2f", price));
         placeholders.put("duration", formatDuration(plugin.getConfig().getLong("auction.duration", 86400)));
         player.sendMessage(plugin.getLanguageManager().getPrefixedMessage("auction-item-listed", placeholders));
-        playSound(player, Sound.ENTITY_PLAYER_LEVELUP, 1.0f, 2.0f);
+
+        playConfigSound(player, "success");
 
         Map<String, String> feePlaceholders = new HashMap<>();
         feePlaceholders.put("fee", String.format("%.2f", commission));
@@ -126,11 +142,5 @@ public class AuctionCommand implements CommandExecutor, TabCompleter {
         long minutes = (seconds % 3600) / 60;
         if (hours > 0) return hours + " " + plugin.getLanguageManager().getMessage("time-hours");
         return minutes + " " + plugin.getLanguageManager().getMessage("time-minutes");
-    }
-
-    private void playSound(Player player, Sound sound, float volume, float pitch) {
-        if (plugin.getConfig().getBoolean("sounds.enabled", true)) {
-            player.playSound(player.getLocation(), sound, volume, pitch);
-        }
     }
 }

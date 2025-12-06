@@ -106,7 +106,12 @@ public class AuctionListener implements Listener {
         if (seller != null && seller.isOnline()) {
             Map<String, String> ph = new HashMap<>();
             ph.put("amount", String.format("%,.2f", listing.getPrice()));
-            ph.put("item", listing.getItemStack().getType().name());
+            ItemStack itemStack = listing.getItemStack();
+            String itemName = itemStack.getType().name();
+            if (itemStack.hasItemMeta() && itemStack.getItemMeta().hasDisplayName()) {
+                itemName = itemStack.getItemMeta().getDisplayName();
+            }
+            ph.put("item", itemName);
             seller.sendMessage(plugin.getLanguageManager().getPrefixedMessage("auction-seller-received", ph));
             seller.playSound(seller.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0f, 1.0f);
         }
@@ -115,7 +120,12 @@ public class AuctionListener implements Listener {
         gui.getConfig().playSound(buyer, "success");
 
         Map<String, String> ph = new HashMap<>();
-        ph.put("item", listing.getItemStack().getType().name());
+        ItemStack itemStack = listing.getItemStack();
+        String itemName = itemStack.getType().name();
+        if (itemStack.hasItemMeta() && itemStack.getItemMeta().hasDisplayName()) {
+            itemName = itemStack.getItemMeta().getDisplayName();
+        }
+        ph.put("item", itemName);
         ph.put("seller", listing.getSellerName());
         ph.put("price", String.format("%,.2f", finalPrice));
         buyer.sendMessage(plugin.getLanguageManager().getPrefixedMessage("auction-item-bought", ph));

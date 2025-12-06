@@ -46,7 +46,6 @@ public class AdminCommand implements CommandExecutor, TabCompleter {
             case "coupon":
                 return handleCoupon(sender, args);
             case "nightshop":
-            case "blackshop":
                 return handleNightShop(sender, args);
             default:
                 sendHelp(sender);
@@ -75,7 +74,6 @@ public class AdminCommand implements CommandExecutor, TabCompleter {
                     completions.addAll(Arrays.asList("create", "remove", "list"));
                     break;
                 case "nightshop":
-                case "blackshop":
                     completions.addAll(Arrays.asList("add", "remove", "list", "toggle"));
                     break;
             }
@@ -171,7 +169,11 @@ public class AdminCommand implements CommandExecutor, TabCompleter {
                 plugin.getShopManager().addShopItem(id, item.clone(), price, stock);
 
                 Map<String, String> placeholders = new HashMap<>();
-                placeholders.put("item", item.getType().name());
+                String itemName = item.getType().name();
+                if (item.hasItemMeta() && item.getItemMeta().hasDisplayName()) {
+                    itemName = item.getItemMeta().getDisplayName();
+                }
+                placeholders.put("item", itemName);
                 placeholders.put("price", String.format("%.2f", price));
                 placeholders.put("stock", String.valueOf(stock));
                 player.sendMessage(plugin.getLanguageManager().getPrefixedMessage("shop-item-added", placeholders));
@@ -222,7 +224,11 @@ public class AdminCommand implements CommandExecutor, TabCompleter {
                 plugin.getSellManager().setCustomItemPrice(item, price);
 
                 Map<String, String> placeholders = new HashMap<>();
-                placeholders.put("item", item.getType().name());
+                String itemName = item.getType().name();
+                if (item.hasItemMeta() && item.getItemMeta().hasDisplayName()) {
+                    itemName = item.getItemMeta().getDisplayName();
+                }
+                placeholders.put("item", itemName);
                 placeholders.put("price", String.format("%.2f", price));
                 player.sendMessage(plugin.getLanguageManager().getPrefixedMessage("sell-price-set", placeholders));
                 playSound(player, Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0f, 1.0f);
@@ -341,11 +347,15 @@ public class AdminCommand implements CommandExecutor, TabCompleter {
                 double price = Double.parseDouble(args[2]);
                 int stock = Integer.parseInt(args[3]);
 
-                String id = "blackitem_" + System.currentTimeMillis();
+                String id = "nightitem_" + System.currentTimeMillis();
                 plugin.getBlackShopManager().addItem(id, item.clone(), price, stock);
 
                 Map<String, String> placeholders = new HashMap<>();
-                placeholders.put("item", item.getType().name());
+                String itemName = item.getType().name();
+                if (item.hasItemMeta() && item.getItemMeta().hasDisplayName()) {
+                    itemName = item.getItemMeta().getDisplayName();
+                }
+                placeholders.put("item", itemName);
                 placeholders.put("price", String.format("%.2f", price));
                 placeholders.put("stock", String.valueOf(stock));
                 player.sendMessage(plugin.getLanguageManager().getPrefixedMessage("nightshop-item-added", placeholders));

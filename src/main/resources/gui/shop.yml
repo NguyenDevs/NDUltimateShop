@@ -40,6 +40,8 @@ decorative-items:
     name: "&c✖ Đóng"
 
 sounds:
+  enable: true
   click: UI_BUTTON_CLICK:1:1
   success: ENTITY_PLAYER_LEVELUP:1:2
   error: BLOCK_NOTE_BLOCK_BASS:1:0.5
+  open: BLOCK_ENDER_CHEST_OPEN:1:0.5

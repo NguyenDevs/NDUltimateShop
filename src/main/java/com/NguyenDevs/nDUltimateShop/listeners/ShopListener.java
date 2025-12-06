@@ -96,7 +96,12 @@ public class ShopListener implements Listener {
 
         Map<String, String> ph = new HashMap<>();
         ph.put("amount", "1");
-        ph.put("item", shopItem.getItemStack().getType().name());
+        ItemStack item = shopItem.getItemStack();
+        String itemName = item.getType().name();
+        if (item.hasItemMeta() && item.getItemMeta().hasDisplayName()) {
+            itemName = item.getItemMeta().getDisplayName();
+        }
+        ph.put("item", itemName);
         ph.put("price", String.format("%,.2f", finalPrice));
         player.sendMessage(plugin.getLanguageManager().getPrefixedMessage("shop-item-bought", ph));
 

@@ -60,7 +60,8 @@ messages:
   action-cancel: "&c▶ Shift + Click để Gỡ!"
 
 sounds:
+  enable: true
   click: UI_BUTTON_CLICK:1:1
   success: ENTITY_EXPERIENCE_ORB_PICKUP:1:1
   error: BLOCK_NOTE_BLOCK_BASS:1:0.5
-  open: BLOCK_CHEST_OPEN:1:1
+  open: BLOCK_TRIAL_SPAWNER_DETECT_PLAYER:1:0.5
