@@ -1,74 +1,56 @@
-# NDUltimateShop Configuration
+# NDUltimateShop Main Configuration
+# Version: 2.0.0
 
-# Ngôn ngữ
-language: vi
-
-# Cài đặt Auction
+# Auction House Settings
 auction:
-  # Thời gian mặt hàng được treo (giây)
-  duration: 86400 # 24 giờ
-  # Phí hoa hồng (%)
-  commission-fee: 5.0
-  # Số lượng item tối đa mỗi người có thể treo
+  # Maximum listings per player
   max-listings-per-player: 10
 
-# Cài đặt Shop
-shop:
-  # Tên GUI
-  gui-title: "&6&lCỬA HÀNG"
-  # Số hàng trong GUI (1-6)
-  gui-rows: 6
+  # Listing duration in seconds (86400 = 24 hours)
+  duration: 86400
 
-# Cài đặt Sell
-sell:
-  # Tên GUI
-  gui-title: "&e&lBÁN VẬT PHẨM"
-  # Số hàng trong GUI
-  gui-rows: 6
-  # Giá mặc định cho item không có trong config (theo material)
-  default-prices:
-    DIAMOND: 100.0
-    GOLD_INGOT: 50.0
-    IRON_INGOT: 10.0
-    COAL: 5.0
-    EMERALD: 200.0
+  # Commission fee percentage (5 = 5%)
+  commission-fee: 5.0
 
-# Cài đặt Chợ Đêm
+# Black Shop Settings
 blackshop:
-  # Tên GUI
-  gui-title: "&5&lCHỢ ĐÊM"
-  # Thời gian mở (giờ)
-  open-time: 20
-  close-time: 22
-  # Múi giờ
+  # Timezone for open/close times
   timezone: "Asia/Ho_Chi_Minh"
-  # Thông báo khi chợ mở/đóng
+
+  # Opening time (24-hour format)
+  open-time: 20
+
+  # Closing time (24-hour format)
+  close-time: 22
+
+  # Announce when black shop opens/closes
   announce-open: true
   announce-close: true
 
-# Cài đặt mã giảm giá
-coupon:
-  # Số lượng tối đa mỗi người có thể sử dụng
-  max-uses-per-player: 1
+# Sell System Settings
+sell:
+  # Default prices for materials (if not in itemsell.yml)
+  default-prices:
+    DIAMOND: 100.0
+    EMERALD: 50.0
+    GOLD_INGOT: 25.0
+    IRON_INGOT: 10.0
+    COAL: 5.0
+    COBBLESTONE: 0.5
+    DIRT: 0.1
+    STONE: 0.5
+    OAK_LOG: 2.0
+    WHEAT: 1.0
 
-# Cài đặt GUI chung
-gui:
-  # Item đại diện cho các nút
-  back-button:
-    material: ARROW
-    name: "&cQuay lại"
-  close-button:
-    material: BARRIER
-    name: "&cĐóng"
-  next-page:
-    material: ARROW
-    name: "&aTrang sau"
-  previous-page:
-    material: ARROW
-    name: "&eTrang trước"
-  confirm-button:
-    material: EMERALD
-    name: "&aXác nhận"
-  cancel-button:
-    material: REDSTONE
-    name: "&cHủy"
+# Language Settings
+language:
+  # Language file to use
+  file: "language.yml"
+
+# PlaceholderAPI Integration
+placeholderapi:
+  # Enable PlaceholderAPI support
+  enabled: true
+
+# Debug Mode
+debug: false

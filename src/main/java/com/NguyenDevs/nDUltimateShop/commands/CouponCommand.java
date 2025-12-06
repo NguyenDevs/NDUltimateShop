@@ -5,12 +5,13 @@ import com.NguyenDevs.nDUltimateShop.models.Coupon;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
-public class CouponCommand implements CommandExecutor {
+public class CouponCommand implements CommandExecutor, TabCompleter {
 
     private final NDUltimateShop plugin;
 
@@ -61,7 +62,6 @@ public class CouponCommand implements CommandExecutor {
             placeholders.put("discount", String.format("%.0f", coupon.getDiscount()));
             player.sendMessage(plugin.getLanguageManager().getPrefixedMessage("coupon-applied", placeholders));
 
-            // Show additional info
             if (coupon.getType() == Coupon.CouponType.TIME) {
                 Map<String, String> timePlaceholders = new HashMap<>();
                 timePlaceholders.put("time", formatTime(coupon.getTimeLeft()));
@@ -76,6 +76,22 @@ public class CouponCommand implements CommandExecutor {
         return true;
     }
 
+    @Override
+    public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
+        List<String> completions = new ArrayList<>();
+
+        if (args.length == 1) {
+            completions.addAll(plugin.getCouponManager().getAllCoupons().stream()
+                    .filter(c -> !c.isExpired())
+                    .map(Coupon::getCode)
+                    .collect(Collectors.toList()));
+        }
+
+        return completions.stream()
+                .filter(s -> s.toLowerCase().startsWith(args[args.length - 1].toLowerCase()))
+                .collect(Collectors.toList());
+    }
+
     private String formatTime(long millis) {
         long seconds = millis / 1000;
         long minutes = seconds / 60;
@@ -83,13 +99,13 @@ public class CouponCommand implements CommandExecutor {
         long days = hours / 24;
 
         if (days > 0) {
-            return days + " ngày";
+            return days + " " + plugin.getLanguageManager().getMessage("time-days");
         } else if (hours > 0) {
-            return hours + " giờ";
+            return hours + " " + plugin.getLanguageManager().getMessage("time-hours");
         } else if (minutes > 0) {
-            return minutes + " phút";
+            return minutes + " " + plugin.getLanguageManager().getMessage("time-minutes");
         } else {
-            return seconds + " giây";
+            return seconds + " " + plugin.getLanguageManager().getMessage("time-seconds");
         }
     }
 }

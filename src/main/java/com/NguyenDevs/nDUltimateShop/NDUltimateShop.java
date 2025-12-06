@@ -7,57 +7,55 @@ import net.milkbowl.vault.economy.Economy;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
-public final class NDUltimateShop extends JavaPlugin {
+public class NDUltimateShop extends JavaPlugin {
 
-    private static NDUltimateShop instance;
     private Economy economy;
     private ConfigManager configManager;
     private LanguageManager languageManager;
     private ShopManager shopManager;
     private AuctionManager auctionManager;
     private SellManager sellManager;
-    private CouponManager couponManager;
     private BlackShopManager blackShopManager;
+    private CouponManager couponManager;
+    private PlaceholderManager placeholderManager;
 
     @Override
     public void onEnable() {
-        instance = this;
-
-        // Setup Vault Economy
         if (!setupEconomy()) {
-            getLogger().severe("Vault không tìm thấy! Plugin bị vô hiệu hóa.");
+            getLogger().severe("Vault không tìm thấy! Plugin sẽ bị vô hiệu hóa.");
             getServer().getPluginManager().disablePlugin(this);
             return;
         }
 
-        // Initialize managers
         configManager = new ConfigManager(this);
-        languageManager = new LanguageManager(this);
-        shopManager = new ShopManager(this);
-        auctionManager = new AuctionManager(this);
-        sellManager = new SellManager(this);
-        couponManager = new CouponManager(this);
-        blackShopManager = new BlackShopManager(this);
-
-        // Load configs
         configManager.loadAllConfigs();
+
+        languageManager = new LanguageManager(this);
         languageManager.loadLanguage();
+
+        placeholderManager = new PlaceholderManager(this);
+
+        shopManager = new ShopManager(this);
         shopManager.loadShops();
+
+        auctionManager = new AuctionManager(this);
         auctionManager.loadAuctions();
-        sellManager.loadSellPrices();
-        blackShopManager.loadBlackShop();
-
-        // Register commands
-        registerCommands();
-
-        // Register listeners
-        registerListeners();
-
-        // Start schedulers
-        blackShopManager.startScheduler();
         auctionManager.startExpirationChecker();
 
-        getLogger().info("NDUltimateShop đã được kích hoạt thành công!");
+        sellManager = new SellManager(this);
+        sellManager.loadSellPrices();
+
+        blackShopManager = new BlackShopManager(this);
+        blackShopManager.loadBlackShop();
+        blackShopManager.startScheduler();
+
+        couponManager = new CouponManager(this);
+        couponManager.loadCoupons();
+
+        registerCommands();
+        registerListeners();
+
+        getLogger().info("NDUltimateShop đã được kích hoạt!");
     }
 
     @Override
@@ -65,10 +63,54 @@ public final class NDUltimateShop extends JavaPlugin {
         if (auctionManager != null) {
             auctionManager.saveAuctions();
         }
+        if (shopManager != null) {
+            shopManager.saveShops();
+        }
         if (blackShopManager != null) {
             blackShopManager.stopScheduler();
+            blackShopManager.saveBlackShop();
         }
-        getLogger().info("NDUltimateShop đã được vô hiệu hóa!");
+        if (couponManager != null) {
+            couponManager.saveCoupons();
+        }
+        if (sellManager != null) {
+            sellManager.saveSellPrices();
+        }
+
+        getLogger().info("NDUltimateShop đã bị vô hiệu hóa!");
+    }
+
+    private void registerCommands() {
+        AdminCommand adminCommand = new AdminCommand(this);
+        getCommand("ndshop").setExecutor(adminCommand);
+        getCommand("ndshop").setTabCompleter(adminCommand);
+
+        ShopCommand shopCommand = new ShopCommand(this);
+        getCommand("shop").setExecutor(shopCommand);
+        getCommand("shop").setTabCompleter(shopCommand);
+
+        AuctionCommand auctionCommand = new AuctionCommand(this);
+        getCommand("ah").setExecutor(auctionCommand);
+        getCommand("ah").setTabCompleter(auctionCommand);
+
+        SellCommand sellCommand = new SellCommand(this);
+        getCommand("sell").setExecutor(sellCommand);
+        getCommand("sell").setTabCompleter(sellCommand);
+
+        BlackShopCommand blackShopCommand = new BlackShopCommand(this);
+        getCommand("blackshop").setExecutor(blackShopCommand);
+        getCommand("blackshop").setTabCompleter(blackShopCommand);
+
+        CouponCommand couponCommand = new CouponCommand(this);
+        getCommand("coupon").setExecutor(couponCommand);
+        getCommand("coupon").setTabCompleter(couponCommand);
+    }
+
+    private void registerListeners() {
+        getServer().getPluginManager().registerEvents(new ShopListener(this), this);
+        getServer().getPluginManager().registerEvents(new AuctionListener(this), this);
+        getServer().getPluginManager().registerEvents(new SellListener(this), this);
+        getServer().getPluginManager().registerEvents(new BlackShopListener(this), this);
     }
 
     private boolean setupEconomy() {
@@ -81,27 +123,6 @@ public final class NDUltimateShop extends JavaPlugin {
         }
         economy = rsp.getProvider();
         return economy != null;
-    }
-
-    private void registerCommands() {
-        getCommand("shop").setExecutor(new ShopCommand(this));
-        getCommand("auction").setExecutor(new AuctionCommand(this));
-        getCommand("ah").setExecutor(new AuctionCommand(this));
-        getCommand("sell").setExecutor(new SellCommand(this));
-        getCommand("coupon").setExecutor(new CouponCommand(this));
-        getCommand("blackshop").setExecutor(new BlackShopCommand(this));
-        getCommand("ndshop").setExecutor(new AdminCommand(this));
-    }
-
-    private void registerListeners() {
-        getServer().getPluginManager().registerEvents(new ShopListener(this), this);
-        getServer().getPluginManager().registerEvents(new AuctionListener(this), this);
-        getServer().getPluginManager().registerEvents(new SellListener(this), this);
-    }
-
-    // Getters
-    public static NDUltimateShop getInstance() {
-        return instance;
     }
 
     public Economy getEconomy() {
@@ -128,11 +149,15 @@ public final class NDUltimateShop extends JavaPlugin {
         return sellManager;
     }
 
+    public BlackShopManager getBlackShopManager() {
+        return blackShopManager;
+    }
+
     public CouponManager getCouponManager() {
         return couponManager;
     }
 
-    public BlackShopManager getBlackShopManager() {
-        return blackShopManager;
+    public PlaceholderManager getPlaceholderManager() {
+        return placeholderManager;
     }
 }

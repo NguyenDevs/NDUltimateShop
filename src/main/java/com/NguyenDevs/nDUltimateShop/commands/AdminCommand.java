@@ -6,13 +6,14 @@ import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
-public class AdminCommand implements CommandExecutor {
+public class AdminCommand implements CommandExecutor, TabCompleter {
 
     private final NDUltimateShop plugin;
 
@@ -50,6 +51,56 @@ public class AdminCommand implements CommandExecutor {
         return true;
     }
 
+    @Override
+    public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
+        List<String> completions = new ArrayList<>();
+
+        if (!sender.hasPermission("ndshop.admin")) {
+            return completions;
+        }
+
+        if (args.length == 1) {
+            completions.addAll(Arrays.asList("reload", "shop", "sell", "coupon", "blackshop"));
+        } else if (args.length == 2) {
+            switch (args[0].toLowerCase()) {
+                case "shop":
+                    completions.addAll(Arrays.asList("add", "remove", "list", "setprice"));
+                    break;
+                case "sell":
+                    completions.addAll(Arrays.asList("setprice", "removeprice", "list"));
+                    break;
+                case "coupon":
+                    completions.addAll(Arrays.asList("create", "remove", "list"));
+                    break;
+                case "blackshop":
+                    completions.addAll(Arrays.asList("add", "remove", "list", "toggle"));
+                    break;
+            }
+        } else if (args.length == 3) {
+            if (args[0].equalsIgnoreCase("shop") && args[1].equalsIgnoreCase("remove")) {
+                completions.addAll(plugin.getShopManager().getAllShopItems().stream()
+                        .map(item -> item.getId())
+                        .collect(Collectors.toList()));
+            } else if (args[0].equalsIgnoreCase("coupon") && args[1].equalsIgnoreCase("remove")) {
+                completions.addAll(plugin.getCouponManager().getAllCoupons().stream()
+                        .map(Coupon::getCode)
+                        .collect(Collectors.toList()));
+            } else if ((args[0].equalsIgnoreCase("shop") || args[0].equalsIgnoreCase("blackshop")) && args[1].equalsIgnoreCase("add")) {
+                completions.add("<price>");
+            }
+        } else if (args.length == 4) {
+            if ((args[0].equalsIgnoreCase("shop") || args[0].equalsIgnoreCase("blackshop")) && args[1].equalsIgnoreCase("add")) {
+                completions.add("<stock>");
+            }
+        } else if (args.length == 5 && args[0].equalsIgnoreCase("coupon") && args[1].equalsIgnoreCase("create")) {
+            completions.addAll(Arrays.asList("time", "uses"));
+        }
+
+        return completions.stream()
+                .filter(s -> s.toLowerCase().startsWith(args[args.length - 1].toLowerCase()))
+                .collect(Collectors.toList());
+    }
+
     private boolean handleReload(CommandSender sender) {
         plugin.getConfigManager().reloadAllConfigs();
         plugin.getLanguageManager().loadLanguage();
@@ -71,11 +122,10 @@ public class AdminCommand implements CommandExecutor {
 
         Player player = (Player) sender;
 
-        // /ndshop shop add <price> [stock]
         if (args.length >= 3 && args[1].equalsIgnoreCase("add")) {
             ItemStack item = player.getInventory().getItemInMainHand();
             if (item == null || item.getType() == Material.AIR) {
-                player.sendMessage(plugin.getLanguageManager().getPrefixedMessage("auction-invalid-price"));
+                player.sendMessage(plugin.getLanguageManager().getPrefixedMessage("hold-item"));
                 return true;
             }
 
@@ -86,17 +136,22 @@ public class AdminCommand implements CommandExecutor {
                 String id = "item_" + System.currentTimeMillis();
                 plugin.getShopManager().addShopItem(id, item.clone(), price, stock);
 
-                player.sendMessage(plugin.getLanguageManager().getPrefixedMessage("shop-item-added"));
+                Map<String, String> placeholders = new HashMap<>();
+                placeholders.put("item", item.getType().name());
+                placeholders.put("price", String.format("%.2f", price));
+                placeholders.put("stock", String.valueOf(stock));
+                player.sendMessage(plugin.getLanguageManager().getPrefixedMessage("shop-item-added", placeholders));
             } catch (NumberFormatException e) {
-                player.sendMessage(plugin.getLanguageManager().getPrefixedMessage("auction-invalid-price"));
+                player.sendMessage(plugin.getLanguageManager().getPrefixedMessage("invalid-number"));
             }
             return true;
         }
 
-        // /ndshop shop remove <id>
         if (args.length >= 3 && args[1].equalsIgnoreCase("remove")) {
             plugin.getShopManager().removeShopItem(args[2]);
-            player.sendMessage(plugin.getLanguageManager().getPrefixedMessage("shop-item-removed"));
+            Map<String, String> placeholders = new HashMap<>();
+            placeholders.put("id", args[2]);
+            player.sendMessage(plugin.getLanguageManager().getPrefixedMessage("shop-item-removed", placeholders));
             return true;
         }
 
@@ -111,11 +166,10 @@ public class AdminCommand implements CommandExecutor {
 
         Player player = (Player) sender;
 
-        // /ndshop sell setprice <price>
         if (args.length >= 3 && args[1].equalsIgnoreCase("setprice")) {
             ItemStack item = player.getInventory().getItemInMainHand();
             if (item == null || item.getType() == Material.AIR) {
-                player.sendMessage(plugin.getLanguageManager().getPrefixedMessage("auction-invalid-price"));
+                player.sendMessage(plugin.getLanguageManager().getPrefixedMessage("hold-item"));
                 return true;
             }
 
@@ -128,7 +182,7 @@ public class AdminCommand implements CommandExecutor {
                 placeholders.put("price", String.format("%.2f", price));
                 player.sendMessage(plugin.getLanguageManager().getPrefixedMessage("sell-price-set", placeholders));
             } catch (NumberFormatException e) {
-                player.sendMessage(plugin.getLanguageManager().getPrefixedMessage("auction-invalid-price"));
+                player.sendMessage(plugin.getLanguageManager().getPrefixedMessage("invalid-number"));
             }
             return true;
         }
@@ -137,7 +191,6 @@ public class AdminCommand implements CommandExecutor {
     }
 
     private boolean handleCoupon(CommandSender sender, String[] args) {
-        // /ndshop coupon create <code> <discount%> <time|uses> <value>
         if (args.length >= 6 && args[1].equalsIgnoreCase("create")) {
             String code = args[2];
             double discount = Double.parseDouble(args[3]);
@@ -147,7 +200,6 @@ public class AdminCommand implements CommandExecutor {
             Coupon.CouponType couponType;
             if (type.equals("time")) {
                 couponType = Coupon.CouponType.TIME;
-                // Convert hours to milliseconds
                 value = Long.parseLong(args[5]) * 3600 * 1000;
             } else {
                 couponType = Coupon.CouponType.USES;
@@ -163,7 +215,6 @@ public class AdminCommand implements CommandExecutor {
             return true;
         }
 
-        // /ndshop coupon remove <code>
         if (args.length >= 3 && args[1].equalsIgnoreCase("remove")) {
             String code = args[2];
             if (plugin.getCouponManager().removeCoupon(code)) {
@@ -187,11 +238,10 @@ public class AdminCommand implements CommandExecutor {
 
         Player player = (Player) sender;
 
-        // /ndshop blackshop add <price> <stock>
         if (args.length >= 4 && args[1].equalsIgnoreCase("add")) {
             ItemStack item = player.getInventory().getItemInMainHand();
             if (item == null || item.getType() == Material.AIR) {
-                player.sendMessage(plugin.getLanguageManager().getPrefixedMessage("auction-invalid-price"));
+                player.sendMessage(plugin.getLanguageManager().getPrefixedMessage("hold-item"));
                 return true;
             }
 
@@ -202,9 +252,13 @@ public class AdminCommand implements CommandExecutor {
                 String id = "blackitem_" + System.currentTimeMillis();
                 plugin.getBlackShopManager().addItem(id, item.clone(), price, stock);
 
-                player.sendMessage(plugin.getLanguageManager().getPrefixedMessage("shop-item-added"));
+                Map<String, String> placeholders = new HashMap<>();
+                placeholders.put("item", item.getType().name());
+                placeholders.put("price", String.format("%.2f", price));
+                placeholders.put("stock", String.valueOf(stock));
+                player.sendMessage(plugin.getLanguageManager().getPrefixedMessage("blackshop-item-added", placeholders));
             } catch (NumberFormatException e) {
-                player.sendMessage(plugin.getLanguageManager().getPrefixedMessage("auction-invalid-price"));
+                player.sendMessage(plugin.getLanguageManager().getPrefixedMessage("invalid-number"));
             }
             return true;
         }

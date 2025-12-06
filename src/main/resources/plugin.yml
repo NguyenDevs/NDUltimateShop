@@ -1,48 +1,81 @@
 name: NDUltimateShop
-version: 1.0.0
+version: 2.0.0
 main: com.NguyenDevs.nDUltimateShop.NDUltimateShop
-api-version: 1.20
+api-version: 1.16
 depend: [Vault]
+softdepend: [PlaceholderAPI]
 author: NguyenDevs
-description: Ultimate shop plugin with auction, sell, coupons and night market
+description: Ultimate shop plugin with auction house, sell system, and black market
 
 commands:
-  shop:
-    description: Mở cửa hàng
-    permission: ndshop.shop.use
-  auction:
-    description: Mở nhà đấu giá
-    aliases: [ah]
-    permission: ndshop.auction.use
-  sell:
-    description: Mở giao diện bán vật phẩm
-    permission: ndshop.sell.use
-  coupon:
-    description: Sử dụng mã giảm giá
-    permission: ndshop.coupon.use
-  blackshop:
-    description: Mở chợ đêm
-    permission: ndshop.blackshop.use
   ndshop:
-    description: Lệnh admin
+    description: Main admin command
+    usage: /ndshop <reload|shop|sell|coupon|blackshop>
     permission: ndshop.admin
+    aliases: [ndsa, shopadmin]
+
+  shop:
+    description: Open the shop GUI
+    usage: /shop
+    permission: ndshop.shop.use
+    aliases: [cửahàng, ch]
+
+  ah:
+    description: Open auction house or sell items
+    usage: /ah [sell <price>]
+    permission: ndshop.auction.use
+    aliases: [auction, đấugiá, dg]
+
+  sell:
+    description: Open sell GUI
+    usage: /sell
+    permission: ndshop.sell.use
+    aliases: [bán, ban]
+
+  blackshop:
+    description: Open black shop
+    usage: /blackshop
+    permission: ndshop.blackshop.use
+    aliases: [chợđêm, cd, bs]
+
+  coupon:
+    description: Use a coupon code
+    usage: /coupon <code>
+    permission: ndshop.coupon.use
+    aliases: [giảmgiá, gg, code]
 
 permissions:
   ndshop.admin:
-    description: Quyền admin
+    description: Access to all admin commands
     default: op
+
   ndshop.shop.use:
-    description: Sử dụng cửa hàng
+    description: Access to shop
     default: true
+
   ndshop.auction.use:
-    description: Sử dụng nhà đấu giá
+    description: Access to auction house
     default: true
+
   ndshop.sell.use:
-    description: Sử dụng giao diện bán
+    description: Access to sell system
     default: true
-  ndshop.coupon.use:
-    description: Sử dụng mã giảm giá
-    default: true
+
   ndshop.blackshop.use:
-    description: Sử dụng chợ đêm
+    description: Access to black shop
     default: true
+
+  ndshop.coupon.use:
+    description: Use coupon codes
+    default: true
+
+  ndshop.*:
+    description: All permissions
+    default: op
+    children:
+      ndshop.admin: true
+      ndshop.shop.use: true
+      ndshop.auction.use: true
+      ndshop.sell.use: true
+      ndshop.blackshop.use: true
+      ndshop.coupon.use: true

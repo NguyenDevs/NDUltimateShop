@@ -1,15 +1,111 @@
-items:
-  diamond_sword:
-    item:
-      ==: org.bukkit.inventory.ItemStack
-      v: 2230
-      type: DIAMOND_SWORD
-    price: 500.0
-    stock: -1  # -1 = unlimited
-  golden_apple:
-    item:
-      ==: org.bukkit.inventory.ItemStack
-      v: 2230
-      type: GOLDEN_APPLE
-    price: 100.0
-    stock: 50
+# Shop GUI Configuration
+title: "&6&lCỬA HÀNG - Trang {page}"
+rows: 6
+
+# Item display slots (where shop items will be shown)
+item-slots:
+  - 10
+  - 11
+  - 12
+  - 13
+  - 14
+  - 15
+  - 16
+  - 19
+  - 20
+  - 21
+  - 22
+  - 23
+  - 24
+  - 25
+  - 28
+  - 29
+  - 30
+  - 31
+  - 32
+  - 33
+  - 34
+  - 37
+  - 38
+  - 39
+  - 40
+  - 41
+  - 42
+  - 43
+
+# Special slots mapping
+slots:
+  info: 4
+  previous: 48
+  next: 50
+  close: 49
+
+# Filler slots (decorative glass panes)
+filler-slots:
+  - 0
+  - 1
+  - 2
+  - 3
+  - 5
+  - 6
+  - 7
+  - 8
+  - 9
+  - 17
+  - 18
+  - 26
+  - 27
+  - 35
+  - 36
+  - 44
+  - 45
+  - 46
+  - 47
+  - 51
+  - 52
+  - 53
+
+filler-material: GRAY_STAINED_GLASS_PANE
+
+# Decorative items
+decorative-items:
+  info:
+    material: BOOK
+    name: "&e&lTHÔNG TIN CỬA HÀNG"
+    lore:
+      - "&7Số dư: &a${balance}"
+      - "&7Mã giảm giá: &d{coupon}"
+      - "&7Giảm giá: &c{coupon_discount}%"
+      - ""
+      - "&eNhấn vào vật phẩm để mua!"
+    enchanted: true
+  
+  previous-button:
+    material: ARROW
+    name: "&e◀ Trang Trước"
+    lore:
+      - "&7Nhấn để xem trang trước"
+  
+  next-button:
+    material: ARROW
+    name: "&eTrang Tiếp ▶"
+    lore:
+      - "&7Nhấn để xem trang tiếp"
+  
+  close-button:
+    material: BARRIER
+    name: "&c✖ Đóng"
+    lore:
+      - "&7Nhấn để đóng cửa hàng"
+
+# Lore messages for shop items
+messages:
+  lore-discount: "&d⚡ Giảm giá: &c-{discount}%"
+  lore-original-price: "&7&mGiá gốc: &r&7{original_price}$"
+  lore-price: "&aGiá: &e{price}$"
+  lore-stock: "&7Còn lại: &b{stock}"
+  lore-click-buy: "&e▶ Nhấn để mua!"
+  
+  shop-item-bought: "&aĐã mua &e{amount}x {item} &avới giá &e{price}$"
+  shop-not-enough-stock: "&cKhông đủ hàng trong kho!"
+  not-enough-money: "&cBạn cần thêm &e{amount}$ &cđể mua vật phẩm này!"

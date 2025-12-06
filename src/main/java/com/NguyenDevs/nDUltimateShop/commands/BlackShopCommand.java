@@ -5,12 +5,15 @@ import com.NguyenDevs.nDUltimateShop.gui.BlackShopGUI;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
-public class BlackShopCommand implements CommandExecutor {
+public class BlackShopCommand implements CommandExecutor, TabCompleter {
 
     private final NDUltimateShop plugin;
 
@@ -42,8 +45,11 @@ public class BlackShopCommand implements CommandExecutor {
         }
 
         new BlackShopGUI(plugin, player).open();
-        player.sendMessage(plugin.getLanguageManager().getMessage("blackshop-opened"));
-
         return true;
+    }
+
+    @Override
+    public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
+        return new ArrayList<>();
     }
 }

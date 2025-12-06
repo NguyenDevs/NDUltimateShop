@@ -1,104 +1,189 @@
 package com.NguyenDevs.nDUltimateShop.gui;
 
 import com.NguyenDevs.nDUltimateShop.NDUltimateShop;
+import com.NguyenDevs.nDUltimateShop.managers.GUIConfigManager;
 import com.NguyenDevs.nDUltimateShop.models.Coupon;
 import com.NguyenDevs.nDUltimateShop.models.ShopItem;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
-public class ShopGUI extends BaseGUI {
+public class ShopGUI {
 
-    private static final int ITEMS_PER_PAGE = 45;
+    private final NDUltimateShop plugin;
+    private final Player player;
+    private Inventory inventory;
+    private int currentPage = 0;
+    private final GUIConfigManager.GUIConfig config;
+    private final List<ShopItem> items;
 
     public ShopGUI(NDUltimateShop plugin, Player player) {
-        super(plugin, player);
+        this.plugin = plugin;
+        this.player = player;
+        this.config = plugin.getConfigManager().getGUIConfig("shop");
+        this.items = new ArrayList<>(plugin.getShopManager().getAllShopItems());
     }
 
-    @Override
     public void open() {
-        String title = plugin.getConfig().getString("shop.gui-title", "&6&lCỬA HÀNG");
-        int rows = plugin.getConfig().getInt("shop.gui-rows", 6);
+        String title = plugin.getPlaceholderManager().replacePlaceholders(player, config.getTitle());
+        int rows = config.getRows();
         inventory = Bukkit.createInventory(null, rows * 9,
-                com.NguyenDevs.nDUltimateShop.managers.LanguageManager.colorize(title));
+                plugin.getLanguageManager().colorize(title));
 
-        loadItems();
+        setupGUI();
         player.openInventory(inventory);
     }
 
-    private void loadItems() {
-        List<ShopItem> items = new ArrayList<>(plugin.getShopManager().getAllShopItems());
-
-        int startIndex = currentPage * ITEMS_PER_PAGE;
-        int endIndex = Math.min(startIndex + ITEMS_PER_PAGE, items.size());
+    private void setupGUI() {
+        List<Integer> itemSlots = config.getItemSlots();
+        int startIndex = currentPage * itemSlots.size();
+        int endIndex = Math.min(startIndex + itemSlots.size(), items.size());
 
         for (int i = startIndex; i < endIndex; i++) {
             ShopItem shopItem = items.get(i);
+            int slot = itemSlots.get(i - startIndex);
             ItemStack displayItem = createShopItemDisplay(shopItem);
-            inventory.setItem(i - startIndex, displayItem);
+            inventory.setItem(slot, displayItem);
         }
 
-        // Add navigation
-        if (endIndex < items.size()) {
-            ItemStack nextButton = createItem(
-                    Material.ARROW,
-                    plugin.getLanguageManager().getMessage("gui-next-page")
-            );
-            inventory.setItem(inventory.getSize() - 1, nextButton);
+        Map<String, Integer> slots = config.getSlotMapping();
+
+        if (currentPage > 0 && slots.containsKey("previous")) {
+            ItemStack prevButton = config.getDecorativeItem("previous-button");
+            inventory.setItem(slots.get("previous"), prevButton);
         }
 
-        addNavigationButtons(inventory.getSize());
+        if (endIndex < items.size() && slots.containsKey("next")) {
+            ItemStack nextButton = config.getDecorativeItem("next-button");
+            inventory.setItem(slots.get("next"), nextButton);
+        }
+
+        if (slots.containsKey("close")) {
+            ItemStack closeButton = config.getDecorativeItem("close-button");
+            inventory.setItem(slots.get("close"), closeButton);
+        }
+
+        if (slots.containsKey("info")) {
+            ItemStack infoItem = createInfoItem();
+            inventory.setItem(slots.get("info"), infoItem);
+        }
+
+        fillDecorative();
     }
 
     private ItemStack createShopItemDisplay(ShopItem shopItem) {
-        ItemStack display = shopItem.getItemStack();
+        ItemStack display = shopItem.getItemStack().clone();
         ItemMeta meta = display.getItemMeta();
 
         if (meta != null) {
-            List<String> lore = meta.hasLore() ? meta.getLore() : new ArrayList<>();
+            List<String> lore = meta.hasLore() ? new ArrayList<>(meta.getLore()) : new ArrayList<>();
 
-            // Get price with discount if applicable
             double originalPrice = shopItem.getPrice();
             double finalPrice = plugin.getCouponManager().getDiscountedPrice(player.getUniqueId(), originalPrice);
 
-            // Add discount indicator
+            Map<String, String> placeholders = new HashMap<>();
+            placeholders.put("price", String.format("%.2f", finalPrice));
+            placeholders.put("original_price", String.format("%.2f", originalPrice));
+            placeholders.put("stock", shopItem.getStock() == -1 ? "∞" : String.valueOf(shopItem.getStock()));
+
             if (finalPrice < originalPrice) {
                 String activeCoupon = plugin.getCouponManager().getActiveCoupon(player.getUniqueId());
                 Coupon coupon = plugin.getCouponManager().getCoupon(activeCoupon);
                 if (coupon != null) {
-                    Map<String, String> discountPlaceholder = new HashMap<>();
-                    discountPlaceholder.put("discount", String.format("%.0f", coupon.getDiscount()));
-                    lore.add(plugin.getLanguageManager().getMessage("lore-discount", discountPlaceholder));
-
-                    Map<String, String> originalPlaceholder = new HashMap<>();
-                    originalPlaceholder.put("price", String.format("%.2f", originalPrice));
-                    lore.add(plugin.getLanguageManager().getMessage("lore-original-price", originalPlaceholder));
+                    placeholders.put("discount", String.format("%.0f", coupon.getDiscount()));
+                    lore.add(plugin.getPlaceholderManager().replacePlaceholders(player,
+                            config.getMessage("lore-discount"), placeholders));
+                    lore.add(plugin.getPlaceholderManager().replacePlaceholders(player,
+                            config.getMessage("lore-original-price"), placeholders));
                 }
             }
 
-            Map<String, String> pricePlaceholder = new HashMap<>();
-            pricePlaceholder.put("price", String.format("%.2f", finalPrice));
-            lore.add(plugin.getLanguageManager().getMessage("lore-price", pricePlaceholder));
+            lore.add(plugin.getPlaceholderManager().replacePlaceholders(player,
+                    config.getMessage("lore-price"), placeholders));
 
             if (shopItem.getStock() != -1) {
-                Map<String, String> stockPlaceholder = new HashMap<>();
-                stockPlaceholder.put("stock", String.valueOf(shopItem.getStock()));
-                lore.add(plugin.getLanguageManager().getMessage("lore-stock", stockPlaceholder));
+                lore.add(plugin.getPlaceholderManager().replacePlaceholders(player,
+                        config.getMessage("lore-stock"), placeholders));
             }
 
-            lore.add(plugin.getLanguageManager().getMessage("lore-click-buy"));
+            lore.add(plugin.getPlaceholderManager().replacePlaceholders(player,
+                    config.getMessage("lore-click-buy"), placeholders));
 
-            meta.setLore(lore);
+            List<String> coloredLore = new ArrayList<>();
+            for (String line : lore) {
+                coloredLore.add(plugin.getLanguageManager().colorize(line));
+            }
+            meta.setLore(coloredLore);
             display.setItemMeta(meta);
         }
 
         return display;
+    }
+
+    private ItemStack createInfoItem() {
+        ItemStack infoItem = config.getDecorativeItem("info");
+        if (infoItem == null) return null;
+
+        ItemMeta meta = infoItem.getItemMeta();
+        if (meta != null && meta.hasLore()) {
+            List<String> lore = new ArrayList<>();
+            for (String line : meta.getLore()) {
+                lore.add(plugin.getPlaceholderManager().replacePlaceholders(player, line));
+            }
+            meta.setLore(lore);
+            infoItem.setItemMeta(meta);
+        }
+
+        return infoItem;
+    }
+
+    private void fillDecorative() {
+        List<Integer> fillerSlots = config.getFillerSlots();
+        if (fillerSlots.isEmpty()) return;
+
+        ItemStack filler = new ItemStack(config.getFillerMaterial());
+        ItemMeta meta = filler.getItemMeta();
+        if (meta != null) {
+            meta.setDisplayName(" ");
+            filler.setItemMeta(meta);
+        }
+
+        for (int slot : fillerSlots) {
+            if (inventory.getItem(slot) == null) {
+                inventory.setItem(slot, filler);
+            }
+        }
+    }
+
+    public Player getPlayer() {
+        return player;
+    }
+
+    public int getCurrentPage() {
+        return currentPage;
+    }
+
+    public void setCurrentPage(int page) {
+        this.currentPage = page;
+    }
+
+    public Inventory getInventory() {
+        return inventory;
+    }
+
+    public ShopItem getShopItemAt(int slot) {
+        List<Integer> itemSlots = config.getItemSlots();
+        int index = itemSlots.indexOf(slot);
+        if (index == -1) return null;
+
+        int actualIndex = currentPage * itemSlots.size() + index;
+        if (actualIndex >= items.size()) return null;
+
+        return items.get(actualIndex);
     }
 }

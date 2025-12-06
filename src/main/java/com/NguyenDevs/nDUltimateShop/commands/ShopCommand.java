@@ -5,9 +5,13 @@ import com.NguyenDevs.nDUltimateShop.gui.ShopGUI;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 
-public class ShopCommand implements CommandExecutor {
+import java.util.ArrayList;
+import java.util.List;
+
+public class ShopCommand implements CommandExecutor, TabCompleter {
 
     private final NDUltimateShop plugin;
 
@@ -30,8 +34,11 @@ public class ShopCommand implements CommandExecutor {
         }
 
         new ShopGUI(plugin, player).open();
-        player.sendMessage(plugin.getLanguageManager().getMessage("shop-opened"));
-
         return true;
+    }
+
+    @Override
+    public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
+        return new ArrayList<>();
     }
 }

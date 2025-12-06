@@ -24,7 +24,7 @@ public class AuctionManager {
 
     public void loadAuctions() {
         activeListings.clear();
-        FileConfiguration config = plugin.getConfigManager().getConfig("auctions.yml");
+        FileConfiguration config = plugin.getConfigManager().getConfig("auction.yml");
 
         ConfigurationSection listingsSection = config.getConfigurationSection("listings");
         if (listingsSection != null) {
@@ -45,7 +45,7 @@ public class AuctionManager {
     }
 
     public void saveAuctions() {
-        FileConfiguration config = plugin.getConfigManager().getConfig("auctions.yml");
+        FileConfiguration config = plugin.getConfigManager().getConfig("auction.yml");
         config.set("listings", null);
 
         for (Map.Entry<String, AuctionListing> entry : activeListings.entrySet()) {
@@ -59,7 +59,7 @@ public class AuctionManager {
             config.set(key + ".expiration", listing.getExpirationTime());
         }
 
-        plugin.getConfigManager().saveConfig("auctions.yml");
+        plugin.getConfigManager().saveConfig("auction.yml");
     }
 
     public String createListing(Player seller, ItemStack item, double price) {

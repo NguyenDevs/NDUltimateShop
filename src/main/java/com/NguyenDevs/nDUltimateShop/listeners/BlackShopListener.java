@@ -1,7 +1,7 @@
 package com.NguyenDevs.nDUltimateShop.listeners;
 
 import com.NguyenDevs.nDUltimateShop.NDUltimateShop;
-import com.NguyenDevs.nDUltimateShop.gui.ShopGUI;
+import com.NguyenDevs.nDUltimateShop.gui.BlackShopGUI;
 import com.NguyenDevs.nDUltimateShop.managers.GUIConfigManager;
 import com.NguyenDevs.nDUltimateShop.models.ShopItem;
 import org.bukkit.entity.Player;
@@ -13,12 +13,12 @@ import org.bukkit.inventory.ItemStack;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ShopListener implements Listener {
+public class BlackShopListener implements Listener {
 
     private final NDUltimateShop plugin;
-    private final Map<Player, ShopGUI> activeGUIs = new HashMap<>();
+    private final Map<Player, BlackShopGUI> activeGUIs = new HashMap<>();
 
-    public ShopListener(NDUltimateShop plugin) {
+    public BlackShopListener(NDUltimateShop plugin) {
         this.plugin = plugin;
     }
 
@@ -27,7 +27,7 @@ public class ShopListener implements Listener {
         if (!(event.getWhoClicked() instanceof Player)) return;
 
         Player player = (Player) event.getWhoClicked();
-        GUIConfigManager.GUIConfig config = plugin.getConfigManager().getGUIConfig("shop");
+        GUIConfigManager.GUIConfig config = plugin.getConfigManager().getGUIConfig("blackshop");
         String title = plugin.getPlaceholderManager().replacePlaceholders(player, config.getTitle());
         title = plugin.getLanguageManager().colorize(title);
 
@@ -40,7 +40,7 @@ public class ShopListener implements Listener {
 
         if (clickedItem == null || slot >= event.getInventory().getSize()) return;
 
-        ShopGUI gui = activeGUIs.get(player);
+        BlackShopGUI gui = activeGUIs.get(player);
         if (gui == null) return;
 
         Map<String, Integer> slots = config.getSlotMapping();
@@ -71,23 +71,22 @@ public class ShopListener implements Listener {
         }
     }
 
-    private void purchaseItem(Player player, ShopItem shopItem, ShopGUI gui) {
+    private void purchaseItem(Player player, ShopItem shopItem, BlackShopGUI gui) {
         if (!shopItem.hasStock()) {
             player.sendMessage(plugin.getLanguageManager().getPrefixedMessage("shop-not-enough-stock"));
             return;
         }
 
-        double originalPrice = shopItem.getPrice();
-        double finalPrice = plugin.getCouponManager().getDiscountedPrice(player.getUniqueId(), originalPrice);
+        double price = shopItem.getPrice();
 
-        if (plugin.getEconomy().getBalance(player) < finalPrice) {
+        if (plugin.getEconomy().getBalance(player) < price) {
             Map<String, String> placeholders = new HashMap<>();
-            placeholders.put("amount", String.format("%.2f", finalPrice));
+            placeholders.put("amount", String.format("%.2f", price));
             player.sendMessage(plugin.getLanguageManager().getPrefixedMessage("not-enough-money", placeholders));
             return;
         }
 
-        plugin.getEconomy().withdrawPlayer(player, finalPrice);
+        plugin.getEconomy().withdrawPlayer(player, price);
 
         Map<Integer, ItemStack> remaining = player.getInventory().addItem(shopItem.getItemStack());
         if (!remaining.isEmpty()) {
@@ -96,18 +95,18 @@ public class ShopListener implements Listener {
             }
         }
 
-        plugin.getShopManager().purchaseItem(shopItem.getId(), 1);
+        plugin.getBlackShopManager().purchaseItem(shopItem.getId(), 1);
 
         Map<String, String> placeholders = new HashMap<>();
         placeholders.put("amount", "1");
         placeholders.put("item", shopItem.getItemStack().getType().name());
-        placeholders.put("price", String.format("%.2f", finalPrice));
-        player.sendMessage(plugin.getLanguageManager().getPrefixedMessage("shop-item-bought", placeholders));
+        placeholders.put("price", String.format("%.2f", price));
+        player.sendMessage(plugin.getLanguageManager().getPrefixedMessage("blackshop-item-bought", placeholders));
 
         gui.open();
     }
 
-    public void registerGUI(Player player, ShopGUI gui) {
+    public void registerGUI(Player player, BlackShopGUI gui) {
         activeGUIs.put(player, gui);
     }
 

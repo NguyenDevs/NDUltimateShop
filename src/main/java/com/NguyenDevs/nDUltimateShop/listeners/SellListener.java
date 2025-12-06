@@ -2,23 +2,24 @@ package com.NguyenDevs.nDUltimateShop.listeners;
 
 import com.NguyenDevs.nDUltimateShop.NDUltimateShop;
 import com.NguyenDevs.nDUltimateShop.gui.SellGUI;
-import com.NguyenDevs.nDUltimateShop.managers.LanguageManager;
-import org.bukkit.Material;
+import com.NguyenDevs.nDUltimateShop.managers.GUIConfigManager;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
-import org.bukkit.inventory.Inventory;
+import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class SellListener implements Listener {
 
     private final NDUltimateShop plugin;
-    private final Map<Player, SellGUI> activeSellGUIs = new HashMap<>();
+    private final Map<Player, SellGUI> activeGUIs = new HashMap<>();
 
     public SellListener(NDUltimateShop plugin) {
         this.plugin = plugin;
@@ -29,86 +30,92 @@ public class SellListener implements Listener {
         if (!(event.getWhoClicked() instanceof Player)) return;
 
         Player player = (Player) event.getWhoClicked();
-        String title = event.getView().getTitle();
-        String sellTitle = plugin.getConfig().getString("sell.gui-title", "&e&lBÁN VẬT PHẨM");
-        sellTitle = com.NguyenDevs.nDUltimateShop.managers.LanguageManager.colorize(sellTitle);
+        GUIConfigManager.GUIConfig config = plugin.getConfigManager().getGUIConfig("sell");
+        String title = plugin.getPlaceholderManager().replacePlaceholders(player, config.getTitle());
+        title = plugin.getLanguageManager().colorize(title);
 
-        if (!title.equals(sellTitle)) return;
+        if (!event.getView().getTitle().equals(title)) return;
 
-        ItemStack clickedItem = event.getCurrentItem();
         int slot = event.getRawSlot();
+        ItemStack clickedItem = event.getCurrentItem();
 
-        // Handle confirm button
-        if (slot == 48 && clickedItem != null && clickedItem.getType() == Material.EMERALD) {
+        SellGUI gui = activeGUIs.get(player);
+        if (gui == null) return;
+
+        Map<String, Integer> slots = config.getSlotMapping();
+        List<Integer> itemSlots = config.getItemSlots();
+
+        if (slots.containsKey("confirm") && slot == slots.get("confirm")) {
             event.setCancelled(true);
-            confirmSell(player, event.getInventory());
+            if (gui.confirmSell()) {
+                player.closeInventory();
+                activeGUIs.remove(player);
+            }
             return;
         }
 
-        // Handle cancel button
-        if (slot == 50 && clickedItem != null && clickedItem.getType() == Material.REDSTONE) {
+        if (slots.containsKey("cancel") && slot == slots.get("cancel")) {
             event.setCancelled(true);
-            cancelSell(player, event.getInventory());
+            gui.cancelSell();
+            player.closeInventory();
+            activeGUIs.remove(player);
             return;
         }
 
-        // Prevent clicking on UI elements
-        if (slot == 4 || slot == 49) {
+        if (slots.containsKey("info") && slot == slots.get("info")) {
             event.setCancelled(true);
             return;
         }
 
-        // Allow placing items in sell slots (9-44)
-        if (slot >= 9 && slot < 45) {
-            // Allow drag and drop
+        if (slots.containsKey("total-value") && slot == slots.get("total-value")) {
+            event.setCancelled(true);
             return;
         }
 
-        // Prevent other clicks
-        if (slot < 54) {
+        if (itemSlots.contains(slot)) {
+            if (slot < event.getInventory().getSize()) {
+                plugin.getServer().getScheduler().runTaskLater(plugin, () -> {
+                    gui.updateTotalDisplay();
+                }, 1L);
+                return;
+            }
+        }
+
+        if (slot < event.getInventory().getSize()) {
             event.setCancelled(true);
         }
     }
 
-    private void confirmSell(Player player, Inventory inventory) {
-        double total = 0.0;
-        boolean hasItems = false;
+    @EventHandler
+    public void onInventoryDrag(InventoryDragEvent event) {
+        if (!(event.getWhoClicked() instanceof Player)) return;
 
-        for (int i = 9; i < 45; i++) {
-            ItemStack item = inventory.getItem(i);
-            if (item != null && item.getType() != Material.AIR) {
-                hasItems = true;
-                total += plugin.getSellManager().calculateSellValue(item);
-                inventory.setItem(i, null);
+        Player player = (Player) event.getWhoClicked();
+        GUIConfigManager.GUIConfig config = plugin.getConfigManager().getGUIConfig("sell");
+        String title = plugin.getPlaceholderManager().replacePlaceholders(player, config.getTitle());
+        title = plugin.getLanguageManager().colorize(title);
+
+        if (!event.getView().getTitle().equals(title)) return;
+
+        SellGUI gui = activeGUIs.get(player);
+        if (gui == null) return;
+
+        List<Integer> itemSlots = config.getItemSlots();
+        boolean affectsItemSlots = event.getRawSlots().stream()
+                .anyMatch(itemSlots::contains);
+
+        if (affectsItemSlots) {
+            plugin.getServer().getScheduler().runTaskLater(plugin, () -> {
+                gui.updateTotalDisplay();
+            }, 1L);
+        } else {
+            for (int slot : event.getRawSlots()) {
+                if (slot < event.getInventory().getSize()) {
+                    event.setCancelled(true);
+                    return;
+                }
             }
         }
-
-        if (!hasItems) {
-            player.sendMessage(plugin.getLanguageManager().getPrefixedMessage("sell-no-items"));
-            return;
-        }
-
-        plugin.getEconomy().depositPlayer(player, total);
-
-        Map<String, String> placeholders = new HashMap<>();
-        placeholders.put("amount", String.format("%.2f", total));
-        player.sendMessage(plugin.getLanguageManager().getPrefixedMessage("sell-success", placeholders));
-
-        player.closeInventory();
-    }
-
-    private void cancelSell(Player player, Inventory inventory) {
-        // Return items to player
-        for (int i = 9; i < 45; i++) {
-            ItemStack item = inventory.getItem(i);
-            if (item != null && item.getType() != Material.AIR) {
-                player.getInventory().addItem(item);
-                inventory.setItem(i, null);
-            }
-        }
-
-        player.sendMessage(plugin.getLanguageManager().getPrefixedMessage("sell-cancelled"));
-        player.closeInventory();
     }
 
     @EventHandler
@@ -116,19 +123,35 @@ public class SellListener implements Listener {
         if (!(event.getPlayer() instanceof Player)) return;
 
         Player player = (Player) event.getPlayer();
-        String title = event.getView().getTitle();
-        String sellTitle = plugin.getConfig().getString("sell.gui-title", "&e&lBÁN VẬT PHẨM");
-        sellTitle = com.NguyenDevs.nDUltimateShop.managers.LanguageManager.colorize(sellTitle);
+        GUIConfigManager.GUIConfig config = plugin.getConfigManager().getGUIConfig("sell");
+        String title = plugin.getPlaceholderManager().replacePlaceholders(player, config.getTitle());
+        title = plugin.getLanguageManager().colorize(title);
 
-        if (title.equals(sellTitle)) {
-            // Return unsold items
-            Inventory inventory = event.getInventory();
-            for (int i = 9; i < 45; i++) {
-                ItemStack item = inventory.getItem(i);
-                if (item != null && item.getType() != Material.AIR) {
-                    player.getInventory().addItem(item);
+        if (!event.getView().getTitle().equals(title)) return;
+
+        SellGUI gui = activeGUIs.get(player);
+        if (gui != null) {
+            List<Integer> itemSlots = config.getItemSlots();
+            for (int slot : itemSlots) {
+                ItemStack item = event.getInventory().getItem(slot);
+                if (item != null) {
+                    Map<Integer, ItemStack> remaining = player.getInventory().addItem(item);
+                    if (!remaining.isEmpty()) {
+                        for (ItemStack drop : remaining.values()) {
+                            player.getWorld().dropItem(player.getLocation(), drop);
+                        }
+                    }
                 }
             }
+            activeGUIs.remove(player);
         }
+    }
+
+    public void registerGUI(Player player, SellGUI gui) {
+        activeGUIs.put(player, gui);
+    }
+
+    public void unregisterGUI(Player player) {
+        activeGUIs.remove(player);
     }
 }

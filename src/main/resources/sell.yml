@@ -1,0 +1,105 @@
+# Sell GUI Configuration
+title: "&e&lBÁN VẬT PHẨM"
+rows: 6
+
+# Slots where players can place items to sell
+item-slots:
+  - 10
+  - 11
+  - 12
+  - 13
+  - 14
+  - 15
+  - 16
+  - 19
+  - 20
+  - 21
+  - 22
+  - 23
+  - 24
+  - 25
+  - 28
+  - 29
+  - 30
+  - 31
+  - 32
+  - 33
+  - 34
+  - 37
+  - 38
+  - 39
+  - 40
+  - 41
+  - 42
+  - 43
+
+slots:
+  info: 4
+  total-value: 49
+  confirm: 48
+  cancel: 50
+
+filler-slots:
+  - 0
+  - 1
+  - 2
+  - 3
+  - 5
+  - 6
+  - 7
+  - 8
+  - 9
+  - 17
+  - 18
+  - 26
+  - 27
+  - 35
+  - 36
+  - 44
+  - 45
+  - 46
+  - 47
+  - 51
+  - 52
+  - 53
+
+filler-material: GRAY_STAINED_GLASS_PANE
+
+decorative-items:
+  info:
+    material: BOOK
+    name: "&e&lHƯỚNG DẪN"
+    lore:
+      - "&7Kéo thả vật phẩm vào đây"
+      - "&7Nhấn nút xác nhận để bán"
+      - ""
+      - "&eGiá bán sẽ được tính tự động!"
+    enchanted: false
+
+  total-value:
+    material: GOLD_INGOT
+    name: "&6&lTỔNG GIÁ TRỊ"
+    lore:
+      - "&aTổng: &e{total}$"
+      - ""
+      - "&7Số dư hiện tại: &a${balance}"
+    enchanted: true
+
+  confirm:
+    material: EMERALD
+    name: "&a✔ Xác Nhận Bán"
+    lore:
+      - "&7Nhấn để bán tất cả vật phẩm"
+      - "&aGiá trị: &e{total}$"
+
+  cancel:
+    material: REDSTONE
+    name: "&c✖ Hủy"
+    lore:
+      - "&7Nhấn để hủy và lấy lại vật phẩm"
+
+messages:
+  sell-success: "&aĐã bán thành công! Nhận được &e{amount}$"
+  sell-cancelled: "&eĐã hủy và hoàn trả vật phẩm!"
+  sell-no-items: "&cKhông có vật phẩm để bán!"
+  sell-gui-opened: "&aĐã mở giao diện bán vật phẩm!"

@@ -5,9 +5,13 @@ import com.NguyenDevs.nDUltimateShop.gui.SellGUI;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 
-public class SellCommand implements CommandExecutor {
+import java.util.ArrayList;
+import java.util.List;
+
+public class SellCommand implements CommandExecutor, TabCompleter {
 
     private final NDUltimateShop plugin;
 
@@ -30,8 +34,11 @@ public class SellCommand implements CommandExecutor {
         }
 
         new SellGUI(plugin, player).open();
-        player.sendMessage(plugin.getLanguageManager().getMessage("sell-gui-opened"));
-
         return true;
+    }
+
+    @Override
+    public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
+        return new ArrayList<>();
     }
 }

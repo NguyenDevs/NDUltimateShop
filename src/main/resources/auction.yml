@@ -1,0 +1,110 @@
+# Auction House GUI Configuration
+title: "&e&lNHÀ ĐẤU GIÁ - Trang {page}"
+rows: 6
+
+item-slots:
+  - 10
+  - 11
+  - 12
+  - 13
+  - 14
+  - 15
+  - 16
+  - 19
+  - 20
+  - 21
+  - 22
+  - 23
+  - 24
+  - 25
+  - 28
+  - 29
+  - 30
+  - 31
+  - 32
+  - 33
+  - 34
+  - 37
+  - 38
+  - 39
+  - 40
+  - 41
+  - 42
+  - 43
+
+slots:
+  info: 4
+  my-listings: 48
+  previous: 45
+  next: 53
+  close: 49
+
+filler-slots:
+  - 0
+  - 1
+  - 2
+  - 3
+  - 5
+  - 6
+  - 7
+  - 8
+  - 9
+  - 17
+  - 18
+  - 26
+  - 27
+  - 35
+  - 36
+  - 44
+  - 46
+  - 47
+  - 50
+  - 51
+  - 52
+
+filler-material: YELLOW_STAINED_GLASS_PANE
+
+decorative-items:
+  info:
+    material: GOLD_INGOT
+    name: "&e&lTHÔNG TIN ĐẤU GIÁ"
+    lore:
+      - "&7Tổng đấu giá: &e{total_listings}"
+      - "&7Đấu giá của bạn: &a{player_listings}"
+      - "&7Phí hoa hồng: &c{commission}%"
+      - ""
+      - "&7Số dư: &a${balance}"
+      - "&7Mã giảm giá: &d{coupon}"
+    enchanted: true
+  
+  my-listings:
+    material: CHEST
+    name: "&aĐấu Giá Của Tôi"
+    lore:
+      - "&7Xem các vật phẩm bạn đang bán"
+      - "&eShift + Click &7để hủy đấu giá"
+  
+  previous-button:
+    material: ARROW
+    name: "&e◀ Trang Trước"
+  
+  next-button:
+    material: ARROW
+    name: "&eTrang Tiếp ▶"
+  
+  close-button:
+    material: BARRIER
+    name: "&c✖ Đóng"
+
+messages:
+  lore-seller: "&7Người bán: &b{seller}"
+  lore-discount: "&d⚡ Giảm giá: &c-{discount}%"
+  lore-original-price: "&7&mGiá gốc: &r&7{original_price}$"
+  lore-price: "&aGiá: &e{price}$"
+  lore-time-left: "&7Còn lại: &e{time}"
+  lore-click-buy: "&e▶ Click để mua!"
+  lore-click-cancel: "&c▶ Shift + Click để hủy!"
+  
+  auction-item-bought: "&aĐã mua &e{item} &atừ &b{seller} &avới giá &e{price}$"
+  auction-item-cancelled: "&eĐã hủy đấu giá và hoàn trả vật phẩm!"
+  auction-seller-received: "&aVật phẩm &e{item} &ađã được bán! Bạn nhận &e{amount}$"

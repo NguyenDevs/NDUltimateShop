@@ -6,13 +6,14 @@ import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
-public class AuctionCommand implements CommandExecutor {
+public class AuctionCommand implements CommandExecutor, TabCompleter {
 
     private final NDUltimateShop plugin;
 
@@ -34,22 +35,33 @@ public class AuctionCommand implements CommandExecutor {
             return true;
         }
 
-        // /ah sell <price>
         if (args.length >= 2 && args[0].equalsIgnoreCase("sell")) {
             return handleSell(player, args);
         }
 
-        // /ah - open GUI
         new AuctionGUI(plugin, player).open();
-        player.sendMessage(plugin.getLanguageManager().getMessage("auction-opened"));
-
         return true;
+    }
+
+    @Override
+    public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
+        List<String> completions = new ArrayList<>();
+
+        if (args.length == 1) {
+            completions.add("sell");
+        } else if (args.length == 2 && args[0].equalsIgnoreCase("sell")) {
+            completions.add("<price>");
+        }
+
+        return completions.stream()
+                .filter(s -> s.toLowerCase().startsWith(args[args.length - 1].toLowerCase()))
+                .collect(Collectors.toList());
     }
 
     private boolean handleSell(Player player, String[] args) {
         ItemStack item = player.getInventory().getItemInMainHand();
         if (item == null || item.getType() == Material.AIR) {
-            player.sendMessage(plugin.getLanguageManager().getPrefixedMessage("auction-invalid-price"));
+            player.sendMessage(plugin.getLanguageManager().getPrefixedMessage("hold-item"));
             return true;
         }
 
@@ -57,15 +69,14 @@ public class AuctionCommand implements CommandExecutor {
         try {
             price = Double.parseDouble(args[1]);
             if (price <= 0) {
-                player.sendMessage(plugin.getLanguageManager().getPrefixedMessage("auction-invalid-price"));
+                player.sendMessage(plugin.getLanguageManager().getPrefixedMessage("invalid-price"));
                 return true;
             }
         } catch (NumberFormatException e) {
-            player.sendMessage(plugin.getLanguageManager().getPrefixedMessage("auction-invalid-price"));
+            player.sendMessage(plugin.getLanguageManager().getPrefixedMessage("invalid-number"));
             return true;
         }
 
-        // Calculate commission fee
         double commissionRate = plugin.getAuctionManager().getCommissionFee();
         double commission = price * (commissionRate / 100.0);
 
@@ -76,20 +87,15 @@ public class AuctionCommand implements CommandExecutor {
             return true;
         }
 
-        // Create listing
         String listingId = plugin.getAuctionManager().createListing(player, item.clone(), price);
         if (listingId == null) {
             player.sendMessage(plugin.getLanguageManager().getPrefixedMessage("auction-max-listings"));
             return true;
         }
 
-        // Charge commission
         plugin.getEconomy().withdrawPlayer(player, commission);
-
-        // Remove item from hand
         player.getInventory().setItemInMainHand(null);
 
-        // Send messages
         Map<String, String> placeholders = new HashMap<>();
         placeholders.put("item", item.getType().name());
         placeholders.put("price", String.format("%.2f", price));
@@ -108,9 +114,9 @@ public class AuctionCommand implements CommandExecutor {
         long minutes = (seconds % 3600) / 60;
 
         if (hours > 0) {
-            return hours + " giờ";
+            return hours + " " + plugin.getLanguageManager().getMessage("time-hours");
         } else {
-            return minutes + " phút";
+            return minutes + " " + plugin.getLanguageManager().getMessage("time-minutes");
         }
     }
 }
