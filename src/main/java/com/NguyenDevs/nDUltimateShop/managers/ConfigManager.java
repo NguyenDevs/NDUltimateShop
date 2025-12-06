@@ -26,10 +26,7 @@ public class ConfigManager {
     public void loadAllConfigs() {
         plugin.saveDefaultConfig();
 
-        createConfig("gui/shop.yml");
-        createConfig("gui/auction.yml");
         createConfig("itemsell.yml");
-        createConfig("gui/blackshop.yml");
         createConfig("coupons.yml");
         createConfig("language.yml");
 
@@ -38,10 +35,10 @@ public class ConfigManager {
             guiFolder.mkdirs();
         }
 
-        createGUIConfig("gui/shop.yml");
-        createGUIConfig("gui/auction.yml");
-        createGUIConfig("gui/sell.yml");
-        createGUIConfig("gui/blackshop.yml");
+        createGUIConfig("shop.yml");
+        createGUIConfig("auction.yml");
+        createGUIConfig("sell.yml");
+        createGUIConfig("blackshop.yml");
 
         loadGUIConfigs();
 
