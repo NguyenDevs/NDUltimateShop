@@ -51,7 +51,7 @@ auction-seller-received: "&aVật phẩm &e%item% &ccủa bạn đã được b�
 
 # GUI My Listings (Vật phẩm đang bán)
 gui-mylistings-title: "&8Vật phẩm đang bán (%count%)"
-gui-mylistings-back: "&c◀ Quay lại Chợ"
+gui-mylistings-back: "&c◀ Quay lại"
 
 # Thông báo Bán đồ (Sell)
 sell-success: "&aĐã bán thành công! Bạn nhận được &e%amount%$"

@@ -52,10 +52,19 @@ public class ConfigManager {
         plugin.getLogger().info("Đã tải và cập nhật các file cấu hình!");
     }
 
+    public void reloadAllConfigs() {
+        configs.clear();
+        configFiles.clear();
+        dataConfigs.clear();
+        dataFiles.clear();
+
+        plugin.reloadConfig();
+        loadAllConfigs();
+    }
+
     private void updateDefaultConfig() {
         plugin.saveDefaultConfig();
         FileConfiguration config = plugin.getConfig();
-
         InputStream defConfigStream = plugin.getResource("config.yml");
         if (defConfigStream != null) {
             YamlConfiguration defConfig = YamlConfiguration.loadConfiguration(new InputStreamReader(defConfigStream, StandardCharsets.UTF_8));
@@ -66,32 +75,28 @@ public class ConfigManager {
     }
 
     private void createOrUpdateConfig(String path) {
-        String fileName = path;
-        File file = new File(plugin.getDataFolder(), fileName);
-
+        File file = new File(plugin.getDataFolder(), path);
         if (!file.exists()) {
             file.getParentFile().mkdirs();
-            plugin.saveResource(fileName, false);
+            plugin.saveResource(path, false);
         }
 
         YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
+        InputStream defConfigStream = plugin.getResource(path);
 
-        InputStream defConfigStream = plugin.getResource(fileName);
         if (defConfigStream != null) {
             YamlConfiguration defConfig = YamlConfiguration.loadConfiguration(new InputStreamReader(defConfigStream, StandardCharsets.UTF_8));
-
             config.setDefaults(defConfig);
             config.options().copyDefaults(true);
-
             try {
                 config.save(file);
             } catch (IOException e) {
-                plugin.getLogger().severe("Không thể lưu file update " + fileName + ": " + e.getMessage());
+                plugin.getLogger().severe("Không thể lưu file update " + path + ": " + e.getMessage());
             }
         }
 
-        configFiles.put(fileName, file);
-        configs.put(fileName, config);
+        configFiles.put(path, file);
+        configs.put(path, config);
     }
 
     private void createDataConfig(String fileName) {
@@ -149,39 +154,6 @@ public class ConfigManager {
                 plugin.getLogger().severe("Không thể lưu file data " + fileName + ": " + e.getMessage());
             }
         }
-    }
-
-    public void reloadAllConfigs() {
-        plugin.reloadConfig();
-        updateDefaultConfig();
-
-        for (String fileName : configFiles.keySet()) {
-            File file = configFiles.get(fileName);
-            if (file != null) {
-                YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
-
-                InputStream defConfigStream = plugin.getResource(fileName);
-                if (defConfigStream != null) {
-                    YamlConfiguration defConfig = YamlConfiguration.loadConfiguration(new InputStreamReader(defConfigStream, StandardCharsets.UTF_8));
-                    config.setDefaults(defConfig);
-                    config.options().copyDefaults(true);
-                    try {
-                        config.save(file);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-
-                configs.put(fileName, config);
-            }
-        }
-
-        for (String fileName : dataFiles.keySet()) {
-            File file = dataFiles.get(fileName);
-            if (file != null) dataConfigs.put(fileName, YamlConfiguration.loadConfiguration(file));
-        }
-
-        loadGUIConfigs();
     }
 
     public GUIConfigManager.GUIConfig getGUIConfig(String guiName) {

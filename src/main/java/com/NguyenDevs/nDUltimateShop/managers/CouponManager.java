@@ -17,7 +17,6 @@ public class CouponManager {
         this.plugin = plugin;
         this.coupons = new HashMap<>();
         this.activeCoupons = new HashMap<>();
-        loadCoupons();
     }
 
     public void loadCoupons() {
