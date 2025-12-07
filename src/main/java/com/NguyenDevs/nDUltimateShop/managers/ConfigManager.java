@@ -6,6 +6,9 @@ import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -28,15 +31,15 @@ public class ConfigManager {
     }
 
     public void loadAllConfigs() {
-        plugin.saveDefaultConfig();
+        updateDefaultConfig();
 
-        createConfig("itemsell.yml");
-        createConfig("language.yml");
+        createOrUpdateConfig("itemsell.yml");
+        createOrUpdateConfig("language.yml");
 
-        createGUIConfig("shop.yml");
-        createGUIConfig("auction.yml");
-        createGUIConfig("sell.yml");
-        createGUIConfig("nightshop.yml");
+        createOrUpdateConfig("gui/shop.yml");
+        createOrUpdateConfig("gui/auction.yml");
+        createOrUpdateConfig("gui/sell.yml");
+        createOrUpdateConfig("gui/nightshop.yml");
 
         createDataConfig("shops.yml");
         createDataConfig("auctions.yml");
@@ -46,31 +49,49 @@ public class ConfigManager {
 
         loadGUIConfigs();
 
-        plugin.getLogger().info("Da tai tat ca file cau hinh va du lieu!");
+        plugin.getLogger().info("Đã tải và cập nhật các file cấu hình!");
     }
 
-    private void createConfig(String fileName) {
+    private void updateDefaultConfig() {
+        plugin.saveDefaultConfig();
+        FileConfiguration config = plugin.getConfig();
+
+        InputStream defConfigStream = plugin.getResource("config.yml");
+        if (defConfigStream != null) {
+            YamlConfiguration defConfig = YamlConfiguration.loadConfiguration(new InputStreamReader(defConfigStream, StandardCharsets.UTF_8));
+            config.setDefaults(defConfig);
+            config.options().copyDefaults(true);
+        }
+        plugin.saveConfig();
+    }
+
+    private void createOrUpdateConfig(String path) {
+        String fileName = path;
         File file = new File(plugin.getDataFolder(), fileName);
+
         if (!file.exists()) {
+            file.getParentFile().mkdirs();
             plugin.saveResource(fileName, false);
         }
+
+        YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
+
+        InputStream defConfigStream = plugin.getResource(fileName);
+        if (defConfigStream != null) {
+            YamlConfiguration defConfig = YamlConfiguration.loadConfiguration(new InputStreamReader(defConfigStream, StandardCharsets.UTF_8));
+
+            config.setDefaults(defConfig);
+            config.options().copyDefaults(true);
+
+            try {
+                config.save(file);
+            } catch (IOException e) {
+                plugin.getLogger().severe("Không thể lưu file update " + fileName + ": " + e.getMessage());
+            }
+        }
+
         configFiles.put(fileName, file);
-        configs.put(fileName, YamlConfiguration.loadConfiguration(file));
-    }
-
-    private void createGUIConfig(String fileName) {
-        File guiFolder = new File(plugin.getDataFolder(), "gui");
-        if (!guiFolder.exists()) {
-            guiFolder.mkdirs();
-        }
-
-        File file = new File(guiFolder, fileName);
-        if (!file.exists()) {
-            plugin.saveResource("gui/" + fileName, false);
-        }
-        String key = "gui/" + fileName;
-        configFiles.put(key, file);
-        configs.put(key, YamlConfiguration.loadConfiguration(file));
+        configs.put(fileName, config);
     }
 
     private void createDataConfig(String fileName) {
@@ -113,7 +134,7 @@ public class ConfigManager {
             try {
                 config.save(file);
             } catch (IOException e) {
-                plugin.getLogger().severe("Khong the luu file config " + fileName + ": " + e.getMessage());
+                plugin.getLogger().severe("Không thể lưu file config " + fileName + ": " + e.getMessage());
             }
         }
     }
@@ -125,21 +146,41 @@ public class ConfigManager {
             try {
                 config.save(file);
             } catch (IOException e) {
-                plugin.getLogger().severe("Khong the luu file data " + fileName + ": " + e.getMessage());
+                plugin.getLogger().severe("Không thể lưu file data " + fileName + ": " + e.getMessage());
             }
         }
     }
 
     public void reloadAllConfigs() {
         plugin.reloadConfig();
+        updateDefaultConfig();
+
         for (String fileName : configFiles.keySet()) {
             File file = configFiles.get(fileName);
-            if (file != null) configs.put(fileName, YamlConfiguration.loadConfiguration(file));
+            if (file != null) {
+                YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
+
+                InputStream defConfigStream = plugin.getResource(fileName);
+                if (defConfigStream != null) {
+                    YamlConfiguration defConfig = YamlConfiguration.loadConfiguration(new InputStreamReader(defConfigStream, StandardCharsets.UTF_8));
+                    config.setDefaults(defConfig);
+                    config.options().copyDefaults(true);
+                    try {
+                        config.save(file);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                configs.put(fileName, config);
+            }
         }
+
         for (String fileName : dataFiles.keySet()) {
             File file = dataFiles.get(fileName);
             if (file != null) dataConfigs.put(fileName, YamlConfiguration.loadConfiguration(file));
         }
+
         loadGUIConfigs();
     }
 
