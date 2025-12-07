@@ -33,14 +33,14 @@ decorative-items:
 
   confirm:
     material: LIME_DYE
-    name: "&a✔ XÁC NHẬN BÁN"
+    name: "&a✔ Xác nhận bán"
     lore:
       - "&7Bán tất cả vật phẩm trong khung"
       - "&aGiá trị: &e%total%$"
 
   cancel:
     material: RED_DYE
-    name: "&c✖ HỦY BỎ"
+    name: "&c✖ Huỷ bỏ"
     lore:
       - "&7Lấy lại toàn bộ vật phẩm"
 

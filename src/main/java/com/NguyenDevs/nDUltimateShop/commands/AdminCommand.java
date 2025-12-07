@@ -188,7 +188,10 @@ public class AdminCommand implements CommandExecutor, TabCompleter {
                 int stock = args.length >= 4 ? Integer.parseInt(args[3]) : -1;
 
                 String id = "item_" + System.currentTimeMillis();
-                plugin.getShopManager().addShopItem(id, item.clone(), price, stock);
+                ItemStack shopItemClone = item.clone();
+                shopItemClone.setAmount(1);
+
+                plugin.getShopManager().addShopItem(id, shopItemClone, price, stock);
 
                 Map<String, String> placeholders = new HashMap<>();
                 String itemName = item.getType().name();

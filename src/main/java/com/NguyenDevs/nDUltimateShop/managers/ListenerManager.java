@@ -5,10 +5,7 @@ import com.NguyenDevs.nDUltimateShop.gui.AuctionGUI;
 import com.NguyenDevs.nDUltimateShop.gui.NightShopGUI;
 import com.NguyenDevs.nDUltimateShop.gui.SellGUI;
 import com.NguyenDevs.nDUltimateShop.gui.ShopGUI;
-import com.NguyenDevs.nDUltimateShop.listeners.AuctionListener;
-import com.NguyenDevs.nDUltimateShop.listeners.NightShopListener;
-import com.NguyenDevs.nDUltimateShop.listeners.SellListener;
-import com.NguyenDevs.nDUltimateShop.listeners.ShopListener;
+import com.NguyenDevs.nDUltimateShop.listeners.*;
 import org.bukkit.entity.Player;
 
 public class ListenerManager {
@@ -21,6 +18,7 @@ public class ListenerManager {
 
     public void registerListeners() {
         plugin.getServer().getPluginManager().registerEvents(new ShopListener(plugin), plugin);
+        plugin.getServer().getPluginManager().registerEvents(new ShopAmountListener(plugin), plugin); // QUAN TRỌNG: Dòng này phải có
         plugin.getServer().getPluginManager().registerEvents(new AuctionListener(plugin), plugin);
         plugin.getServer().getPluginManager().registerEvents(new SellListener(plugin), plugin);
         plugin.getServer().getPluginManager().registerEvents(new NightShopListener(plugin), plugin);
