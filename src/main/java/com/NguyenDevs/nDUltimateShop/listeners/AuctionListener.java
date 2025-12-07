@@ -2,6 +2,8 @@ package com.NguyenDevs.nDUltimateShop.listeners;
 
 import com.NguyenDevs.nDUltimateShop.NDUltimateShop;
 import com.NguyenDevs.nDUltimateShop.gui.AuctionGUI;
+import com.NguyenDevs.nDUltimateShop.gui.BaseGUI;
+import com.NguyenDevs.nDUltimateShop.gui.MyListingsGUI;
 import com.NguyenDevs.nDUltimateShop.models.AuctionListing;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -26,66 +28,109 @@ public class AuctionListener implements Listener {
 
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event) {
-        if (!(event.getInventory().getHolder() instanceof AuctionGUI)) return;
-        event.setCancelled(true);
+        if (!(event.getInventory().getHolder() instanceof BaseGUI)) return;
 
-        AuctionGUI gui = (AuctionGUI) event.getInventory().getHolder();
+        // Chỉ xử lý nếu là AuctionGUI hoặc MyListingsGUI
+        if (!(event.getInventory().getHolder() instanceof AuctionGUI) &&
+                !(event.getInventory().getHolder() instanceof MyListingsGUI)) return;
+
+        event.setCancelled(true);
         Player player = (Player) event.getWhoClicked();
         int slot = event.getRawSlot();
-        Map<String, Integer> slots = gui.getConfig().getSlotMapping();
+
+        // Xử lý chung cho cả 2 GUI (Sort, Previous, Next)
+        BaseGUI baseGUI = (BaseGUI) event.getInventory().getHolder();
+        Map<String, Integer> slots = baseGUI.getConfig().getSlotMapping();
         ItemStack clickedItem = event.getCurrentItem();
 
-        // Xử lý nút Sắp xếp
-        if (slot == gui.getSortSlot()) {
-            gui.getConfig().playSound(player, "click");
-            gui.handleSortClick(event.getClick());
-            gui.open();
-            return;
-        }
-
-        if (slots.containsKey("close") && slot == slots.get("close")) {
-            gui.getConfig().playSound(player, "click");
-            player.closeInventory();
+        if (slot == baseGUI.getSortSlot()) {
+            baseGUI.getConfig().playSound(player, "click");
+            baseGUI.handleSortClick(event.getClick());
+            baseGUI.open();
             return;
         }
 
         if (slots.containsKey("previous") && slot == slots.get("previous")) {
             if (clickedItem == null || clickedItem.getType() == Material.AIR) return;
-            if (clickedItem.getType() == gui.getConfig().getFillerMaterial()) return;
+            if (clickedItem.getType() == baseGUI.getConfig().getFillerMaterial()) return;
 
-            if (gui.getCurrentPage() > 0) {
-                gui.getConfig().playSound(player, "click");
-                gui.setCurrentPage(gui.getCurrentPage() - 1);
-                gui.open();
+            if (baseGUI.getCurrentPage() > 0) {
+                baseGUI.getConfig().playSound(player, "click");
+                baseGUI.setCurrentPage(baseGUI.getCurrentPage() - 1);
+                baseGUI.open();
             } else {
-                gui.getConfig().playSound(player, "error");
+                baseGUI.getConfig().playSound(player, "error");
             }
             return;
         }
 
         if (slots.containsKey("next") && slot == slots.get("next")) {
             if (clickedItem == null || clickedItem.getType() == Material.AIR) return;
-            if (clickedItem.getType() == gui.getConfig().getFillerMaterial()) return;
+            if (clickedItem.getType() == baseGUI.getConfig().getFillerMaterial()) return;
 
-            gui.getConfig().playSound(player, "click");
-            gui.setCurrentPage(gui.getCurrentPage() + 1);
-            gui.open();
+            baseGUI.getConfig().playSound(player, "click");
+            baseGUI.setCurrentPage(baseGUI.getCurrentPage() + 1);
+            baseGUI.open();
             return;
         }
 
-        AuctionListing listing = gui.getAuctionListingAt(slot);
-        if (listing != null) {
-            if (listing.getSellerUUID().equals(player.getUniqueId())) {
+        // --- Xử lý riêng cho AuctionGUI ---
+        if (baseGUI instanceof AuctionGUI) {
+            AuctionGUI gui = (AuctionGUI) baseGUI;
+
+            // Nút "My Listings"
+            if (slots.containsKey("my-listings") && slot == slots.get("my-listings")) {
+                gui.getConfig().playSound(player, "click");
+                new MyListingsGUI(plugin, player).open();
+                return;
+            }
+
+            if (slots.containsKey("close") && slot == slots.get("close")) {
+                gui.getConfig().playSound(player, "click");
+                player.closeInventory();
+                return;
+            }
+
+            AuctionListing listing = gui.getAuctionListingAt(slot);
+            if (listing != null) {
+                if (listing.getSellerUUID().equals(player.getUniqueId())) {
+                    if (event.getClick() == ClickType.SHIFT_LEFT || event.getClick() == ClickType.SHIFT_RIGHT) {
+                        cancelListing(player, listing, baseGUI);
+                    } else {
+                        gui.getConfig().playSound(player, "error");
+                        Map<String, String> ph = new HashMap<>();
+                        ph.put("hint", "Shift + Click");
+                        player.sendMessage(plugin.getLanguageManager().getPrefixedMessage("help-admin-auction-cancel-hint", ph));
+                    }
+                } else {
+                    purchaseAuction(player, listing, gui);
+                }
+            }
+        }
+
+        // --- Xử lý riêng cho MyListingsGUI ---
+        else if (baseGUI instanceof MyListingsGUI) {
+            MyListingsGUI gui = (MyListingsGUI) baseGUI;
+
+            // Nút "Back" (Vị trí nút close trong config)
+            if (slots.containsKey("close") && slot == slots.get("close")) {
+                gui.getConfig().playSound(player, "click");
+                new AuctionGUI(plugin, player).open();
+                return;
+            }
+
+            AuctionListing listing = gui.getAuctionListingAt(slot);
+            if (listing != null) {
+                // Trong GUI này, mọi click đều là hủy bán (vì đều là item của mình)
                 if (event.getClick() == ClickType.SHIFT_LEFT || event.getClick() == ClickType.SHIFT_RIGHT) {
                     cancelListing(player, listing, gui);
                 } else {
+                    // Nhắc nhở dùng Shift Click để tránh nhầm lẫn
                     gui.getConfig().playSound(player, "error");
                     Map<String, String> ph = new HashMap<>();
                     ph.put("hint", "Shift + Click");
                     player.sendMessage(plugin.getLanguageManager().getPrefixedMessage("help-admin-auction-cancel-hint", ph));
                 }
-            } else {
-                purchaseAuction(player, listing, gui);
             }
         }
     }
@@ -108,9 +153,9 @@ public class AuctionListener implements Listener {
             buyer.getWorld().dropItem(buyer.getLocation(), item);
         }
 
-        Player seller = Bukkit.getPlayer(listing.getSellerUUID());
         plugin.getEconomy().depositPlayer(Bukkit.getOfflinePlayer(listing.getSellerUUID()), listing.getPrice());
 
+        Player seller = Bukkit.getPlayer(listing.getSellerUUID());
         if (seller != null && seller.isOnline()) {
             Map<String, String> ph = new HashMap<>();
             ph.put("amount", String.format("%,.2f", listing.getPrice()));
@@ -141,7 +186,7 @@ public class AuctionListener implements Listener {
         gui.open();
     }
 
-    private void cancelListing(Player player, AuctionListing listing, AuctionGUI gui) {
+    private void cancelListing(Player player, AuctionListing listing, BaseGUI gui) {
         plugin.getAuctionManager().removeListing(listing.getId());
         for (ItemStack item : player.getInventory().addItem(listing.getItemStack()).values()) {
             player.getWorld().dropItem(player.getLocation(), item);

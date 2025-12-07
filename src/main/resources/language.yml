@@ -49,6 +49,10 @@ auction-item-cancelled: "&eĐã hủy bán và nhận lại vật phẩm!"
 auction-item-expired: "&cVật phẩm &e%item% &ccủa bạn đã hết hạn và được trả về kho!"
 auction-seller-received: "&aVật phẩm &e%item% &ccủa bạn đã được bán! Bạn nhận được &e%amount%$"
 
+# GUI My Listings (Vật phẩm đang bán)
+gui-mylistings-title: "&8Vật phẩm đang bán (%count%)"
+gui-mylistings-back: "&c◀ Quay lại Chợ"
+
 # Thông báo Bán đồ (Sell)
 sell-success: "&aĐã bán thành công! Bạn nhận được &e%amount%$"
 sell-no-items: "&cBạn chưa bỏ vật phẩm nào vào để bán!"
