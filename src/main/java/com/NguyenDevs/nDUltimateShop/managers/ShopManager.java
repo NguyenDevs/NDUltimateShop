@@ -35,7 +35,7 @@ public class ShopManager {
             }
         }
 
-        plugin.getLogger().info("Da tai " + shopItems.size() + " vat pham Shop tu data/shops.yml!");
+        plugin.getLogger().info("Đã tải " + shopItems.size() + " item shop từ data/shops.yml!");
     }
 
     public void saveShops() {

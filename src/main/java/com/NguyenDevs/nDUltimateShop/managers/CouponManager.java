@@ -47,7 +47,7 @@ public class CouponManager {
             }
         }
 
-        plugin.getLogger().info("Da tai " + coupons.size() + " ma giam gia tu data/coupons.yml!");
+        plugin.getLogger().info("Đã tải " + coupons.size() + " mã giảm giá từ data/coupons.yml!");
     }
 
     public void saveCoupons() {

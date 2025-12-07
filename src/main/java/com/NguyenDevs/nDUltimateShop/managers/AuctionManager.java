@@ -65,7 +65,7 @@ public class AuctionManager {
             }
         }
 
-        plugin.getLogger().info("Da tai " + activeListings.size() + " mat hang dau gia tu data/auctions.yml!");
+        plugin.getLogger().info("Đã tải " + activeListings.size() + " item đấu giá từ data/auctions.yml!");
     }
 
     public void saveAuctions() {

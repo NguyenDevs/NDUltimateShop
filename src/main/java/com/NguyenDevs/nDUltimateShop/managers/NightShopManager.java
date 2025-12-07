@@ -40,7 +40,7 @@ public class NightShopManager {
             }
         }
 
-        plugin.getLogger().info("Da tai " + nightShopItems.size() + " vat pham cho dem tu data/nightshop_data.yml!");
+        plugin.getLogger().info("Đã tải " + nightShopItems.size() + " item chợ đêm từ data/nightshop_data.yml!");
     }
 
     public void saveBlackShop() {
