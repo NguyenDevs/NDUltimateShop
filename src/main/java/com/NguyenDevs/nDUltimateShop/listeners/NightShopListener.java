@@ -32,7 +32,6 @@ public class NightShopListener implements Listener {
         Map<String, Integer> slots = gui.getConfig().getSlotMapping();
         ItemStack clickedItem = event.getCurrentItem();
 
-        // Xử lý nút Sắp xếp
         if (slot == gui.getSortSlot()) {
             gui.getConfig().playSound(player, "click");
             gui.handleSortClick(event.getClick());

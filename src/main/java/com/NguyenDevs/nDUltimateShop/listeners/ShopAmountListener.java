@@ -59,7 +59,6 @@ public class ShopAmountListener implements Listener {
     @EventHandler
     public void onInventoryDrag(InventoryDragEvent event) {
         if (event.getInventory().getHolder() instanceof ShopAmountGUI) {
-            // Chặn kéo thả item trong GUI này
             event.setCancelled(true);
         }
     }

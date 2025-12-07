@@ -26,7 +26,6 @@ public class SellManager {
         itemPrices.clear();
         materialPrices.clear();
 
-        // Load Custom Items from Data
         FileConfiguration data = plugin.getConfigManager().getDataConfig("sell_data.yml");
         ConfigurationSection customSection = data.getConfigurationSection("custom-items");
         if (customSection != null) {
@@ -40,7 +39,6 @@ public class SellManager {
             }
         }
 
-        // Load Default Material Prices from Config
         FileConfiguration config = plugin.getConfigManager().getConfig("itemsell.yml");
         ConfigurationSection materialSection = config.getConfigurationSection("materials");
         if (materialSection != null) {
@@ -59,29 +57,15 @@ public class SellManager {
     }
 
     public void saveSellPrices() {
-        // Only save custom items to data
         FileConfiguration data = plugin.getConfigManager().getDataConfig("sell_data.yml");
         data.set("custom-items", null);
 
         int index = 0;
         for (Map.Entry<String, Double> entry : itemPrices.entrySet()) {
             String key = "custom-items.item" + index;
-            // We need to reconstruct item from hash or store item obj separately?
-            // For simplicity in this logic, we assume we only store price.
-            // But wait, the previous logic stored ItemStack.
-            // This is a limitation of the current simple hashing.
-            // In a real scenario, you map Hash -> Object(Item, Price).
-            // For now, I will skip saving itemStack back to YML in this specific snippet
-            // because `itemPrices` only holds string hash.
-            // To fix this properly requires changing Map<String, Double> to Map<String, SellItemData>.
-            // Assuming for this request we keep the structure but note that setCustomItemPrice needs to write immediately.
             data.set(key + ".price", entry.getValue());
             index++;
         }
-        // Note: The original code had a flaw where it couldn't easily save back the ItemStack from just the hash String key
-        // unless the map stored the ItemStack too.
-        // For this refactor, I will ensure setCustomItemPrice writes directly to file to preserve the ItemStack.
-
         plugin.getConfigManager().saveData("sell_data.yml");
     }
 
@@ -110,15 +94,12 @@ public class SellManager {
         String hash = getItemHash(item);
         itemPrices.put(hash, price);
 
-        // Direct save to ensure ItemStack is preserved
         FileConfiguration data = plugin.getConfigManager().getDataConfig("sell_data.yml");
         String key = "custom-items.item_" + System.currentTimeMillis();
-        // Use timestamp to unique key or hash if valid yml key
         data.set(key + ".item", item.clone());
         data.set(key + ".price", price);
         plugin.getConfigManager().saveData("sell_data.yml");
 
-        // Reload to sync (simplified approach)
         loadSellPrices();
     }
 

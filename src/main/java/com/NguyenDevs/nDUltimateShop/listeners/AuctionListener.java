@@ -30,7 +30,6 @@ public class AuctionListener implements Listener {
     public void onInventoryClick(InventoryClickEvent event) {
         if (!(event.getInventory().getHolder() instanceof BaseGUI)) return;
 
-        // Chỉ xử lý nếu là AuctionGUI hoặc MyListingsGUI
         if (!(event.getInventory().getHolder() instanceof AuctionGUI) &&
                 !(event.getInventory().getHolder() instanceof MyListingsGUI)) return;
 
@@ -38,7 +37,6 @@ public class AuctionListener implements Listener {
         Player player = (Player) event.getWhoClicked();
         int slot = event.getRawSlot();
 
-        // Xử lý chung cho cả 2 GUI (Sort, Previous, Next)
         BaseGUI baseGUI = (BaseGUI) event.getInventory().getHolder();
         Map<String, Integer> slots = baseGUI.getConfig().getSlotMapping();
         ItemStack clickedItem = event.getCurrentItem();
@@ -74,11 +72,9 @@ public class AuctionListener implements Listener {
             return;
         }
 
-        // --- Xử lý riêng cho AuctionGUI ---
         if (baseGUI instanceof AuctionGUI) {
             AuctionGUI gui = (AuctionGUI) baseGUI;
 
-            // Nút "My Listings"
             if (slots.containsKey("my-listings") && slot == slots.get("my-listings")) {
                 gui.getConfig().playSound(player, "click");
                 new MyListingsGUI(plugin, player).open();
@@ -108,11 +104,9 @@ public class AuctionListener implements Listener {
             }
         }
 
-        // --- Xử lý riêng cho MyListingsGUI ---
         else if (baseGUI instanceof MyListingsGUI) {
             MyListingsGUI gui = (MyListingsGUI) baseGUI;
 
-            // Nút "Back" (Vị trí nút close trong config)
             if (slots.containsKey("close") && slot == slots.get("close")) {
                 gui.getConfig().playSound(player, "click");
                 new AuctionGUI(plugin, player).open();
@@ -121,11 +115,9 @@ public class AuctionListener implements Listener {
 
             AuctionListing listing = gui.getAuctionListingAt(slot);
             if (listing != null) {
-                // Trong GUI này, mọi click đều là hủy bán (vì đều là item của mình)
                 if (event.getClick() == ClickType.SHIFT_LEFT || event.getClick() == ClickType.SHIFT_RIGHT) {
                     cancelListing(player, listing, gui);
                 } else {
-                    // Nhắc nhở dùng Shift Click để tránh nhầm lẫn
                     gui.getConfig().playSound(player, "error");
                     Map<String, String> ph = new HashMap<>();
                     ph.put("hint", "Shift + Click");
