@@ -18,13 +18,13 @@ commands:
     description: Open the shop GUI
     usage: /shop
     permission: ndshop.shop.use
-    aliases: [cửahàng, ch]
+    aliases: [cửahàng, ch, cuahang]
 
   ah:
     description: Open auction house or sell items
     usage: /ah [sell <price>]
     permission: ndshop.auction.use
-    aliases: [auction, đấugiá, dg]
+    aliases: [auction, đấugiá, dg, daugia]
 
   sell:
     description: Open sell GUI
@@ -36,13 +36,13 @@ commands:
     description: Open night shop
     usage: /nightshop
     permission: ndshop.nightshop.use
-    aliases: [chợđêm, cd, ns]
+    aliases: [chợđêm, cd, ns, chodem]
 
   coupon:
     description: Use a coupon code
     usage: /coupon <code>
     permission: ndshop.coupon.use
-    aliases: [giảmgiá, gg, code]
+    aliases: [giảmgiá, gg, code, giamgia]
 
 permissions:
   ndshop.admin:
