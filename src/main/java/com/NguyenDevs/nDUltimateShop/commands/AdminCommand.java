@@ -65,7 +65,7 @@ public class AdminCommand implements CommandExecutor, TabCompleter {
         } else if (args.length == 2) {
             switch (args[0].toLowerCase()) {
                 case "shop":
-                    completions.addAll(Arrays.asList("add", "remove", "list", "setprice"));
+                    completions.addAll(Arrays.asList("add", "remove", "list", "setprice", "restock"));
                     break;
                 case "sell":
                     completions.addAll(Arrays.asList("setprice", "removeprice", "list"));
@@ -78,7 +78,7 @@ public class AdminCommand implements CommandExecutor, TabCompleter {
                     break;
             }
         } else if (args.length == 3) {
-            if (args[0].equalsIgnoreCase("shop") && args[1].equalsIgnoreCase("remove")) {
+            if (args[0].equalsIgnoreCase("shop") && (args[1].equalsIgnoreCase("remove") || args[1].equalsIgnoreCase("restock"))) {
                 completions.addAll(plugin.getShopManager().getAllShopItems().stream()
                         .map(ShopItem::getId)
                         .collect(Collectors.toList()));
@@ -98,6 +98,8 @@ public class AdminCommand implements CommandExecutor, TabCompleter {
         } else if (args.length == 4) {
             if ((args[0].equalsIgnoreCase("shop") || args[0].equalsIgnoreCase("nightshop")) && args[1].equalsIgnoreCase("add")) {
                 completions.add("<số lượng>");
+            } else if (args[0].equalsIgnoreCase("shop") && args[1].equalsIgnoreCase("restock")) {
+                completions.add("<số lượng (-1 vô hạn)>");
             } else if (args[0].equalsIgnoreCase("coupon") && args[1].equalsIgnoreCase("create")) {
                 completions.add("<% giảm giá>");
             }
@@ -142,6 +144,26 @@ public class AdminCommand implements CommandExecutor, TabCompleter {
             sender.sendMessage("§6§lDanh sách vật phẩm Shop:");
             for (ShopItem item : plugin.getShopManager().getAllShopItems()) {
                 sender.sendMessage("§eID: §f" + item.getId() + " §7| §eGiá: §a" + item.getPrice() + "$");
+            }
+            return true;
+        }
+
+        if (args.length >= 4 && args[1].equalsIgnoreCase("restock")) {
+            String id = args[2];
+            ShopItem item = plugin.getShopManager().getShopItem(id);
+            if (item == null) {
+                sender.sendMessage(plugin.getLanguageManager().getPrefix() + " §cKhông tìm thấy vật phẩm với ID: " + id);
+                return true;
+            }
+
+            try {
+                int stock = Integer.parseInt(args[3]);
+                item.setStock(stock);
+                plugin.getShopManager().saveShops();
+                sender.sendMessage(plugin.getLanguageManager().getPrefix() + " §aĐã cập nhật kho cho §e" + id + " §athành §e" + (stock == -1 ? "Vô hạn" : stock));
+                playSound(sender, Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0f, 1.0f);
+            } catch (NumberFormatException e) {
+                sender.sendMessage(plugin.getLanguageManager().getPrefixedMessage("invalid-number"));
             }
             return true;
         }
@@ -200,7 +222,7 @@ public class AdminCommand implements CommandExecutor, TabCompleter {
     private boolean handleSell(CommandSender sender, String[] args) {
         if (args.length >= 2 && args[1].equalsIgnoreCase("list")) {
             sender.sendMessage("§6§lDanh sách giá bán (Custom):");
-            sender.sendMessage("§7Chức năng list cho Sell đang phát triển (cần iterate hashmap).");
+            sender.sendMessage("§7Chức năng list cho Sell đang phát triển.");
             return true;
         }
 
@@ -386,6 +408,7 @@ public class AdminCommand implements CommandExecutor, TabCompleter {
         sender.sendMessage("§2§lShop Commands:");
         sender.sendMessage("§e/ndshop shop list §7- Xem danh sách shop");
         sender.sendMessage("§e/ndshop shop add <giá> [kho] §7- Thêm vật phẩm");
+        sender.sendMessage("§e/ndshop shop restock <id> <kho> §7- Cập nhật kho");
         sender.sendMessage("§e/ndshop shop remove <id> §7- Xóa vật phẩm");
 
         sender.sendMessage(" ");

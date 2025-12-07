@@ -1,6 +1,7 @@
 package com.NguyenDevs.nDUltimateShop.gui;
 
 import com.NguyenDevs.nDUltimateShop.NDUltimateShop;
+import com.NguyenDevs.nDUltimateShop.managers.LanguageManager;
 import com.NguyenDevs.nDUltimateShop.models.Coupon;
 import com.NguyenDevs.nDUltimateShop.models.ShopItem;
 import org.bukkit.Bukkit;
@@ -29,7 +30,7 @@ public class ShopGUI extends BaseGUI {
         String title = plugin.getPlaceholderManager().replacePlaceholders(player, config.getTitle());
         title = title.replace("%page%", String.valueOf(currentPage + 1));
 
-        inventory = Bukkit.createInventory(this, config.getRows() * 9, plugin.getLanguageManager().colorize(title));
+        inventory = Bukkit.createInventory(this, config.getRows() * 9, LanguageManager.colorize(title));
 
         setupGUI();
         player.openInventory(inventory);
@@ -114,22 +115,28 @@ public class ShopGUI extends BaseGUI {
         }
 
         List<String> configLore = config.getLoreFormat();
+        List<String> finalLore = new ArrayList<>();
+
         if (configLore != null && !configLore.isEmpty()) {
-            List<String> finalLore = new ArrayList<>();
             for (String line : configLore) {
                 if (line.contains("%lore%")) {
                     if (meta.hasLore()) {
-                        for (String originalLine : meta.getLore()) finalLore.add(originalLine);
+                        finalLore.addAll(meta.getLore());
                     }
                 } else {
-                    finalLore.add(plugin.getLanguageManager().colorize(
+                    finalLore.add(LanguageManager.colorize(
                             plugin.getPlaceholderManager().replacePlaceholders(player, line, ph)
                     ));
                 }
             }
-            meta.setLore(finalLore);
         }
 
+        if (player.hasPermission("ndshop.admin")) {
+            finalLore.add(LanguageManager.colorize(" "));
+            finalLore.add(LanguageManager.colorize("&8&oID: " + shopItem.getId()));
+        }
+
+        meta.setLore(finalLore);
         display.setItemMeta(meta);
         return display;
     }
@@ -138,14 +145,14 @@ public class ShopGUI extends BaseGUI {
         if (item == null || !item.hasItemMeta()) return;
         ItemMeta meta = item.getItemMeta();
         if (meta.hasDisplayName()) {
-            meta.setDisplayName(plugin.getLanguageManager().colorize(
+            meta.setDisplayName(LanguageManager.colorize(
                     plugin.getPlaceholderManager().replacePlaceholders(player, meta.getDisplayName(), ph)
             ));
         }
         if (meta.hasLore()) {
             List<String> lore = new ArrayList<>();
             for (String line : meta.getLore()) {
-                lore.add(plugin.getLanguageManager().colorize(
+                lore.add(LanguageManager.colorize(
                         plugin.getPlaceholderManager().replacePlaceholders(player, line, ph)
                 ));
             }

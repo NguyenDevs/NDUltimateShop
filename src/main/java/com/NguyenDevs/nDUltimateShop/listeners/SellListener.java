@@ -32,12 +32,8 @@ public class SellListener implements Listener {
 
         if (slots.containsKey("confirm") && slot == slots.get("confirm")) {
             event.setCancelled(true);
-            if (gui.confirmSell()) {
-                gui.getConfig().playSound(player, "success");
-                player.closeInventory();
-            } else {
-                gui.getConfig().playSound(player, "error");
-            }
+            gui.getConfig().playSound(player, "success");
+            player.closeInventory();
             return;
         }
 
@@ -58,9 +54,6 @@ public class SellListener implements Listener {
         if (slot < event.getInventory().getSize()) {
             event.setCancelled(true);
         } else {
-            if (event.isShiftClick()) {
-                event.setCancelled(true);
-            }
             plugin.getServer().getScheduler().runTask(plugin, gui::updateGUI);
         }
     }
@@ -80,7 +73,7 @@ public class SellListener implements Listener {
     @EventHandler
     public void onClose(InventoryCloseEvent event) {
         if (event.getInventory().getHolder() instanceof SellGUI) {
-            ((SellGUI) event.getInventory().getHolder()).cancelSell();
+            ((SellGUI) event.getInventory().getHolder()).confirmSell();
         }
     }
 }

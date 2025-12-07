@@ -14,6 +14,8 @@ import java.util.Map;
 
 public class SellGUI extends BaseGUI {
 
+    private boolean processed = false;
+
     public SellGUI(NDUltimateShop plugin, Player player) {
         super(plugin, player, "sell");
     }
@@ -91,6 +93,9 @@ public class SellGUI extends BaseGUI {
     }
 
     public boolean confirmSell() {
+        if (processed) return false;
+        processed = true;
+
         double total = 0.0;
         List<ItemStack> unsoldItems = new ArrayList<>();
         boolean soldAnything = false;
@@ -138,6 +143,9 @@ public class SellGUI extends BaseGUI {
     }
 
     public void cancelSell() {
+        if (processed) return;
+        processed = true;
+
         for (int slot : config.getItemSlots()) {
             ItemStack item = inventory.getItem(slot);
             if (item != null && item.getType() != Material.AIR) {
